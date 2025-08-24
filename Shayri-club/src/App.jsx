@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import Bg from './bg'
+import Bg from './Bg'
 import IqbalInfo from './pages/IqbalInfo';
 import JaunInfo from './pages/JaunInfo';
 import {BrowserRouter, Routes, Route} from "react-router-dom";
