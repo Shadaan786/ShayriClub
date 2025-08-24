@@ -7,6 +7,7 @@ import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Iqbalsher from './pages/Iqbalsher';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import Kalam from './pages/kalam';
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
       <Route path = 'IqbalInfo/Iqbalsher' element = {<Iqbalsher/>}/>
       <Route path = 'Signup' element = {<Signup/>}/>
       <Route path = 'Signup/Login' element = {<Login/>}/>
+      <Route path='Kalam' element = {<Kalam/>}/>
     </Routes>
     </BrowserRouter>
     

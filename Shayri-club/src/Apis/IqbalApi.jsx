@@ -11,7 +11,7 @@ const IqbalApi = () =>{
   const apiUrl = import.meta.env.VITE_API_URL;
 
 
-  useEffect(()=>{
+  const IqbalFunc = ()=>{
     axiosInstance.get("http://localhost:9000/api/sher/Allama_Iqbal")
     .then(response => {
       setShayri(response.data);
@@ -21,6 +21,10 @@ const IqbalApi = () =>{
       setError(err.message);
       setLoading(false);
     });
+  }
+
+  useEffect(()=>{
+    IqbalFunc();
   }, []);
   
   if(loading) return<p>Loading...</p>;
@@ -44,7 +48,7 @@ const IqbalApi = () =>{
 
       <br/><br/><br/><br/><br/>
 
-      <button onClick={()=>window.location.reload()}>Read More</button>
+      <button onClick={IqbalFunc}>Read More</button>
       </div>
       
 
