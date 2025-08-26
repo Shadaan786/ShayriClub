@@ -15,7 +15,7 @@ const handleKalam = ()=>{
 
 
     axios
-    .post("http://localhost:9000/kalam",
+    .post("/kalam",
         {
 
         type: `${type}`,

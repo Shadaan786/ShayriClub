@@ -42,7 +42,7 @@ const IqbalApi = () => {
   // Axios fetch
   useEffect(() => {
     axiosInstance
-      .get("http://localhost:9000/api/sher/Allama_Iqbal")
+      .get("/api/sher/Allama_Iqbal")
       .then((res) => {
         setShayri(res.data);
         setLoading(false);

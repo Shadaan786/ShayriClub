@@ -15,7 +15,7 @@ const Login=()=>{
   const Logging=()=>{
     axiosInstance
 
-    .post("http://localhost:9000/login", {
+    .post("/login", {
 
         email: `${id}`,
         password: `${password}`

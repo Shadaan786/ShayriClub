@@ -12,7 +12,7 @@ const SignupApi = ()=>{
 
 const handleUserSignup=()=>{
         axiosInstance
-        .post("http://localhost:9000/signup", {
+        .post("/signup", {
 
             name: `${name}`,
             email: `${userID}`,

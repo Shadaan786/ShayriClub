@@ -12,7 +12,7 @@ const IqbalApi = () =>{
 
 
   const IqbalFunc = ()=>{
-    axiosInstance.get("http://localhost:9000/api/sher/Allama_Iqbal")
+    axiosInstance.get("/api/sher/Allama_Iqbal")
     .then(response => {
       setShayri(response.data);
       setLoading(false);
