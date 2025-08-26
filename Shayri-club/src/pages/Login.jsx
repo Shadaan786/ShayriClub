@@ -19,10 +19,16 @@ const Login=()=>{
 
         email: `${id}`,
         password: `${password}`
+    },
+        {
+        withCredentials: true
+        }
+
+      )
 
 
 
-    }).then((response)=>{
+    .then((response)=>{
       setLogiin(response.data)
 
       const data = response.data;
