@@ -14,7 +14,7 @@ const Kalam = ()=>{
 const handleKalam = ()=>{
 
 
-    axios
+    axiosInstance
     .post("/kalam",
         {
 
