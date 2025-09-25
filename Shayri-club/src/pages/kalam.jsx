@@ -2,14 +2,29 @@ import axiosInstance from "../Apis/axiosInstance";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from 'react-router-dom';
+import { createContext } from "react";
+import { MyContext } from "../ContextProvider";
+import { useContext } from "react";
 
-const Kalam = () => {
-  const navigate = useNavigate();
 
-  const [type, setType] = useState("");
-  const [content, setContent] = useState("");
+
+
+
+ const Kalam = () => {
+  
+
+
+
+  // const [type, setType] = useState("");
+  // const [content, setContent] = useState("");
   const [message, setMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const navigate = useNavigate();
+
+
+  const {content, setContent} = useContext(MyContext);
+  const {type, setType} = useContext(MyContext);
 
   const handleKalam = () => {
     axiosInstance
@@ -40,11 +55,15 @@ const Kalam = () => {
       })
       .catch((err) => {
         console.error(err);
+      
       });
-  };
+  };  
+
 
   return (
     <>
+    <h1>Hello </h1>
+    
       <div className="flex flex-col items-center justify-center h-screen gap-6">
         <h1 className="text-4xl">Welcome to Kalam</h1>
 
@@ -72,6 +91,9 @@ const Kalam = () => {
         </button>
 
         <h1>{message}</h1>
+        <Link to = '/UrKalam'>
+        <button>view your kalams</button>
+        </Link>
 
         {/* Popup */}
         <AnimatePresence>
@@ -88,8 +110,27 @@ const Kalam = () => {
           )}
         </AnimatePresence>
       </div>
+      
     </>
   );
 };
+
+// export const MyContext = createContext();
+
+// export const ContextProvider = ({ children })=>{
+
+//   const[content, setContent] = useState("");
+
+//   return(
+
+//     <MyContext.Provider value = {{content, setContent}}>
+//         { children }
+    
+//     </MyContext.Provider>
+    
+//   )
+
+// }
+
 
 export default Kalam;

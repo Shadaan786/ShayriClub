@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import axiosInstance from "../Apis/axiosInstance";
+import { Link } from "react-router-dom";
 
 const IqbalApi = () => {
   const [shayri, setShayri] = useState([]);
@@ -176,7 +177,9 @@ const IqbalApi = () => {
             "In every verse lies a universe of infinite possibilities. Let Iqbal's words be the compass that guides your soul through the cosmos of consciousness."
           </p>
         </div>
-      </div>
+      </div><Link to = '/kalam'>
+      <button>Submit you  Kalam</button>
+      </Link>
 
       {/* Ripple CSS */}
       <style jsx>{`

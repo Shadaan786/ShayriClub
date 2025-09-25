@@ -8,6 +8,8 @@ import Iqbalsher from './pages/Iqbalsher';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Kalam from './pages/kalam';
+import UrKalam from './pages/UrKalam';
+import { ContextProvider } from '../src/ContextProvider';
 
 function App() {
 
@@ -15,6 +17,7 @@ function App() {
   return (
     <>
     <BrowserRouter>
+    <ContextProvider>
     <Routes> 
 
       <Route path = '/' element = {<Bg/>}/>
@@ -23,8 +26,12 @@ function App() {
       <Route path = 'IqbalInfo/Iqbalsher' element = {<Iqbalsher/>}/>
       <Route path = 'Signup' element = {<Signup/>}/>
       <Route path = 'Signup/Login' element = {<Login/>}/>
-      <Route path='Kalam' element = {<Kalam/>}/>
+      
+      <Route path = '/Kalam' element = {<Kalam/>}/>
+      <Route path = 'UrKalam' element = {<UrKalam/>}/>
+    
     </Routes>
+    </ContextProvider>
     </BrowserRouter>
     
     {/* <div ><Bg/></div> */}
@@ -32,4 +39,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
