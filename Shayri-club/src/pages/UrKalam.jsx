@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { MyContext } from "../ContextProvider";
+// import { MyContext } from "../ContextProvider";
 import axiosInstance from "../Apis/axiosInstance";
 import { useEffect } from "react";
 import { useState } from "react";
-
+import { Link } from "react-router-dom";
 
 
 
@@ -58,6 +58,15 @@ useEffect(()=>{
         <h1>hello {content} </h1>
         <button onClick={() =>{setContent('lakka')}}>click me</button> */}
         {/* <button onClick={call}>hello</button> */}
+
+
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
+
+        <Link to = '/Profile'>
+        <button>View your profile</button>
+        </Link>
+
 
         
         </>

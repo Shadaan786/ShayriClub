@@ -9,7 +9,11 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Kalam from './pages/kalam';
 import UrKalam from './pages/UrKalam';
-import { ContextProvider } from '../src/ContextProvider';
+import Streak from './pages/streak';
+// import { ContextProvider } from '../src/ContextProvider';
+// import { ContextProvider } from './Apis/SignupApi';
+import UserProfile from './pages/UserProfile';
+import { ContextProvider } from './ContextProvider';
 
 function App() {
 
@@ -17,7 +21,7 @@ function App() {
   return (
     <>
     <BrowserRouter>
-    <ContextProvider>
+    
     <Routes> 
 
       <Route path = '/' element = {<Bg/>}/>
@@ -29,9 +33,15 @@ function App() {
       
       <Route path = '/Kalam' element = {<Kalam/>}/>
       <Route path = 'UrKalam' element = {<UrKalam/>}/>
+      <Route path = '/Profile' element = {<UserProfile/>}/>
+      <Route path = '/Streak' element = {<Streak/>}/>
+
+      {/* <ContextProvider>
+        <Kalam/>
+      </ContextProvider> */}
     
     </Routes>
-    </ContextProvider>
+    
     </BrowserRouter>
     
     {/* <div ><Bg/></div> */}

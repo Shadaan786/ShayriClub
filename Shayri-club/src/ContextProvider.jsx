@@ -1,17 +1,21 @@
 import { createContext } from "react";
 import { useState } from "react";
 
+
 export const MyContext = createContext();
+export const ContextProvider = ({children})=>{
 
-export const ContextProvider = ({ children }) =>{
+  const [streak, setStreak] = useState("");
+  const [streak2, setStreak2] = useState("");
+  const [counter, setCounter] = useState(0);
 
-    const[content, setContent] = useState("");
-    const[type, setType] = useState("");
+  return(
+    <MyContext.Provider value = {{streak, setStreak, streak2, setStreak2}}>
+    
+    { children }
+
+    </MyContext.Provider>
+  )
 
 
-    return(
-        <MyContext.Provider value = {{content, setContent, type, setType}}>
-            { children }
-            </MyContext.Provider>
-    );
-};
+}

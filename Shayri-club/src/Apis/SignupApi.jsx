@@ -2,6 +2,24 @@ import {useState, useEffect} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "./axiosInstance";
+// import { createContext } from "react";
+// import { useContext } from "react";
+
+
+
+// export const MyContext = createContext();
+// export const ContextProvider = ({children})=>{
+    
+//     const [name, setName] = useState("");
+
+//     return(
+//         <MyContext.Provider value = {name} >
+//             { children }
+//         </MyContext.Provider>
+//     )
+
+
+// }
 
 const SignupApi = ()=>{
 
