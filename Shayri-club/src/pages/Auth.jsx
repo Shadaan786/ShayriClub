@@ -1,9 +1,13 @@
 import { useRef } from "react";
-import "./auth.css";
+import "./Auth.css";
 
 
-export default function Auth() {
+export default function Auth({user}) {
   const containerRef = useRef(null);
+
+  //  user.name = name;
+  //  user.id = id;
+  //  user.password = password
 
   const handleRegister = () => {
     containerRef.current.classList.add("active");

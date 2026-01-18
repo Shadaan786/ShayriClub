@@ -60,7 +60,7 @@ export default function CanvasStars() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 -z-20"
+      className="fixed inset-0 -z-0"
     />
   );
 }
