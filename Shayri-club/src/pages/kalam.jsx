@@ -73,13 +73,14 @@ import { MyContext } from "../ContextProvider";
 
   return (
     <>
+    <div>
     <h1>Hello </h1>
 
   {/* {streak}
   {streak2}
      */}
       <div className="flex flex-col items-center justify-center h-screen gap-6">
-        <h1 className="text-4xl">Welcome to Kalam</h1>
+        <h1 className="text-4xl text-black">Welcome to Kalam</h1>
 
         <input
           type="text"
@@ -123,6 +124,7 @@ import { MyContext } from "../ContextProvider";
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
       </div>
       
     </>

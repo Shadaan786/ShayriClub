@@ -19,7 +19,7 @@ const IqbalApi = () => {
       starArray.push({
         id: i,
         x: Math.random() * 100,
-        y: Math.random() * 100,
+        y: Math.random() * 100, 
         size: Math.random() * 3 + 1,
         opacity: Math.random() * 0.8 + 0.2,
         speed: Math.random() * 0.5 + 0.1,

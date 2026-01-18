@@ -14,6 +14,16 @@ import Streak from './pages/streak';
 // import { ContextProvider } from './Apis/SignupApi';
 import UserProfile from './pages/UserProfile';
 import { ContextProvider } from './ContextProvider';
+import GlobalChat from './pages/globalChat';
+import Search from './pages/Search';
+import { Community } from './pages/Communities';
+import DispCommunities from './pages/DispCommunities';
+import CommunityNav from './pages/CommunityNav';
+import CommunityProfile from './pages/CommunityProfile';
+import { CommunityChat } from './pages/CommunityChat';
+import Auth from './pages/Auth';
+import AuthPage from './pages/AuthPage';
+
 
 function App() {
 
@@ -35,6 +45,15 @@ function App() {
       <Route path = 'UrKalam' element = {<UrKalam/>}/>
       <Route path = '/Profile' element = {<UserProfile/>}/>
       <Route path = '/Streak' element = {<Streak/>}/>
+      <Route path = '/Chat' element = {<GlobalChat/>}/>
+      <Route path = '/Search' element = {<Search/>}/>
+      <Route path = '/Communities' element = {<Community/>}/>
+      <Route path = '/DispCommunities' element = {<DispCommunities/>}/>
+      <Route path = '/CommunityNav' element = {<CommunityNav/>}/>
+      <Route path = '/CommunityProfile' element = {<CommunityProfile/>}/>
+      <Route path='/CommunityChat' element= {<CommunityChat/>}/>
+      <Route path='/try' element= {<Auth/>}/>
+      <Route path='/try2' element= {<AuthPage/>}/>
 
       {/* <ContextProvider>
         <Kalam/>
