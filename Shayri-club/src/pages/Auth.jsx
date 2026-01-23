@@ -1,9 +1,15 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import "./Auth.css";
+import axiosInstance from "../Apis/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 
-export default function Auth({user}) {
+export default function Auth() {
   const containerRef = useRef(null);
+  const[email, setEmail] = useState("");
+  const[password, setPasssword] = useState("");
+  const[login, setLogin] = useState("");
+  const navigate = useNavigate();
 
   //  user.name = name;
   //  user.id = id;
@@ -15,6 +21,33 @@ export default function Auth({user}) {
 
   const handleLogin = () => {
     containerRef.current.classList.remove("active");
+
+    axiosInstance
+
+    .post("/login", {
+
+        email: `${email}`,
+        password: `${password}`
+    },
+        {
+        withCredentials: true
+        }
+
+      )
+
+
+
+    .then((response)=>{
+      setLogin(response.data)
+
+      const data = response.data;
+      if(data.success){
+        navigate(data.redirectUrl);
+
+      }
+    })
+
+
   };
 
   return (
@@ -52,10 +85,18 @@ export default function Auth({user}) {
           </div>
 
           <span className="text-black">or use your email password</span>
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
+          <input
+           type="email"
+            placeholder="Email"
+             onChange = {(e)=> setEmail(e.target.value)}
+            />
+          <input
+           type="password"
+            placeholder="Password"
+             onChange = {(e)=> setPasssword(e.target.value)}
+            />
           <a href="#">Forgot your password?</a>
-          <button type="button">Sign In</button>
+          <button type="button"  onClick={handleLogin}>Sign In</button>
         </form>
       </div>
 
@@ -65,7 +106,7 @@ export default function Auth({user}) {
           <div className="toggle-panel toggle-left">
             <h1 className="text-2xl">Welcome Back!</h1>
             <p>Enter your personal details to use all features</p>
-            <button type="button" className="ghost-btn" onClick={handleLogin}>Sign In</button>
+            <button type="button" onClick ={handleLogin}  className = "ghost-btn">Sign In</button>
           </div>
 
           <div className="toggle-panel toggle-right">

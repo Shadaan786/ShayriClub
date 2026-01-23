@@ -23,6 +23,9 @@ import CommunityProfile from './pages/CommunityProfile';
 import { CommunityChat } from './pages/CommunityChat';
 import Auth from './pages/Auth';
 import AuthPage from './pages/AuthPage';
+import { Social } from './pages/Social';
+import { Card } from './pages/components/Card';
+import LightRays from './pages/Bg2';
 
 
 function App() {
@@ -52,8 +55,11 @@ function App() {
       <Route path = '/CommunityNav' element = {<CommunityNav/>}/>
       <Route path = '/CommunityProfile' element = {<CommunityProfile/>}/>
       <Route path='/CommunityChat' element= {<CommunityChat/>}/>
-      <Route path='/try' element= {<Auth/>}/>
-      <Route path='/try2' element= {<AuthPage/>}/>
+      <Route path='/Try' element= {<Auth/>}/>
+      <Route path='/Try2' element= {<AuthPage/>}/>
+      <Route path='/Social' element= {<Social/>}/>
+      <Route path='/Card' element= {<Card/>}/>
+      <Route path='/Bg2' element= {<LightRays/>}/>
 
       {/* <ContextProvider>
         <Kalam/>
