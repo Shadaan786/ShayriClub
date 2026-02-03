@@ -26,6 +26,7 @@ import AuthPage from './pages/AuthPage';
 import { Social } from './pages/Social';
 import { Card } from './pages/components/Card';
 import LightRays from './pages/Bg2';
+import { KalamComment } from './pages/KalamComment';
 
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
       <Route path='/Social' element= {<Social/>}/>
       <Route path='/Card' element= {<Card/>}/>
       <Route path='/Bg2' element= {<LightRays/>}/>
+      <Route path='/Comment' element= {<KalamComment/>}/>
 
       {/* <ContextProvider>
         <Kalam/>

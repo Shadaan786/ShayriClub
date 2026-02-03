@@ -87,7 +87,7 @@ import { MyContext } from "../ContextProvider";
           placeholder="type"
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="border px-3 py-2 rounded"
+          className="border px-3 py-2 rounded text-black"
         />
 
         <input
@@ -95,7 +95,7 @@ import { MyContext } from "../ContextProvider";
           placeholder="content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="border px-3 py-2 rounded"
+          className="border px-3 py-2 rounded text-black"
         />
 
         <button
