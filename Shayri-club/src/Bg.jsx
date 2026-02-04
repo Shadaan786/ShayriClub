@@ -132,7 +132,7 @@ export default function ShayriClub() {
                 <a href="/kalam" className="px-4 py-2 text-gray-300 hover:text-white transition rounded-lg hover:bg-white/5">
                   Kalam
                 </a>
-                <a href="/community" className="px-4 py-2 text-gray-300 hover:text-white transition rounded-lg hover:bg-white/5">
+                <a href="/DispCommunities" className="px-4 py-2 text-gray-300 hover:text-white transition rounded-lg hover:bg-white/5">
                   Community
                 </a>
                 <a href="/browse" className="px-4 py-2 text-gray-300 hover:text-white transition rounded-lg hover:bg-white/5">

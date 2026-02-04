@@ -18,7 +18,7 @@ export const Social = () => {
 
   const handle = () => {
     axiosInstance
-      .get("http://localhost:9000/api/social",{
+      .get("/api/social",{
 
         withCredentials: true
       })

@@ -7,8 +7,9 @@ export const KalamComment=()=>{
 
     const [commentValue, setCommentValue] = useState("");
     const [memberId, setMemberId] = useState("");
-    const [totalComments, setTotalComments] = useState("");
+    const [totalComments, setTotalComments] = useState([]);
     const [SearchParams] = useSearchParams();
+    const [allComments, setAllComments] = useState([]);
 
     const kalamId = SearchParams.get("kalamId")
 
@@ -21,13 +22,14 @@ export const KalamComment=()=>{
     const Handle=()=>{
        
 axiosInstance
-.get(`http://localhost:9000/api/kalam/comment`,{withCredentials: true})
+.get(`/api/kalam/comment?kalamId=${kalamId}`,{withCredentials: true})
 
 .then((response)=>{
 
     console.log(response.data);
     setMemberId(response.data.mId[0]._id)
     setTotalComments((response.data.userKalam[0].comments))
+    console.log(totalComments)
 
     
 
@@ -42,10 +44,10 @@ axiosInstance
     const handleComment=()=>{
 
     axiosInstance
-    .post(`http://localhost:9000/api/kalam/comm?kalamId=${kalamId}`,
+    .post(`/api/kalam/comm?kalamId=${kalamId}`,
         
         {
-          comment: "hello checking comment feature3",
+          comment: commentValue,
           mUid: memberId
 
         },
@@ -56,7 +58,7 @@ axiosInstance
 
     )
 
-    
+
     
 
 
@@ -69,10 +71,18 @@ return(
     <div className="min-w-fit h-screen flex flex-col">
     <h1>Comment Section</h1>
     <button onClick={Handle}> handle</button>
+    <br/><br/><br/><br/>
+    <div>
+         {
+            totalComments.map((totalComments, i)=>(
+                <div key = {i} className= {(totalComments.commentBy === memberId)? "text-right": "text-left"}>{totalComments.comment}</div>
+            ))
+         }
+    </div>
     <input
      type="text"
       className="mb-0 mt-auto text-black" 
-      onChange={e=> setCommentValue(e.target.value)}
+      onChange={(e)=> setCommentValue(e.target.value)}
       
       
       />
