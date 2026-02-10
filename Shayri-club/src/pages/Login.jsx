@@ -2,6 +2,7 @@ import axios from 'axios';
 import {useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import axiosInstance from '../Apis/axiosInstance';
+import MagicBento from './components/LoginCard';
 
 
 const Login=()=>{
@@ -69,6 +70,23 @@ const Login=()=>{
          <br/><br/><br/><br/><br/><br/><br/><br/><br/>
          
           <button onClick={Logging}>Login</button>
+
+
+    
+
+{/* <MagicBento 
+  textAutoHide={true}
+  enableStars
+  enableSpotlight
+  enableBorderGlow={true}
+  enableTilt={false}
+  enableMagnetism={false}
+  clickEffect
+  spotlightRadius={290}
+  particleCount={12}
+  glowColor="132, 0, 255"
+  disableAnimations={false}
+/> */}
 
 
         </>

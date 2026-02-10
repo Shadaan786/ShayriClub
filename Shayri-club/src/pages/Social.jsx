@@ -86,21 +86,25 @@ export const Social = () => {
       </div>
 
       {/* Fixed Stars (above rays, still background) - CHANGED TO FIXED */}
-      <div className="fixed inset-0 z-[1] pointer-events-none">
+
+
+      {/* <div className="fixed inset-0 z-[1] pointer-events-none">
         <StarryBackground />
-      </div>
+      </div> */}
 
       {/* Scrollable UI / Content */}
       <div className="relative z-20 pt-9 pb-20">
         <div className="flex flex-col items-center">
           <Link 
-            to="./kalam"
+            to="/kalam"
             className="mb-8 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg"
           >
             Publish
           </Link>
 
           {kalamDat.map((item) => (
+
+            <>
             <Card
               key={item._id}
               kalam={item.content}
@@ -110,7 +114,15 @@ export const Social = () => {
               time={item.createdAt}
               type={item.type}
             />
-          ))}
+            
+            <br /><br /><br /><br /><br />
+            
+
+            </>
+          )
+          
+          
+          )}
         </div>
       </div>
 

@@ -27,6 +27,7 @@ import { Social } from './pages/Social';
 import { Card } from './pages/components/Card';
 import LightRays from './pages/Bg2';
 import { KalamComment } from './pages/KalamComment';
+import { ProfileCard } from './pages/components/ProfileCard';
 
 
 function App() {
@@ -62,6 +63,7 @@ function App() {
       <Route path='/Card' element= {<Card/>}/>
       <Route path='/Bg2' element= {<LightRays/>}/>
       <Route path='/Comment' element= {<KalamComment/>}/>
+      <Route path='/ProfileCard' element= {<ProfileCard/>}/>
 
       {/* <ContextProvider>
         <Kalam/>

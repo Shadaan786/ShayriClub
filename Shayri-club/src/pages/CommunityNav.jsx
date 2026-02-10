@@ -24,7 +24,7 @@ const HandleNav=()=>{
  
     
  axiosInstance
- .post("http://localhost:9000/api/community/search", {
+ .post("/api/community/search", {
 
     need: "Trial12",
  })

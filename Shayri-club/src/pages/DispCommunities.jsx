@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../Apis/axiosInstance";
 import Login from "../pages/Login"
 import { useNavigate } from "react-router-dom";
+import { CommunityCard } from "./components/CommunityCard";
+import { Link } from "react-router-dom";
 
 
 
@@ -11,12 +13,15 @@ const DispCommunities =()=>{
     const[dat, setDat] = useState([]);
     const Navigate = useNavigate();
     // const[length, setLength] = useState("");
+    // const communityName;
+    // const bio;
+    // const category;
 
 
     useEffect(()=>{
 
          axiosInstance
-        .get("http://localhost:9000/api/communityDisp")
+        .get("/api/communityDisp")
 
         .then((Response)=>{
             // console.log(Response.data[0].name)
@@ -72,39 +77,84 @@ const DispCommunities =()=>{
             
             ))} */}
 
-            <div>
 
+                       
 
+                        <div className="p-6 mx-60">
 
             {
 
-                 dat.map((dat, i)=>(
+                //  dat.map((dat, i)=>(
 
-                    <div key={i}>
+                //     <div key={i}>
 
-                         <button onClick={()=>Navigate(`/CommunityNav?to=${dat.name}`)}>
+                //          <button onClick={()=>Navigate(`/CommunityNav?to=${dat.name}`)}>
                         
-                        {dat.name}<br/>
+                //         {dat.name}<br/>
                     
                     
                     
-                    <h1>{dat.bio}</h1>
-                    <h1>{dat.category}</h1>
+                //     <h1>{dat.bio}</h1>
+                //     <h1>{dat.category}</h1>
 
-                    </button>
+                //     </button>
 
-                     <br/><br/>
+                //      <br/><br/>
                     
-                    </div>
+                //     </div>
+
 
                    
                     
                    
 
-                 ))
+                //  ))
+
+                
+                    dat.map((dat)=>(
+
+                    //    <button onClick={()=>Navigate(`/CommunityNav?to=${dat.name}`)}>
+
+                     
+                    <Link to={`/CommunityNav?to=${dat.name}`}>
+
+
+                              
+                              
+           
+                    
+                        <CommunityCard
+
+                        key={dat._id}
+                        communityName={dat.name}
+                        bio={dat.bio}
+                        category={dat.category}
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        />
+
+                        <br/>
+
+                        </Link>
+                            // </button>
+
+                          
+
+
+                        
+                    ))
+
+                     
             }
 
-            </div>
+             </div>
+
+           
 
             {/* <h1>{dat}</h1> */}
         </>

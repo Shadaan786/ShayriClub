@@ -2,6 +2,7 @@ import { useState, useEffect} from "react";
 import axiosInstance from "../Apis/axiosInstance";
 import { useContext } from "react";
 import { MyContext } from "../ContextProvider"
+import { ProfileCard } from "./components/ProfileCard";
 
 
 
@@ -23,6 +24,7 @@ const UserProfile = () =>{
     const[counter, setCounter] = useState("");
     const[current, setCurrent] = useState("");
     const{streak, setStreak, streak2, setStreak2} = useContext(MyContext);
+    const[data, setData] = useState("")
      
    
 
@@ -248,7 +250,7 @@ const UserProfile = () =>{
 
     return(
         <>
-        <h1>User Profile</h1>
+        {/* <h1>User Profile</h1>
         <h1>Hello {userName}</h1>
         <h1>Total Kalams submitted {netKalam}</h1>
         <h1>Account created on {joining}</h1>
@@ -256,12 +258,32 @@ const UserProfile = () =>{
         <h1>Contributions made in Ghazal: {ghazalLength}</h1>
         <h1>Contributions made in Nazm: {nazmLength}</h1>
         <h1>Date: {date}</h1>
-        <h1>Streak: {current}</h1>
+        <h1>Streak: {current}</h1> */}
+
+
+
         {/* <h1>{current}</h1>
         <h1>{currentValue}</h1> */}
         {/* <button onClick={HandleCount}>Handle</button>  */}
         
-       
+        <ProfileCard
+        
+        userName={userName}
+        totalKalams={netKalam}
+        joiningDate={joining}
+        Streak={current}
+        totalSher={sherLength}
+        totalGhazal={ghazalLength}
+        totalNazm={nazmLength}
+        
+
+        
+        />
+
+        <input  type ="file"  onChange={(e)=> setData(e.target.value)}  />
+{
+        console.log("image Data", data)
+}
         </>
     )
 
