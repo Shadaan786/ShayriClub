@@ -24,7 +24,9 @@ const UserProfile = () =>{
     const[counter, setCounter] = useState("");
     const[current, setCurrent] = useState("");
     const{streak, setStreak, streak2, setStreak2} = useContext(MyContext);
+    const[file, setFile] = useState(null);
     const[data, setData] = useState("")
+    const[available, setAvailable]  = useState(false);
      
    
 
@@ -243,6 +245,36 @@ const UserProfile = () =>{
     }, []);
 
 
+  
+
+    
+
+
+    const handleUpload =()=>{
+
+
+      if(!available){
+
+        alert("Select an image");
+
+        return
+      }
+    const formData = new FormData();
+
+
+    formData.append("image", file)
+
+
+      axiosInstance
+      .post("/upload", formData)
+
+      .then((response)=>{
+
+        console.log(response.data)
+      })
+    }
+
+
    
 
   
@@ -280,10 +312,27 @@ const UserProfile = () =>{
         
         />
 
-        <input  type ="file"  onChange={(e)=> setData(e.target.value)}  />
+        <input  type ="file"  onChange={(e)=> 
+        
+        
+        {
+        setFile(e.target.files[0])
+        setAvailable(true)
+      
+        }
+      
+      }
+        
+        
+        
+        
+        
+        />
 {
         console.log("image Data", data)
 }
+
+<button onClick={handleUpload}>upload</button>
         </>
     )
 
