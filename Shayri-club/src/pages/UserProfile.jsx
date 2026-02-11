@@ -258,20 +258,29 @@ const UserProfile = () =>{
         alert("Select an image");
 
         return
-      }
-    const formData = new FormData();
+      }else{
+
+
+         const formData = new FormData();
 
 
     formData.append("image", file)
 
 
       axiosInstance
-      .post("/upload", formData)
+      .post("/upload", formData,{
+
+        headers:{"Content-Type":"multipsrt/form-data" }
+      })
 
       .then((response)=>{
 
         console.log(response.data)
       })
+
+
+      }
+   
     }
 
 
@@ -333,6 +342,8 @@ const UserProfile = () =>{
 }
 
 <button onClick={handleUpload}>upload</button>
+
+
         </>
     )
 

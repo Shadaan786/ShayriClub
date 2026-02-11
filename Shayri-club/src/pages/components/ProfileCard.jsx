@@ -41,7 +41,9 @@ export const ProfileCard=({userName, totalKalams, joiningDate, Streak, totalSher
 
                  {/* profile pic */}
 
-            <div className="rounded-full  bg-blue-950 w-40 h-40">
+            <div className="rounded-full  bg-blue-950 w-40 h-40 ">
+
+                <img className="rounded-full w-full h-full" src="http://localhost:9000/uploads/profilePics/image-1770827123299_744819523.jpg" />
 
             </div>
 
