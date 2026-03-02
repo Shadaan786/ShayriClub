@@ -28,6 +28,13 @@ import { Card } from './pages/components/Card';
 import LightRays from './pages/Bg2';
 import { KalamComment } from './pages/KalamComment';
 import { ProfileCard } from './pages/components/ProfileCard';
+import {CreatingAlbums } from './pages/CreatingAlbums';
+import {DispAlbums} from './pages/DispAlbums'
+import { AlbumCard } from './pages/components/AlbumsCard';
+import { Album } from './pages/Album';
+import { Trying } from './pages/Trying';
+import { MicTesting } from './pages/Mic';
+import {KalamPlayer} from './pages/components/kalamPlayer'
 
 
 function App() {
@@ -64,6 +71,13 @@ function App() {
       <Route path='/Bg2' element= {<LightRays/>}/>
       <Route path='/Comment' element= {<KalamComment/>}/>
       <Route path='/ProfileCard' element= {<ProfileCard/>}/>
+      <Route path='/CreatingAlbums' element= {<CreatingAlbums/>}/>
+      <Route path='/DispAlbums' element= {<DispAlbums/>}/>
+      <Route path='/AlbumCard' element= {<AlbumCard/>}/>
+      <Route path='/Album' element= {<Album/>}/>
+      <Route path='/trying' element= {<Trying/>}/>
+      <Route path='/mic' element= {<MicTesting/>}/>
+      <Route path='/kplayer' element= {<KalamPlayer/>}/>
 
       {/* <ContextProvider>
         <Kalam/>

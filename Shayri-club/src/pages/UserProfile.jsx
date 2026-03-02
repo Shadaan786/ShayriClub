@@ -270,7 +270,7 @@ const UserProfile = () =>{
       axiosInstance
       .post("/upload", formData,{
 
-        headers:{"Content-Type":"multipsrt/form-data" },
+        headers:{"Content-Type":"multipart/form-data" },
         withCredentials: true
       })
 
