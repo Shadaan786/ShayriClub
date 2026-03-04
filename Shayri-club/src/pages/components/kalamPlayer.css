@@ -1,120 +1,241 @@
-/* FULL MODAL AREA (fills the modal body) */
-.kpFull{
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+/* ── Full modal container ── */
+.kpFull {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 70vh; /* adjust if your modal is shorter */
+  min-height: 70vh;
   overflow: hidden;
-  border-radius: 18px;
-  background: #000;
+  border-radius: 20px;
+  background: #080808;
+  font-family: 'Outfit', sans-serif;
 }
 
-/* video takes whole modal */
-.kpVideo{
+/* ── Video fills modal ── */
+.kpVideo {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* fill */
+  object-fit: cover;
   background: #000;
+  opacity: 0.75;
 }
 
-/* optional shading for text */
-.kpShade{
+/* ── Gradient shade over video ── */
+.kpShade {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,0.25),
-    rgba(0,0,0,0.25),
-    rgba(0,0,0,0.55)
+    rgba(8, 8, 8, 0.10) 0%,
+    rgba(8, 8, 8, 0.20) 40%,
+    rgba(8, 8, 8, 0.82) 75%,
+    rgba(8, 8, 8, 0.97) 100%
   );
 }
 
-/* bottom bar */
-.kpBottom{
+/* ── Bottom control panel ── */
+.kpBottom {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 16px 18px 14px;
-  backdrop-filter: blur(10px);
-  background: rgba(0,0,0,0.35);
-  border-top: 1px solid rgba(255,255,255,0.10);
+  padding: 20px 24px 22px;
   color: white;
 }
 
-.kpMeta{
+/* ── Track meta ── */
+.kpMeta {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
-.kpTitle{
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.2;
+.kpTitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.90);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin-bottom: 4px;
 }
 
-.kpArtist{
-  font-size: 14px;
-  opacity: 0.75;
-  margin-top: 2px;
+.kpArtist {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.kpTimeRow{
+/* ── Time row ── */
+.kpTimeRow {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
-  opacity: 0.85;
-  margin-bottom: 8px;
+  font-size: 11px;
+  font-family: 'Outfit', monospace;
+  color: rgba(255, 255, 255, 0.30);
+  margin-bottom: 7px;
+  padding: 0 2px;
+  font-variant-numeric: tabular-nums;
 }
 
-/* progress */
-.kpProgress{
+/* ── Progress bar ── */
+.kpProgress {
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
-  height: 10px;
+  height: 3px;
   border-radius: 999px;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  background: linear-gradient(
+    to right,
+    #a78bfa var(--val, 0%),
+    rgba(255, 255, 255, 0.10) var(--val, 0%)
+  );
+  outline: none;
+  border: none;
+  transition: height 0.15s;
 }
 
-/* controls */
-.kpControls{
+.kpProgress:hover {
+  height: 5px;
+}
+
+.kpProgress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.80);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.kpProgress:hover::-webkit-slider-thumb {
+  transform: scale(1.25);
+  box-shadow: 0 0 12px rgba(167, 139, 250, 1);
+}
+
+.kpProgress::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.80);
+  cursor: pointer;
+}
+
+/* ── Controls row ── */
+.kpControls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 10px;
+  gap: 16px;
 }
 
-.kpIcon{
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.08);
-  color: white;
+/* prev / next buttons */
+.kpIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.55);
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
 }
 
-.kpPlay{
-  width: 56px;
-  height: 56px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.14);
-  color: white;
+.kpIcon:hover {
+  background: rgba(167, 139, 250, 0.12);
+  border-color: rgba(167, 139, 250, 0.35);
+  color: #a78bfa;
+  transform: scale(1.08);
+}
+
+.kpIcon:active {
+  transform: scale(0.95);
+}
+
+/* play / pause button */
+.kpPlay {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 1px solid rgba(167, 139, 250, 0.40);
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.20), rgba(124, 58, 237, 0.15));
+  color: #a78bfa;
   cursor: pointer;
-  font-size: 22px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  box-shadow: 0 0 16px rgba(167, 139, 250, 0.20);
 }
 
-.kpCloseBtn{
+.kpPlay:hover {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.35), rgba(124, 58, 237, 0.28));
+  border-color: rgba(167, 139, 250, 0.70);
+  box-shadow: 0 0 24px rgba(167, 139, 250, 0.45);
+  transform: scale(1.07);
+}
+
+.kpPlay:active {
+  transform: scale(0.96);
+}
+
+/* ── Close button ── */
+.kpCloseBtn {
   width: 100%;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.08);
-  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.35);
   padding: 10px 12px;
-  border-radius: 14px;
+  border-radius: 12px;
   cursor: pointer;
+  font-size: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 14px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.kpCloseBtn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.60);
+}
+
+/* ── Track indicator dots ── */
+.kpDots {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 16px;
+}
+
+.kpDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.kpDot.active {
+  background: #a78bfa;
+  transform: scale(1.3);
+  box-shadow: 0 0 6px rgba(167, 139, 250, 0.70);
 }
