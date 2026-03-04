@@ -1336,7 +1336,7 @@ import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
 import { Card } from "./components/Card";
 import { KalamPlayer } from "./components/kalamPlayer";
 import { Globe } from "lucide-react";
-import { KalamCard } from "./components/KalamCard";
+import { KalamCard } from "./components/kalamCard";
 
 export const Album = () => {
   const [SearchParams] = useSearchParams();
