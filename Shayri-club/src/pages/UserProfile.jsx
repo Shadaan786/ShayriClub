@@ -27,6 +27,7 @@ const UserProfile = () =>{
     const[file, setFile] = useState(null);
     const[data, setData] = useState("")
     const[available, setAvailable]  = useState(false);
+    const[profilePic, setProfilePic] = useState("");
      
    
 
@@ -53,6 +54,10 @@ const UserProfile = () =>{
             setCurrent(currentValue)
 
              console.log(current)
+
+             // ProfilePic Link from cloudinary
+
+             setProfilePic(response.data.userDb[0].profilePic)
 
 
 
@@ -317,6 +322,14 @@ const UserProfile = () =>{
         totalSher={sherLength}
         totalGhazal={ghazalLength}
         totalNazm={nazmLength}
+        profileLink={profilePic}
+
+         badges={[
+    { name: "First Ghazal", icon: "🌙", desc: "Published your very first Ghazal.", earned: true },
+    { name: "Hundred Shers", icon: "✍️", desc: "Wrote 100 shers in total.", earned: true },
+    { name: "Trending Poet", icon: "🔥", desc: "Had a kalam reach trending.", earned: false },
+    { name: "Maqta Master", icon: "👑", desc: "10 acclaimed maqta couplets.", earned: false },
+  ]}
         
 
         

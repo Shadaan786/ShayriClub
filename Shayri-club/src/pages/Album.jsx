@@ -2406,7 +2406,7 @@ export const Album = () => {
             className="flex-1 min-h-0 overflow-y-auto"
             style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.10) transparent", background: "linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00))" }}
           >
-            <div className="px-4 sm:px-6 pt-6 pb-24 lg:pb-10">
+            <div className="px-4 sm:px-6  pb-24 lg:pb-10">
               {/* Section heading */}
               <div className="relative mb-6 pb-4 border-b border-white/[0.06]">
                 <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-violet-900/15 to-transparent pointer-events-none" />

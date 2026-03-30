@@ -35,6 +35,7 @@ import { Album } from './pages/Album';
 import { Trying } from './pages/Trying';
 import { MicTesting } from './pages/Mic';
 import {KalamPlayer} from './pages/components/kalamPlayer'
+import AlbumsLive from './pages/AlbumsLive';
 
 
 function App() {
@@ -78,6 +79,7 @@ function App() {
       <Route path='/trying' element= {<Trying/>}/>
       <Route path='/mic' element= {<MicTesting/>}/>
       <Route path='/kplayer' element= {<KalamPlayer/>}/>
+      <Route path='/albumsLive' element= {<AlbumsLive/>}/>
 
       {/* <ContextProvider>
         <Kalam/>

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export function MyVerticallyCenteredModal({ isOpen, onClose, children }) {
+export function MyVerticallyCenteredModal({ isOpen, onClose, children, height, width  }) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -14,7 +14,7 @@ export function MyVerticallyCenteredModal({ isOpen, onClose, children }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center w-full">
       
       {/* Backdrop */}
       <div
@@ -23,7 +23,7 @@ export function MyVerticallyCenteredModal({ isOpen, onClose, children }) {
       />
 
       {/* Modal */}
-      <div className="relative z-10 w-[90%] max-w-md rounded-3xl bg-[#0f0f0f] border border-[#2a2a2a] shadow-2xl p-6 text-gray-200 animate-fadeIn">
+      <div className={`relative z-10 w-${width || "w-[90%]" } h-${height} rounded-3xl bg-[#0f0f0f] border border-[#2a2a2a] shadow-2xl  text-gray-200 animate-fadeIn`}>
         {children}
       </div>
     </div>
