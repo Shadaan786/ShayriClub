@@ -247,6 +247,65 @@ styleTag.textContent = `
     100% { transform: scale(1); }
   }
   .like-pop { animation: likePoP 0.35s ease forwards; }
+
+  /* ── Mobile-only overrides (no changes to web view) ── */
+  @media (max-width: 480px) {
+    .kalam-card-root {
+      max-width: 100% !important;
+    }
+    .kalam-card-shell {
+      border-radius: 12px !important;
+    }
+    .kalam-card-header {
+      padding: 12px 14px 0 !important;
+    }
+    .kalam-card-avatar {
+      width: 28px !important;
+      height: 28px !important;
+      font-size: 11px !important;
+    }
+    .kalam-card-username {
+      font-size: 12px !important;
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .kalam-card-pill {
+      padding: 3px 8px !important;
+    }
+    .kalam-card-pill-label {
+      font-size: 9px !important;
+    }
+    .kalam-card-divider {
+      margin: 10px 14px 0 !important;
+    }
+    .kalam-card-body {
+      padding: 12px 14px 0 !important;
+    }
+    .kalam-card-quote-mark {
+      font-size: 38px !important;
+      margin-bottom: 6px !important;
+    }
+    .kalam-card-text {
+      font-size: 14px !important;
+      line-height: 1.7 !important;
+    }
+    .kalam-card-show-more {
+      min-height: 36px;
+    }
+    .kalam-card-footer {
+      margin: 10px 14px 0 !important;
+      padding-top: 10px !important;
+      padding-bottom: 12px !important;
+    }
+    .kalam-action-btn {
+      width: 38px !important;
+      height: 38px !important;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+  }
 `;
 if (!document.head.querySelector("#card-keyframes")) {
   styleTag.id = "card-keyframes";
@@ -334,6 +393,7 @@ export const Card = ({ kalam, userName, time, type, kalId, mUid }) => {
 
   return (
     <div
+      className="kalam-card-root"
       style={{ width: "100%", maxWidth: 480, fontFamily: "'Outfit', sans-serif", position: "relative" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -353,17 +413,19 @@ export const Card = ({ kalam, userName, time, type, kalId, mUid }) => {
       }} />
 
       {/* ── Card shell ── */}
-      <div style={{
-        background: "#0e0e0e",
-        border: `1px solid ${hovered ? accent + "40" : "rgba(255,255,255,0.07)"}`,
-        borderRadius: 16,
-        overflow: "hidden",
-        position: "relative",
-        transition: "border-color 0.35s ease",
-        boxShadow: hovered
-          ? `0 0 0 1px ${accent}18, 0 8px 40px ${accent}20, 0 2px 12px rgba(0,0,0,0.6)`
-          : "0 2px 12px rgba(0,0,0,0.5)",
-      }}>
+      <div
+        className="kalam-card-shell"
+        style={{
+          background: "#0e0e0e",
+          border: `1px solid ${hovered ? accent + "40" : "rgba(255,255,255,0.07)"}`,
+          borderRadius: 16,
+          overflow: "hidden",
+          position: "relative",
+          transition: "border-color 0.35s ease",
+          boxShadow: hovered
+            ? `0 0 0 1px ${accent}18, 0 8px 40px ${accent}20, 0 2px 12px rgba(0,0,0,0.6)`
+            : "0 2px 12px rgba(0,0,0,0.5)",
+        }}>
 
         {/* ── Stars layer ── */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden", borderRadius: 16 }}>
@@ -415,25 +477,29 @@ export const Card = ({ kalam, userName, time, type, kalId, mUid }) => {
         }} />
 
         {/* ── Header ── */}
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "16px 20px 0", position: "relative", zIndex: 2,
-        }}>
+        <div
+          className="kalam-card-header"
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "16px 20px 0", position: "relative", zIndex: 2,
+          }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             {/* Avatar with glow */}
-            <div style={{
-              width: 34, height: 34, borderRadius: "50%",
-              background: `linear-gradient(135deg, ${accent}33, ${accent}18)`,
-              border: `1px solid ${accent}55`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 13, fontWeight: 600, color: accent,
-              flexShrink: 0,
-              boxShadow: `0 0 10px ${accent}40`,
-            }}>
+            <div
+              className="kalam-card-avatar"
+              style={{
+                width: 34, height: 34, borderRadius: "50%",
+                background: `linear-gradient(135deg, ${accent}33, ${accent}18)`,
+                border: `1px solid ${accent}55`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 13, fontWeight: 600, color: accent,
+                flexShrink: 0,
+                boxShadow: `0 0 10px ${accent}40`,
+              }}>
               {initial}
             </div>
             <div>
-              <p style={{ fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.80)", lineHeight: 1.2 }}>
+              <p className="kalam-card-username" style={{ fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.80)", lineHeight: 1.2 }}>
                 {userName}
               </p>
               <p style={{ fontSize: 10, color: "rgba(255,255,255,0.22)", marginTop: 2, fontVariantNumeric: "tabular-nums" }}>
@@ -443,57 +509,66 @@ export const Card = ({ kalam, userName, time, type, kalId, mUid }) => {
           </div>
 
           {/* Category pill with glow */}
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 5,
-            padding: "4px 10px", borderRadius: 99,
-            background: `${accent}14`,
-            border: `1px solid ${accent}35`,
-            boxShadow: `0 0 8px ${accent}30`,
-          }}>
+          <div
+            className="kalam-card-pill"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 5,
+              padding: "4px 10px", borderRadius: 99,
+              background: `${accent}14`,
+              border: `1px solid ${accent}35`,
+              boxShadow: `0 0 8px ${accent}30`,
+            }}>
             <div style={{
               width: 5, height: 5, borderRadius: "50%",
               background: accent, opacity: 0.9,
               boxShadow: `0 0 5px 2px ${accent}80`,
             }} />
-            <span style={{ fontSize: 10, fontWeight: 600, color: accent, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <span className="kalam-card-pill-label" style={{ fontSize: 10, fontWeight: 600, color: accent, letterSpacing: "0.08em", textTransform: "uppercase" }}>
               {label}
             </span>
           </div>
         </div>
 
         {/* ── Divider with glow ── */}
-        <div style={{
-          margin: "14px 20px 0", height: 1,
-          background: `linear-gradient(90deg, transparent, ${accent}20, transparent)`,
-        }} />
+        <div
+          className="kalam-card-divider"
+          style={{
+            margin: "14px 20px 0", height: 1,
+            background: `linear-gradient(90deg, transparent, ${accent}20, transparent)`,
+          }} />
 
         {/* ── Poetry content ── */}
-        <div style={{ padding: "18px 20px 0", position: "relative", zIndex: 2 }}>
-          <div style={{
-            fontSize: 52, lineHeight: 0.7, color: accent,
-            opacity: 0.22, fontFamily: "Georgia, serif",
-            marginBottom: 8, userSelect: "none",
-            textShadow: `0 0 20px ${accent}60`,
-          }}>
+        <div className="kalam-card-body" style={{ padding: "18px 20px 0", position: "relative", zIndex: 2 }}>
+          <div
+            className="kalam-card-quote-mark"
+            style={{
+              fontSize: 52, lineHeight: 0.7, color: accent,
+              opacity: 0.22, fontFamily: "Georgia, serif",
+              marginBottom: 8, userSelect: "none",
+              textShadow: `0 0 20px ${accent}60`,
+            }}>
             "
           </div>
 
-          <p style={{
-            fontSize: 15, lineHeight: 1.8,
-            color: "rgba(255,255,255,0.72)",
-            whiteSpace: "pre-wrap", wordBreak: "break-word",
-            display: "-webkit-box",
-            WebkitBoxOrient: "vertical",
-            WebkitLineClamp: expanded ? "unset" : 4,
-            overflow: expanded ? "visible" : "hidden",
-            transition: "all 0.3s ease",
-            fontWeight: 300, letterSpacing: "0.01em",
-          }}>
+          <p
+            className="kalam-card-text"
+            style={{
+              fontSize: 15, lineHeight: 1.8,
+              color: "rgba(255,255,255,0.72)",
+              whiteSpace: "pre-wrap", wordBreak: "break-word",
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: expanded ? "unset" : 4,
+              overflow: expanded ? "visible" : "hidden",
+              transition: "all 0.3s ease",
+              fontWeight: 300, letterSpacing: "0.01em",
+            }}>
             {kalam}
           </p>
 
           {isLong && (
             <button
+              className="kalam-card-show-more"
               onClick={() => setExpanded(!expanded)}
               style={{
                 marginTop: 10, background: "none", border: "none", cursor: "pointer",
@@ -511,12 +586,14 @@ export const Card = ({ kalam, userName, time, type, kalId, mUid }) => {
         </div>
 
         {/* ── Footer ── */}
-        <div style={{
-          margin: "16px 20px 0", paddingTop: 12, paddingBottom: 16,
-          borderTop: `1px solid ${accent}12`,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          position: "relative", zIndex: 2,
-        }}>
+        <div
+          className="kalam-card-footer"
+          style={{
+            margin: "16px 20px 0", paddingTop: 12, paddingBottom: 16,
+            borderTop: `1px solid ${accent}12`,
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            position: "relative", zIndex: 2,
+          }}>
           <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
 
             {/* Like with pop animation */}
@@ -570,7 +647,7 @@ const ActionBtn = ({ children, onClick, title, active, activeColor, activeBg, ex
     <button
       onClick={onClick}
       title={title}
-      className={extraClass || ""}
+      className={`kalam-action-btn${extraClass ? ` ${extraClass}` : ""}`}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
