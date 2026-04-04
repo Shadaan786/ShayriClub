@@ -43,7 +43,7 @@ const UserProfile = () =>{
 
         axiosInstance
 
-        .post('http://localhost:9000/api/users',{
+        .post('/api/users',{
 
           userId: userId
         }, {
@@ -190,7 +190,7 @@ const UserProfile = () =>{
 
 
         axiosInstance 
-      .put('http://localhost:9000/streak',{
+      .put('/streak',{
 
         // count: current
 
