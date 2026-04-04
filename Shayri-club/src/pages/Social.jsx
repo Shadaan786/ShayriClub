@@ -4,6 +4,8 @@ import { Card } from "./components/Card";
 import LightRays from "./Bg2";
 import StarryBackground from "./components/StarryBackground";
 import {Link} from "react-router-dom";
+// import { Sidebar } from "lucide-react";
+import SidebarExample from "./components/Sidebar"
 // import { ContextProvider, MyContext } from "./LikeContext";
 
 
@@ -12,6 +14,7 @@ export const Social = () => {
   const [uid, setUid] = useState("");
   const [kalamid, setKalamId] = useState("");
   const [isReady, setIsReady] = useState(false);
+  const[isOpen, setIsOpen] = useState(false);
   // const {kId} = useContext(MyContext)
    const socket = useRef(null);
   
@@ -79,6 +82,10 @@ export const Social = () => {
 
   return (
     <div className="relative min-h-screen bg-black">
+
+      <SidebarExample isOpen={isOpen} onClose={()=>setIsOpen(false)} />
+
+        <button onClick={()=>setIsOpen(true)}>Open Sidebar</button>
 
       {/* Fixed Light rays (deep background) - CHANGED TO FIXED */}
       <div className="fixed inset-0 z-0 pointer-events-none">

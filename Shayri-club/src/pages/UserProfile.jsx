@@ -3,6 +3,7 @@ import axiosInstance from "../Apis/axiosInstance";
 import { useContext } from "react";
 import { MyContext } from "../ContextProvider"
 import { ProfileCard } from "./components/ProfileCard";
+import { useSearchParams } from "react-router-dom";
 
 
 
@@ -28,6 +29,10 @@ const UserProfile = () =>{
     const[data, setData] = useState("")
     const[available, setAvailable]  = useState(false);
     const[profilePic, setProfilePic] = useState("");
+
+    const[SearchParams] = useSearchParams();
+
+    const userId = SearchParams.get("userId");
      
    
 
@@ -38,7 +43,12 @@ const UserProfile = () =>{
 
         axiosInstance
 
-        .get('http://localhost:9000/api/users')
+        .post('http://localhost:9000/api/users',{
+
+          userId: userId
+        }, {
+          withCredentials: true
+        })
         .then(response =>{
             
 

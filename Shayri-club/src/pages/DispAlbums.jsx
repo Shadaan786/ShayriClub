@@ -12,6 +12,7 @@ export const DispAlbums = () => {
   const[isAvailable, setIsAvailable] = useState(false);
   const[file, setFile] = useState([]);
   const[imageUrl, setImageUrl] = useState([]);
+  const[category, setCategory] = useState("");
 
   useEffect(() => {
 
@@ -22,7 +23,7 @@ export const DispAlbums = () => {
 
       .then((response) => {
         setAlbumList(response.data)
-        console.log(response.data)
+        console.log("response.data", response.data)
         setImageUrl(response.data.imageUrl)
       })
 
@@ -49,6 +50,7 @@ export const DispAlbums = () => {
     .post("/api/album",{
 
         name: name,
+        category: category
 
     },{
         withCredentials: true
@@ -59,6 +61,7 @@ export const DispAlbums = () => {
       const formData = new FormData()
       formData.append('albumCover', file)
       formData.append('name', name)
+      formData.append('category', category)
 
       axiosInstance
       .post('/api/upload/albumCover', formData,{withCredentials: true})
@@ -180,6 +183,49 @@ export const DispAlbums = () => {
           onBlur={e => e.target.style.borderBottomColor = 'rgba(255,255,255,0.12)'}
         />
       </div>
+
+      {/* Category */}
+<div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+  <label style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
+    Category
+  </label>
+  <div style={{ position: 'relative' }}>
+    <select
+  defaultValue=""
+  style={{
+    width: '100%',
+    boxSizing: 'border-box',
+    padding: '10px 0',
+    paddingRight: '24px',
+    fontSize: '15px',
+    border: 'none',
+    borderBottom: '1px solid rgba(255,255,255,0.12)',
+    background: 'transparent',
+    color: 'rgba(255,255,255,0.4)',
+    outline: 'none',
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    cursor: 'pointer',
+    transition: 'border-color 0.2s',
+  }}
+  onFocus={e => e.target.style.borderBottomColor = '#7c5cbf'}
+  onBlur={e => e.target.style.borderBottomColor = 'rgba(255,255,255,0.12)'}
+  onChange={e => {
+    setCategory(e.target.value);
+    e.target.style.color = e.target.value ? '#ffffff' : 'rgba(255,255,255,0.4)';
+  }}
+>
+      <option value="" disabled style={{ background: '#111', color: 'rgba(255,255,255,0.4)' }}>Select a category</option>
+      <option value="romantic" style={{ background: '#111', color: '#fff' }}>Romantic</option>
+      <option value="motivation" style={{ background: '#111', color: '#fff' }}>Motivation</option>
+      <option value="inspirational" style={{ background: '#111', color: '#fff' }}>Inspirational</option>
+      <option value="visionary" style={{ background: '#111', color: '#fff' }}>Visionary</option>
+    </select>
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ position: 'absolute', right: '2px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'rgba(255,255,255,0.3)' }}>
+      <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  </div>
+</div>
 
       {/* Album Cover */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

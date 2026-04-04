@@ -91,6 +91,7 @@ import { useContext } from "react";
 import axiosInstance from "../Apis/axiosInstance";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const typeColors = {
   poem:    { bg: "rgba(120,200,180,0.07)", border: "rgba(120,200,180,0.25)", text: "rgba(120,200,180,0.9)" },
@@ -109,6 +110,19 @@ const getTypeStyle = (type = "") => {
 const UrKalam = () => {
   const [kalam, setKalam] = useState({});
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState("");
+  const Navigate = useNavigate();
+  
+  useEffect(()=>{
+
+    axiosInstance
+    .get('/api/userId')
+    .then((Response)=>{
+
+      setUserId(Response.data._id)
+
+    })
+  })
 
   useEffect(() => {
     axiosInstance
@@ -408,10 +422,11 @@ const UrKalam = () => {
 
           {/* Footer */}
           <div className="ur-footer">
-            <Link to="/Profile" className="ur-profile-link">
+            <Link to={`/Profile?userId=${userId}`} className="ur-profile-link">
               View Profile →
             </Link>
-          </div>
+            
+          </div> 
 
         </div>
       </div>
