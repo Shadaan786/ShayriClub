@@ -1910,6 +1910,7 @@
 import axiosInstance from "@/Apis/axiosInstance";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import ws3 from '@/Apis/ws'
 
 const GlobalChat = () => {
   const [content, setContent] = useState("");
@@ -1933,7 +1934,7 @@ const GlobalChat = () => {
       profilePic.current = Response.data.profilePic;
       name.current = Response.data.name;
 
-      ws.current = new WebSocket(`ws://localhost:8080?username=anon&userId=${userId.current}`);
+      ws.current = new WebSocket(`${ws3}?username=anon&userId=${userId.current}`);
 
       ws.current.onerror = () => {
         console.error("Error while connecting to the websocket connection");

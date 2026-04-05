@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext, Children, useRef } from "react";
+import ws from '@/Apis/ws'
 
 export const SocialContext = createContext();
 
@@ -10,7 +11,7 @@ export const SocialContextProvider=({children})=>{
     useEffect(()=>{
 
 
-   socket.current = new WebSocket("ws://localhost:8080?username=Bob");
+   socket.current = new WebSocket(`${ws}?username=Bob`);
    console.log("Hello Checking")
 
    socket.current.onopen = () =>{

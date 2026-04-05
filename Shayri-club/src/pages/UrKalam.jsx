@@ -93,6 +93,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
+
 const typeColors = {
   poem:    { bg: "rgba(120,200,180,0.07)", border: "rgba(120,200,180,0.25)", text: "rgba(120,200,180,0.9)" },
   thought: { bg: "rgba(180,140,255,0.07)", border: "rgba(180,140,255,0.25)", text: "rgba(180,140,255,0.9)" },
