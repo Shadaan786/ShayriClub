@@ -116,7 +116,10 @@ const UrKalam = () => {
   useEffect(()=>{
 
     axiosInstance
-    .get('/api/userId')
+    .get('/api/userId',{
+
+      withCredentials: true
+    })
     .then((Response)=>{
 
       setUserId(Response.data._id)
@@ -126,10 +129,21 @@ const UrKalam = () => {
 
   useEffect(() => {
     axiosInstance
-      .get("/api/UrKalam")
+      .get("/api/UrKalam",
+        {
+
+          withCredentials: true
+
+      })
       .then((res) => {
         setKalam(res.data);
         console.log(res.data);
+
+
+
+
+
+
       })
       .finally(() => setLoading(false));
   }, []);
