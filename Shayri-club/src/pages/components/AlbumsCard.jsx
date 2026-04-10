@@ -28,8 +28,6 @@
 // }
 
 
-
-
 import { useState } from "react";
 
 export const AlbumCard = ({ albumName, albumId, albumImg }) => {
@@ -42,7 +40,7 @@ export const AlbumCard = ({ albumName, albumId, albumImg }) => {
 
         .album-card {
           font-family: 'DM Sans', sans-serif;
-          width: 176px;
+          width: 100%;
           border-radius: 16px;
           overflow: hidden;
           background: #0f0f0f;

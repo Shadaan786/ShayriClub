@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Placeholder components - replace with your actual imports
 const CanvasStars = () => (
@@ -100,6 +101,7 @@ const Footer = () => (
 
 export default function ShayriClub() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const Navigate = useNavigate();
   
   const slides = [
     "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&q=80",
@@ -142,10 +144,10 @@ export default function ShayriClub() {
 
               {/* Auth Buttons */}
               <div className="hidden md:flex items-center space-x-3">
-                <button className="px-5 py-2 text-white hover:bg-white/10 transition rounded-lg border border-white/20">
+                <button onClick={()=>Navigate('/Signup/Login')} className="px-5 py-2 text-white hover:bg-white/10 transition rounded-lg border border-white/20">
                   Login
                 </button>
-                <button className="px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transition">
+                <button onClick={()=>Navigate('/Signup')} className="px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transition">
                   Sign Up
                 </button>
               </div>
