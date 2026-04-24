@@ -422,7 +422,7 @@ export const Social = () => {
         
 
       </div>
-      <button onClick={fetchMoreData}>check</button>
+      {/* <button onClick={fetchMoreData}>check</button> */}
 
     </div>
   );

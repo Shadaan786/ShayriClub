@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
-import { Menu, X, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronRight, LucideCircleUserRound, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "./Apis/axiosInstance";
+import { MyVerticallyCenteredModal } from "./pages/components/Modals/MyModal";
+
 
 // Placeholder components - replace with your actual imports
 const CanvasStars = () => (
@@ -101,13 +104,34 @@ const Footer = () => (
 
 export default function ShayriClub() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const[isLoggedIn, setIsLoggedIn] = useState(false)
   const Navigate = useNavigate();
+
+const[notificationOpened, setNotificationOpened] = useState(false);
   
   const slides = [
     "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&q=80",
     "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80",
     "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&q=80",
   ];
+
+  useEffect(()=>{
+    axiosInstance
+    .get('/api/trackUser',{
+      withCredentials: true
+    }).then((Response)=>{
+
+      if(!Response.data.loggedIn){
+        console.log("checking_not_loggedIn", Response.data.loggedIn)
+
+        setIsLoggedIn(false)
+      }else{
+        setIsLoggedIn(true)
+        console.log("checking_logged_in", )
+      }
+
+    })
+  })
 
   return (
     <div className="relative min-h-screen bg-black">
@@ -137,19 +161,24 @@ export default function ShayriClub() {
                 <a href="/DispCommunities" className="px-4 py-2 text-gray-300 hover:text-white transition rounded-lg hover:bg-white/5">
                   Community
                 </a>
-                <a href="/browse" className="px-4 py-2 text-gray-300 hover:text-white transition rounded-lg hover:bg-white/5">
+                <a href="/Social" className="px-4 py-2 text-gray-300 hover:text-white transition rounded-lg hover:bg-white/5">
                   Browse
                 </a>
               </div>
 
               {/* Auth Buttons */}
               <div className="hidden md:flex items-center space-x-3">
-                <button onClick={()=>Navigate('/Signup/Login')} className="px-5 py-2 text-white hover:bg-white/10 transition rounded-lg border border-white/20">
+               {!isLoggedIn && <button onClick={()=>Navigate('/Signup/Login')} className="px-5 py-2 text-white hover:bg-white/10 transition rounded-lg border border-white/20">
                   Login
-                </button>
-                <button onClick={()=>Navigate('/Signup')} className="px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transition">
+                </button>}
+              { !isLoggedIn &&  <button onClick={()=>Navigate('/Signup')} className="px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transition">
                   Sign Up
-                </button>
+                </button>}
+                {isLoggedIn && <button onClick={()=>Navigate('/Profile')} className="w-8 h-8"><LucideCircleUserRound/></button>}
+                {isLoggedIn && <button onClick={()=>setNotificationOpened(true)}><Bell/></button>}
+
+                
+                
               </div>
 
               {/* Mobile menu button */}
@@ -187,6 +216,7 @@ export default function ShayriClub() {
             </div>
           )}
         </nav>
+       
 
         {/* Hero Section */}
         <section className="pt-32 pb-20 px-4">
@@ -213,6 +243,7 @@ export default function ShayriClub() {
                 </button>
               </div>
             </div>
+             <MyVerticallyCenteredModal isOpen={notificationOpened} onClose={()=>setNotificationOpened(false)}><h1>Hello</h1></MyVerticallyCenteredModal>
           </div>
         </section>
 

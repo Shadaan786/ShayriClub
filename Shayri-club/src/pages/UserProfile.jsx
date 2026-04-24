@@ -29,6 +29,7 @@ const UserProfile = () =>{
     const[data, setData] = useState("")
     const[available, setAvailable]  = useState(false);
     const[profilePic, setProfilePic] = useState("");
+    const[followerCount, setFollowerCount] = useState(0)
 
     const[SearchParams] = useSearchParams();
 
@@ -43,10 +44,7 @@ const UserProfile = () =>{
 
         axiosInstance
 
-        .post('/api/users',{
-
-          userId: userId
-        }, {
+        .get(`/api/users?userId=${userId}`, {
           withCredentials: true
         })
         .then(response =>{
@@ -54,7 +52,9 @@ const UserProfile = () =>{
 
             // currentstreak
 
-           
+           setFollowerCount(response.data.netFollowers.followers.length)
+
+           console.log("follower_count", response.data.netFollowers.followers.length)
 
              const currentValue =  response.data.counter[0].streak
 
@@ -333,6 +333,7 @@ const UserProfile = () =>{
         totalGhazal={ghazalLength}
         totalNazm={nazmLength}
         profileLink={profilePic}
+        totalFollowers={followerCount}
 
          badges={[
     { name: "First Ghazal", icon: "🌙", desc: "Published your very first Ghazal.", earned: true },

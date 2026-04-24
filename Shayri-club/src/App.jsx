@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import Bg from './Bg'
 import IqbalInfo from './pages/IqbalInfo';
@@ -36,9 +36,43 @@ import { Trying } from './pages/Trying';
 import { MicTesting } from './pages/Mic';
 import {KalamPlayer} from './pages/components/kalamPlayer'
 import AlbumsLive from './pages/AlbumsLive';
+import { firebaseApp } from "./firebaseConfig";
+import { getMessaging, onMessage } from "firebase/messaging";
+import { getFCMToken } from './services/push notifications/getToken';
+import logo from './image.png'
+import { LogOut } from 'lucide-react';
 
 
 function App() {
+
+  useEffect(()=>{
+
+    const messaging = getMessaging(firebaseApp);
+onMessage(messaging, (data) => {
+  console.log('Message received. ', data);
+
+  
+  const notificationTitle =
+    data.payload.notification?.title || "Foreground Message Title";
+
+  const notificationOptions = {
+    body: data.payload.notification?.body || "foreground Message body.",
+    icon: logo,
+  };
+
+  new Notification(notificationTitle, notificationOptions);
+
+
+  // ...
+});
+
+
+
+
+
+  }, [])
+  
+
 
 
   return (
@@ -46,6 +80,11 @@ function App() {
     <BrowserRouter>
     
     <Routes> 
+      {
+        useEffect(()=>{
+          getFCMToken()
+        }, [])
+      }
 
       <Route path = '/' element = {<Bg/>}/>
       <Route path = 'IqbalInfo' element = {<IqbalInfo/>}/>

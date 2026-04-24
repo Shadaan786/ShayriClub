@@ -198,11 +198,14 @@
 
 
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
 import { AlbumCard } from "./components/AlbumsCard";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import InfiniteScroll from "react-infinite-scroll-component";
+import axios from "axios";
+
 
 const AlbumsLive = () => {
 
@@ -213,17 +216,21 @@ const AlbumsLive = () => {
     const [motiv, setMotiv] = useState([]);
     const [isMotivation, setIsMotivation] = useState(false);
     const [category, setCategory] = useState(["all"]);
+    const newAlbums = useRef([null]);
+    const[hasMore, setHasMore] = useState(true);
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(15);
 
     useEffect(() => {
 
         axiosInstance
-            .post('/api/albumsLive', {
-                category: category
-            })
+            .get(`/api/albumsLive?category=${category}&page=${page}&limit=${limit}`)
             .then((response) => {
                 console.log("length", response.data.length);
                 console.log("response.data", response.data)
                 setLiveAlbums(response.data)
+
+                setPage(2);
             })
             .catch((error) => {
                 console.error("error while fetching live albums", error)
@@ -299,12 +306,37 @@ const AlbumsLive = () => {
     //     )
     // }
 
+    const fetchMore =()=>{
+        axiosInstance
+          .get(`/api/albumsLive?category=${category}&page=${page}&limit=${limit}`)
+            .then((response) => {
+                console.log("fetchMore_running")
+                console.log("length", response.data.length);
+                console.log("response.data", response.data)
+                
+
+                newAlbums.current = response.data
+               
+                if(newAlbums.current.length === 0){
+                    setHasMore(false);
+                }else{
+                     
+                setLiveAlbums(prevItems =>[...prevItems, ...newAlbums.current])
+                setPage(prev=> prev + 1)
+
+                }
+            })
+            .catch((error) => {
+                console.error("error while fetching live albums", error)
+            })
+    }
+
     return (
-        <div className="min-h-screen bg-[#0f0f0f] text-white">
+        <div id="scrollable" className="h-screen overflow-auto bg-[#000000] text-white">
 
             {/* ── Page Header ── */}
             <div className="flex items-center justify-between px-10 pt-8 pb-2">
-                <h1 className="text-2xl font-medium tracking-tight text-[#f0f0f0]">
+                <h1 className="text-7xl font-medium tracking-tight text-[#f0f0f0]">
                     Live Albums
                 </h1>
                 <span className="text-xs text-[#505058]">
@@ -330,11 +362,28 @@ const AlbumsLive = () => {
                     </button>
                 ))}
             </div>
+            
 
             {/* ── Album Grid ── */}
             {
                 <main className="px-10 pt-2">
+
+                    <InfiniteScroll
+                          dataLength={liveAlbums.length} //This is important field to render the next data
+                          next={fetchMore}
+                          scrollableTarget= "scrollable"
+                          hasMore={hasMore}
+                          loader={<h4>Loading...</h4>}
+                          endMessage={
+                            <p style={{ textAlign: 'center' }}>
+                              <b>Yay! You have seen it all</b>
+                            </p>
+                          }
+                        >
+
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+
+                           
                         {
                             liveAlbums.map((item) => (
                                 <div key={item._id}>
@@ -353,7 +402,9 @@ const AlbumsLive = () => {
                                 </div>
                             ))
                         }
+                       
                     </div>
+                     </InfiniteScroll>
                 </main>
             }
 
