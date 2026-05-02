@@ -53,10 +53,10 @@ onMessage(messaging, (data) => {
 
   
   const notificationTitle =
-    data.payload.notification?.title || "Foreground Message Title";
+    data.notification?.title || "Foreground Message Title";
 
   const notificationOptions = {
-    body: data.payload.notification?.body || "foreground Message body.",
+    body: data.notification?.body || "foreground Message body.",
     icon: logo,
   };
 
