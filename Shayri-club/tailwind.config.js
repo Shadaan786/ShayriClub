@@ -1,3 +1,5 @@
+import animate from "tailwindcss-animate"
+
 /** @type {import('tailwindcss').Config} */
 export default {
     darkMode: ["class"],
@@ -7,7 +9,12 @@ export default {
   ],
   theme: {
   	extend: {
+		fontFamily:{
+				allura: ['Allura'],
+				dancingScript: ['Dancing Script']
+			},
   		animation: {
+			
   			typewriter: 'typewriter 4s steps(28) forwards',
   			caret: 'typewriter 4s steps(28) forwards, blink 2s steps(28) infinite 2s'
   		},
@@ -84,5 +91,5 @@ export default {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [animate],
 }

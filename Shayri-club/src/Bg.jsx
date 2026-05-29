@@ -1,9 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, X, ChevronRight, LucideCircleUserRound, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "./Apis/axiosInstance";
 import { MyVerticallyCenteredModal } from "./pages/components/Modals/MyModal";
-
+import { TokenContext } from "./services/push notifications/tokenContextProvider";
+import { useContext } from "react";
+import { getFCMToken } from "./services/push notifications/getToken";
+import { BellRingIcon } from "@animateicons/react/lucide";
+import { NotiicationCard } from "./pages/components/NotificationCard";
+import { UserRoundIcon } from "@animateicons/react/lucide";
+import { LogoutIcon } from "@animateicons/react/lucide";
 
 // Placeholder components - replace with your actual imports
 const CanvasStars = () => (
@@ -106,6 +112,10 @@ export default function ShayriClub() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const[isLoggedIn, setIsLoggedIn] = useState(false)
   const Navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
+  const uuid = useRef(null);
+  // const [token, setToken] = useState("");
+  const[notificationsAvailable, setNotificationsAvailable] = useState(false);
 
 const[notificationOpened, setNotificationOpened] = useState(false);
   
@@ -114,6 +124,8 @@ const[notificationOpened, setNotificationOpened] = useState(false);
     "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80",
     "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&q=80",
   ];
+
+  // console.log("fcm_tokennnnn", fcm_token)
 
   useEffect(()=>{
     axiosInstance
@@ -132,6 +144,92 @@ const[notificationOpened, setNotificationOpened] = useState(false);
 
     })
   })
+  useEffect(()=>{
+
+    const gettinUserId = async()=>{
+
+      const response =  await axiosInstance
+    .get('/api/userId')
+
+    console.log("userIdF", response.data._id)
+    // const userId = response.data._id;
+    uuid.current = response.data._id;
+    // axiosInstance
+    // .get(`/api/notifictions?uuid=${userId}`)
+
+    // .then((response)=>{
+    //   console.log("response.data", response.data)
+    //   setNotifications(response.data)
+    // }).catch((error)=>{
+    //   console.log("Error while fetching user notifications", error);
+    // })
+
+
+    }
+
+    gettinUserId()
+
+   
+  }, [])
+
+  //------------------------------------------------------------------------------------------------>
+
+  const handleLogOut=()=>{
+
+    getFCMToken()
+    .then((token)=>{
+
+
+      axiosInstance.
+    get(`/api/logout?token=${token}`)
+
+    .then((response)=>{
+         console.log(response.data);
+    }).catch((error)=>{
+      console.error("Error while Signing out", error)
+    })
+
+
+    })
+
+    
+  }
+
+  //-----------------------------------------------------------------------------------------------------
+  
+    
+
+
+
+
+  useEffect(()=>{
+
+
+
+  
+
+    const fetchingNotifications=async()=>{
+
+       const response =  await axiosInstance
+    .get('/api/userId')
+
+    const userId = response.data._id;
+
+    console.log("check", userId._id)
+
+      axiosInstance
+      .get(`/api/offlineNotifications?userId=${userId}`)
+      .then((response)=>{
+        console.log("offline_notifications", response.data.offlineNotifications.notifications)
+        // console.log(response.data.notifications.length)
+        setNotifications(response.data.offlineNotifications.notifications)
+      })
+    }
+
+    fetchingNotifications()
+
+  }, [])
+    
 
   return (
     <div className="relative min-h-screen bg-black">
@@ -174,11 +272,25 @@ const[notificationOpened, setNotificationOpened] = useState(false);
               { !isLoggedIn &&  <button onClick={()=>Navigate('/Signup')} className="px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transition">
                   Sign Up
                 </button>}
-                {isLoggedIn && <button onClick={()=>Navigate('/Profile')} className="w-8 h-8"><LucideCircleUserRound/></button>}
-                {isLoggedIn && <button onClick={()=>setNotificationOpened(true)}><Bell/></button>}
+                {isLoggedIn && <button onClick={()=>Navigate(`/Profile?userId=${uuid.current}`)} className="w-8 h-8">
+                  <UserRoundIcon
+                    size={25}
+                    duration={1}
+                    color="#ffffff"
+                  /></button>}
+                {isLoggedIn && <button onClick={()=>{setNotificationOpened(true)}}>
+                  <BellRingIcon
+                      size={25}
+                      duration={1}
+                      color="#840606"
+                      /></button>}
+                {isLoggedIn && <button onClick={handleLogOut}>
+                <LogoutIcon
+                size={25}
+                duration={1}
+                color="#ffffff"
+              /></button>}
 
-                
-                
               </div>
 
               {/* Mobile menu button */}
@@ -243,7 +355,30 @@ const[notificationOpened, setNotificationOpened] = useState(false);
                 </button>
               </div>
             </div>
-             <MyVerticallyCenteredModal isOpen={notificationOpened} onClose={()=>setNotificationOpened(false)}><h1>Hello</h1></MyVerticallyCenteredModal>
+             <MyVerticallyCenteredModal isOpen={notificationOpened} onClose={()=>setNotificationOpened(false)}>
+
+              {console.log("see_notifications", typeof(notifications))}
+              {console.log("see_notifications", notifications)}
+
+              {
+                
+                notifications.map((item, i)=>(
+                  <div>
+                  
+                  <div key={i}>
+                  <button onClick={()=>Navigate(item.toNavigate)}>
+                  <NotiicationCard notificationTitle={item.notificationTitle} notificationBody={item.notificationBody}/>
+                  </button>
+                  </div>
+                  </div>
+                ))
+
+                // (!notifications) && <h1 className="text-3xl">Your notifications will appear here</h1>
+              }
+              
+             
+             
+             </MyVerticallyCenteredModal>
           </div>
         </section>
 

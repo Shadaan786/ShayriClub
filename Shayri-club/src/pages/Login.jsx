@@ -109,9 +109,10 @@
 //---------------------------------------------------------------------->
 
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import axiosInstance from '../Apis/axiosInstance';
+import { getFCMToken } from '@/services/push notifications/getToken';
 
 const Login = () => {
   const [id, setId] = useState("");
@@ -138,6 +139,20 @@ const Login = () => {
       const data = response.data;
       if (data.success) {
         setNotice2(`Welcome back, ${id}`);
+        
+        const token = await  getFCMToken();
+
+        axiosInstance
+        .post('/api/FCMtoken',{
+          fcmToken: token
+        },{
+          withCredentials: true
+        }).then((response)=>{
+          console.log("fcmToken sent successfully",response.data)
+        }).catch((error)=>{
+          console.error("Error while sending fcmToken", error)
+        })
+        
         setTimeout(() => navigate(data.redirectUrl), 800);
       } else {
         setNotice(data.message || "Invalid credentials.");

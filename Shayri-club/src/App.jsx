@@ -38,9 +38,10 @@ import {KalamPlayer} from './pages/components/kalamPlayer'
 import AlbumsLive from './pages/AlbumsLive';
 import { firebaseApp } from "./firebaseConfig";
 import { getMessaging, onMessage } from "firebase/messaging";
-import { getFCMToken } from './services/push notifications/getToken';
+// import { getFCMToken } from './services/push notifications/getToken';
 import logo from './image.png'
 import { LogOut } from 'lucide-react';
+import NewKalam from './pages/components/NewKalam';
 
 
 function App() {
@@ -80,11 +81,11 @@ onMessage(messaging, (data) => {
     <BrowserRouter>
     
     <Routes> 
-      {
+      {/* {
         useEffect(()=>{
           getFCMToken()
         }, [])
-      }
+      } */}
 
       <Route path = '/' element = {<Bg/>}/>
       <Route path = 'IqbalInfo' element = {<IqbalInfo/>}/>
@@ -119,6 +120,7 @@ onMessage(messaging, (data) => {
       <Route path='/mic' element= {<MicTesting/>}/>
       <Route path='/kplayer' element= {<KalamPlayer/>}/>
       <Route path='/albumsLive' element= {<AlbumsLive/>}/>
+      <Route path='/NewKalam' element= {<NewKalam/>}/>
 
       {/* <ContextProvider>
         <Kalam/>
