@@ -42,6 +42,7 @@ import { getMessaging, onMessage } from "firebase/messaging";
 import logo from './image.png'
 import { LogOut } from 'lucide-react';
 import NewKalam from './pages/components/NewKalam';
+import KalamOfTheWeek from './pages/KalamOfTheWeek';
 
 
 function App() {
@@ -121,6 +122,7 @@ onMessage(messaging, (data) => {
       <Route path='/kplayer' element= {<KalamPlayer/>}/>
       <Route path='/albumsLive' element= {<AlbumsLive/>}/>
       <Route path='/NewKalam' element= {<NewKalam/>}/>
+      <Route path='/Kotw' element= {<KalamOfTheWeek/>}/>
 
       {/* <ContextProvider>
         <Kalam/>

@@ -1127,37 +1127,49 @@
 
 
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
 import { HeartIcon } from "@animateicons/react/lucide";
 import { MessageCircleIcon } from "@animateicons/react/lucide";
 import { ShareIcon } from "@animateicons/react/lucide";
 import { BookmarkIcon } from "@animateicons/react/lucide";
+import { SocialContext } from "../Contexts/SocketContext";
+import { useNavigate } from "react-router-dom";
+// import { useContext } from "react";
 
 const NewKalam=({
         title,
       content,
-      badgeBg,
-      badgeBorder,
-      autoMainColor,
-      resolvedTitleColor,
-      titleFs,
-      resolvedTitleFamily,
-      resolvedContentColor,
-      contentFs,
-      resolvedContentFamily,
-      subColor,
-      backdrop,
-      resolvedTextColor,
-      activeMoods,
+      // badgeBg,
+      // badgeBorder,
+      // autoMainColor,
+      // resolvedTitleColor,
+      // titleFs,
+      // resolvedTitleFamily,
+      // resolvedContentColor,
+      // contentFs,
+      // resolvedContentFamily,
+      // subColor,
+      // backdrop,
+      // resolvedTextColor,
+      // activeMoods,
       type,
-      bgTab,
-      customColor,
-      selectedColor,
-      bgOpacity,
-      scrim,
-      isImage
+      // bgTab,
+      // customColor,
+      // selectedColor,
+      // bgOpacity,
+      // scrim,
+      isImage,
+      mUid,
+      kalId,
+      isLiked2,
+      
+      customStyles
 })=>{
+
+  console.log("checking_isLiked",isLiked2)
+  console.log("kalId", kalId)
+ 
 
 const TITLE_FONTS = [
   { id: "cormorant",       label: "Cormorant Garamond", sample: "یاد کا لمحہ",  family: "'Cormorant Garamond', serif",      googleParam: "Cormorant+Garamond:ital,wght@1,300;1,400;1,600" },
@@ -1198,6 +1210,21 @@ const buildGoogleFontsUrl = () => {
 };
 
   const [showFullPreview, setShowFullPreview] = useState(false);
+  const backdrop = customStyles.backdrop
+  const resolvedTextColor = customStyles.resolvedTextColor;
+  const bgTab = customStyles.bgTab
+  const customColor = customStyles.customColor;
+  const selectedColor = customStyles.selectedColor;
+  const bgOpacity = customStyles.bgOpacity;
+  const scrim = customStyles.scrim;
+  const [isLiked, setIsLiked] = useState(false);
+  const {send} = useContext(SocialContext)
+
+  const Navigate = useNavigate()
+
+  // Checking like state
+
+   
 
   const previewWrapStyle = (() => {
     if (backdrop === "none") return {
@@ -1239,6 +1266,21 @@ const buildGoogleFontsUrl = () => {
         console.log("Response.data[0]", Response.data[0])
       })
   }, [])
+
+  const handleLike =()=>{
+    send(JSON.stringify({
+      type: "kalam_like",
+      payload: {uid: mUid, kalamUid: kalId},
+    }))
+  }
+
+  useEffect(()=>{
+
+    (isLiked2)?setIsLiked(true):setIsLiked(false)
+
+
+  }, [])
+  
 
   return (
     <>
@@ -1966,9 +2008,9 @@ const buildGoogleFontsUrl = () => {
               <div
                 className="k-prev-title"
                 style={{
-                  color: resolvedTitleColor,
-                  fontSize: titleFs,
-                  fontFamily: resolvedTitleFamily,
+                  color: customStyles.resolvedTitleColor,
+                  fontSize: customStyles.titleFs,
+                  fontFamily: customStyles.resolvedTitleFamily,
                 }}
               >
                 {title}
@@ -1979,9 +2021,9 @@ const buildGoogleFontsUrl = () => {
                 <div
                   className="k-prev-text"
                   style={{
-                    color: resolvedContentColor,
-                    fontSize: contentFs,
-                    fontFamily: resolvedContentFamily,
+                    color: customStyles.resolvedContentColor,
+                    fontSize: customStyles.contentFs,
+                    fontFamily: customStyles.resolvedContentFamily,
                   }}
                 >
                   {previewText}{!showFullPreview && previewIsTruncated ? "…" : ""}
@@ -1996,7 +2038,7 @@ const buildGoogleFontsUrl = () => {
                 )}
               </div>
             )}
-            <div className="k-prev-author" style={{ color: subColor }}>— Arif Karimi</div>
+            <div className="k-prev-author" style={{ color: customStyles.subColor }}>— Arif Karimi</div>
           </div>
         )}
 
@@ -2019,7 +2061,7 @@ const buildGoogleFontsUrl = () => {
       }}>
 
         {/* Like */}
-        <button style={{
+        <button onClick={()=>{handleLike(); (isLiked)?setIsLiked(false):setIsLiked(true)}} style={{
           display: "flex", alignItems: "center", gap: "5px",
           padding: "5px 10px", borderRadius: "20px", border: "none",
           background: "transparent", color: "rgba(240,235,227,0.55)",
@@ -2030,16 +2072,18 @@ const buildGoogleFontsUrl = () => {
           onMouseEnter={e => { e.currentTarget.style.color = "rgba(255,140,140,0.9)"; e.currentTarget.style.background = "rgba(226,75,74,0.1)"; }}
           onMouseLeave={e => { e.currentTarget.style.color = "rgba(240,235,227,0.55)"; e.currentTarget.style.background = "transparent"; }}
         >
+          
          <HeartIcon
+         
   size={15}
   duration={1}
-  color="#ffffff"
+  color={(isLiked)?"#771818":"#ffffff"}
 />
           Like
         </button>
 
         {/* Comment */}
-        <button style={{
+        <button onClick={() => Navigate(`/comment?kalamId=${kalId}`)} style={{
           display: "flex", alignItems: "center", gap: "5px",
           padding: "5px 10px", borderRadius: "20px", border: "none",
           background: "transparent", color: "rgba(240,235,227,0.55)",
