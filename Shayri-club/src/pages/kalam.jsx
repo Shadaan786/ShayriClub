@@ -845,39 +845,193 @@ const Kalam = () => {
   const [file, setFile] = useState([]);
   const [available, setAvailable] = useState(false);
   const [recordingFinal, setRecordingFinal] = useState([]);
-  const [checking, setChecking] = useState();
-  const [titleFont, setTitleFont] = useState("")
-  const [contentFont, setContentFont] = useState("")
+  const [checking, setChecking] = useState([]);
+  const [titleFont, setTitleFont] = useState("");
+  const [contentFont, setContentFont] = useState("");
+  const [image, setImage] = useState("");
+  const [audio, setAudio] = useState("");
   
 
   const handleKalam = () => {
     if (!available) {
+      // axiosInstance
+      //   .post("/kalam", { type, content }, { withCredentials: true })
+      //   .then((response) => {
+      //     const data = response.data;
+      //     console.log(response.data);
+      //     if (data.success) {
+      //       setMessage(data.msg);
+      //       setShowPopup(true);
+      //       setTimeout(() => setShowPopup(false), 2000);
+      //       if (data.redirectUrl) navigate(data.redirectUrl);
+      //     }
+      //     setStreak(response.data.streak[0].createdAt);
+      //     setStreak2(response.data.streak[1].createdAt);
+      //   })
+      //   .catch((err) => console.error(err));
+
       axiosInstance
-        .post("/kalam", { type, content }, { withCredentials: true })
-        .then((response) => {
-          const data = response.data;
-          console.log(response.data);
-          if (data.success) {
-            setMessage(data.msg);
-            setShowPopup(true);
-            setTimeout(() => setShowPopup(false), 2000);
-            if (data.redirectUrl) navigate(data.redirectUrl);
-          }
-          setStreak(response.data.streak[0].createdAt);
-          setStreak2(response.data.streak[1].createdAt);
-        })
-        .catch((err) => console.error(err));
-    } else {
-      const formData = new FormData();
-      console.log("type", typeof checking);
-      formData.append("audio", checking, { originalFileName: "hello.webm", type: type, content: content });
+    .post('/api/customKalam',{
+      title,
+      content,
+      badgeBg,
+      badgeBorder,
+      autoMainColor,
+      resolvedTitleColor,
+      titleFs,
+      resolvedTitleFamily,
+      resolvedContentColor,
+      contentFs,
+      resolvedContentFamily,
+      subColor,
+      backdrop,
+      resolvedTextColor,
+      activeMoods,
+      type,
+      bgTab,
+      customColor,
+      selectedColor,
+      bgOpacity,
+      scrim
+      
+      
+
+    },{
+      withCredentials: true
+    }).then((response)=>{
+       console.log("response from db", response.data)
+    })
+
+
+    } else if(available || isImage) {
+
+   
+
+   if(isImage && !available){
+
+    const formData = new FormData();
+
+
+      formData.append("kalamBg", image)
       formData.append("type", type);
       formData.append("content", content);
-      console.log("recording", recordingFinal);
-      axiosInstance
+      formData.append("title", title)
+      formData.append("badgeBg", badgeBg);
+      formData.append("badgeBorder", badgeBorder);
+      formData.append("autoMainColor", autoMainColor);
+      formData.append("resolvedTitleColor", resolvedTitleColor);
+      formData.append("titleFs", titleFs);
+      formData.append("resolvedTitleFamily", resolvedTitleFamily);
+      formData.append("resolvedContentColor", resolvedContentColor);
+      formData.append("contentsFs", contentFs);
+      formData.append("resolvedContentFamily", resolvedContentFamily);
+      formData.append("subColor", subColor);
+      formData.append("backdrop", backdrop);
+      formData.append("resolvedTextColor", resolvedTextColor);
+      formData.append("activeMoods", activeMoods);
+      formData.append("type", type);
+      formData.append("bgTab", bgTab);
+      formData.append("customColor", customColor);
+      formData.append("selectedColor", selectedColor);
+      formData.append("bgOpacity", bgOpacity);
+      formData.append("scrim", scrim);
+
+       axiosInstance
         .post("/upload/kalamAudio", formData, { withCredentials: true })
         .then((response) => { console.log("data from multer", response.data); })
         .catch((error) => { console.error("error from Multer", error); });
+      }
+      
+     
+      else if(!isImage && available){
+
+        const formData = new FormData();
+
+      // formData.append("audio", checking, { originalFileName: "hello.webm", type: type, content: content });
+      formData.append("kalamAudio", checking)
+      formData.append("type", type);
+      formData.append("content", content);
+      formData.append("title", title)
+      formData.append("badgeBg", badgeBg);
+      formData.append("badgeBorder", badgeBorder);
+      formData.append("autoMainColor", autoMainColor);
+      formData.append("resolvedTitleColor", resolvedTitleColor);
+      formData.append("titleFs", titleFs);
+      formData.append("resolvedTitleFamily", resolvedTitleFamily);
+      formData.append("resolvedContentColor", resolvedContentColor);
+      formData.append("contentsFs", contentFs);
+      formData.append("resolvedContentFamily", resolvedContentFamily);
+      formData.append("subColor", subColor);
+      formData.append("backdrop", backdrop);
+      formData.append("resolvedTextColor", resolvedTextColor);
+      formData.append("activeMoods", activeMoods);
+      formData.append("type", type);
+      formData.append("bgTab", bgTab);
+      formData.append("customColor", customColor);
+      formData.append("selectedColor", selectedColor);
+      formData.append("bgOpacity", bgOpacity);
+      formData.append("scrim", scrim);
+
+       axiosInstance
+        .post("/upload/kalamAudio", formData, { withCredentials: true })
+        .then((response) => { console.log("data from multer", response.data); })
+        .catch((error) => { console.error("error from Multer", error); });
+
+      }else if(isImage && available){
+
+        console.log("isImage && available")
+
+     const formData = new FormData();
+        console.log("type", typeof checking);
+
+
+      // formData.append("bgImage&audio", file);
+      formData.append("kalamAudio", audio,{content: content});
+      formData.append("kalamBg", image);
+      formData.append("fileType", "image&audio");
+      formData.append("type", type);
+      formData.append("content", content);
+      formData.append("title", title)
+      formData.append("badgeBg", badgeBg);
+      formData.append("badgeBorder", badgeBorder);
+      formData.append("autoMainColor", autoMainColor);
+      formData.append("resolvedTitleColor", resolvedTitleColor);
+      formData.append("titleFs", titleFs);
+      formData.append("resolvedTitleFamily", resolvedTitleFamily);
+      formData.append("resolvedContentColor", resolvedContentColor);
+      formData.append("contentsFs", contentFs);
+      formData.append("resolvedContentFamily", resolvedContentFamily);
+      formData.append("subColor", subColor);
+      formData.append("backdrop", backdrop);
+      formData.append("resolvedTextColor", resolvedTextColor);
+      formData.append("activeMoods", activeMoods);
+      formData.append("type", type);
+      formData.append("bgTab", bgTab);
+      formData.append("customColor", customColor);
+      formData.append("selectedColor", selectedColor);
+      formData.append("bgOpacity", bgOpacity);
+      formData.append("scrim", scrim);
+
+      console.log("formData", formData);
+      console.log("file", file);
+      
+
+
+       axiosInstance
+        .post("/api/testing", formData, { withCredentials: true })
+        .then((response) => { console.log("data from multer", response.data); })
+        .catch((error) => { console.error("error from Multer", error); });
+
+
+
+      }
+     
+     
+      
+      
+
+      console.log("recording", recordingFinal);
+     
     }
   };
 
@@ -897,6 +1051,8 @@ const Kalam = () => {
         setRecording([audioUrl]);
         setRecordingFinal([audioUrl + ".wav"]);
         setAvailable(true);
+        setFile(prev=>[...prev, pook])
+        setAudio(pook);
       };
       mediaRecorderRef.current = mediaRecorder;
       mediaRecorder.start();
@@ -955,6 +1111,8 @@ const Kalam = () => {
 
   const handleImageUpload = (e) => {
     const f = e.target.files[0];
+    setFile(prev=>[...prev, f])
+    setImage(f);
     if (!f) return;
     const reader = new FileReader();
     reader.onload = (ev) => { setImageSrc(ev.target.result); setIsImage(true); };
@@ -985,7 +1143,7 @@ const Kalam = () => {
       customColor,
       selectedColor,
       bgOpacity,
-      scrim
+      scrim,
       
       
 
@@ -2230,7 +2388,7 @@ const Kalam = () => {
                     <button className="k-btn-ghost">↗ Share</button>
                     <button className="k-btn-ghost">🖨 Export</button>
                   </div>
-                  <button  className="k-btn-primary" onClick={updateCustomKalam}>
+                  <button  className="k-btn-primary" onClick={()=>{handleKalam()}}>
                     ✦ Publish kalam
                   </button>
                 </div>
