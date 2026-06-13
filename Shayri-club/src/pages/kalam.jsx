@@ -853,7 +853,7 @@ const Kalam = () => {
   
 
   const handleKalam = () => {
-    if (!available) {
+    if (!available && !isImage) {
       // axiosInstance
       //   .post("/kalam", { type, content }, { withCredentials: true })
       //   .then((response) => {
@@ -903,16 +903,13 @@ const Kalam = () => {
     })
 
 
-    } else if(available || isImage) {
-
-   
-
-   if(isImage && !available){
+    } else if(isImage && !available){
 
     const formData = new FormData();
 
 
-      formData.append("kalamBg", image)
+      formData.append("kalamBg", image);
+      formData.append("fileType", "image");
       formData.append("type", type);
       formData.append("content", content);
       formData.append("title", title)
@@ -937,7 +934,7 @@ const Kalam = () => {
       formData.append("scrim", scrim);
 
        axiosInstance
-        .post("/upload/kalamAudio", formData, { withCredentials: true })
+        .post("/api/testing", formData, { withCredentials: true })
         .then((response) => { console.log("data from multer", response.data); })
         .catch((error) => { console.error("error from Multer", error); });
       }
@@ -948,7 +945,8 @@ const Kalam = () => {
         const formData = new FormData();
 
       // formData.append("audio", checking, { originalFileName: "hello.webm", type: type, content: content });
-      formData.append("kalamAudio", checking)
+      formData.append("kalamAudio", checking);
+      formData.append("fileType", "audio")
       formData.append("type", type);
       formData.append("content", content);
       formData.append("title", title)
@@ -973,7 +971,7 @@ const Kalam = () => {
       formData.append("scrim", scrim);
 
        axiosInstance
-        .post("/upload/kalamAudio", formData, { withCredentials: true })
+        .post("/api/testing", formData, { withCredentials: true })
         .then((response) => { console.log("data from multer", response.data); })
         .catch((error) => { console.error("error from Multer", error); });
 
@@ -1032,7 +1030,7 @@ const Kalam = () => {
 
       console.log("recording", recordingFinal);
      
-    }
+    
   };
 
   const startRec = async () => {
