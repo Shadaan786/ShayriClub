@@ -1128,6 +1128,329 @@
 //---------------------------------------------------------------------------------------------------------------------------->>>
 
 
+// import axiosInstance from "../Apis/axiosInstance";
+// import { useState, useEffect, useRef } from "react";
+// import { Card } from "./components/Card";
+// import { Link, useNavigate } from "react-router-dom";
+// import SidebarExample from "./components/Sidebar"
+// import InfiniteScroll from "react-infinite-scroll-component";
+// import NewKalam from "./components/NewKalam";
+// import { type } from "firebase/firestore/lite/pipelines";
+
+
+// export const Social = () => {
+//   const [kalamDat, setKalamDat] = useState([]);
+//   const [uid, setUid] = useState("");
+//   const [kalamid, setKalamId] = useState("");
+//   const [isReady, setIsReady] = useState(false);
+//   const [isOpen, setIsOpen] = useState(false);
+//   const [activeTab, setActiveTab] = useState("kalams");
+//   const [page, setPage] = useState(1);
+//   const [limit, setLimit] = useState(10);
+//   const socket = useRef(null);
+//   const navigate = useNavigate();
+//   const [length, setLength] = useState(0);
+//   const [hasMore, setHasMore] = useState(true);
+//   const newKalams = useRef([null]);
+//   const [totalLength, setTotalLength] = useState(0);
+//   const [isImage, setIsImage] = useState(false);
+//   let customStyles;
+//   let likedKalams;
+//   const likedKalams2 = useRef(new Set())
+
+//   const handle = () => {
+//     axiosInstance
+//       .get(`/api/social?page=${page}&limit=${limit}`, { withCredentials: true })
+//       .then((response) => {
+//         setKalamDat(response.data.allKalamsName);
+//         customStyles = response.data.allKalamsName.customStyles
+//         console.log(response.data);
+//         setLength(response.data.allKalamsName.length);
+//         setUid(response.data.userId[0]._id);
+//         setTotalLength(response.data.totalLength);
+//         likedKalams = new Set(response.data.likedKalams)
+//         for (const items of likedKalams) {
+//           likedKalams2.current.add(items._id)
+//         }
+//       });
+//     setTimeout(() => { console.log("hhhh2", likedKalams2.current) }, 3000)
+//     setPage(prev => prev + 1);
+//   };
+
+//   useEffect(() => { handle(); }, []);
+
+//   const handleTabClick = (tab) => {
+//     setActiveTab(tab);
+//     if (tab === "albums") navigate("/albumsLive");
+//     else if (tab === "kotw") navigate("/Kotw");
+//   };
+
+//   const fetchMoreData = () => {
+//     console.log("FetchMore_running");
+//     axiosInstance
+//       .get(`/api/social?page=${page}&limit=${limit}`, { withCredentials: true })
+//       .then((response) => {
+//         newKalams.current = response.data.allKalamsName;
+//         console.log("checking_newKalams", newKalams.current);
+//         console.log("CHECKING_TOTAL_LENGTH", totalLength);
+//         if (newKalams.current.length === 0) {
+//           setHasMore(false);
+//         } else {
+//           setKalamDat(prevItems => [...prevItems, ...newKalams.current]);
+//           setPage(prev => prev + 1);
+//           setLength(prev => prev + 10);
+//         }
+//       });
+//   };
+
+//   return (
+//     <div
+//       id="mainScroll"
+//       className="relative overflow-auto"
+//       style={{ height: "100svh", WebkitOverflowScrolling: "touch", background: "#0a0a10" }}
+//     >
+//       <SidebarExample isOpen={isOpen} onClose={() => setIsOpen(false)} />
+
+//       <style>{`
+//         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&display=swap');
+//         @keyframes social-fu {
+//           from { opacity: 0; transform: translateY(12px); }
+//           to   { opacity: 1; transform: translateY(0); }
+//         }
+//         .s-a1 { animation: social-fu .45s ease both; }
+//         .s-a2 { animation: social-fu .45s .09s ease both; }
+//         .s-a3 { animation: social-fu .45s .18s ease both; }
+//         .s-a4 { animation: social-fu .45s .27s ease both; }
+//         .s-tab-btn { transition: color .2s, border-color .2s; }
+//         .s-tab-btn:hover:not([data-active="true"]) { color: rgba(167,139,250,0.7) !important; }
+//       `}</style>
+
+//       <div
+//         className="relative z-20"
+//         style={{ paddingBottom: "max(80px, env(safe-area-inset-bottom))" }}
+//       >
+//         <div className="max-w-[1600px] mx-auto">
+
+//           {/* ── Top Nav ── */}
+//           <nav
+//             className="flex items-center justify-between px-10 py-4 sticky top-0 z-30"
+//             style={{
+//               background: "rgba(10,10,16,0.98)",
+//               borderBottom: "1px solid rgba(255,255,255,0.06)",
+//               backdropFilter: "blur(12px)",
+//             }}
+//           >
+//             {/* Left: sidebar + logo */}
+//             <div className="flex items-center gap-3">
+//               <button
+//                 onClick={() => setIsOpen(true)}
+//                 className="flex items-center justify-center w-9 h-9 flex-shrink-0 transition-all duration-150 active:scale-95"
+//                 style={{
+//                   background: "rgba(255,255,255,0.05)",
+//                   border: "1px solid rgba(255,255,255,0.09)",
+//                   borderRadius: 10,
+//                   color: "#9090b0",
+//                 }}
+//                 aria-label="Open sidebar"
+//               >
+//                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+//                   <line x1="3" y1="6" x2="21" y2="6" />
+//                   <line x1="3" y1="12" x2="15" y2="12" />
+//                   <line x1="3" y1="18" x2="18" y2="18" />
+//                 </svg>
+//               </button>
+//               <div
+//                 className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+//                 style={{ background: "linear-gradient(135deg,#7c4dff,#c16dff)" }}
+//               >
+//                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+//                   <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
+//                 </svg>
+//               </div>
+//               <span style={{ fontSize: 15, fontWeight: 600, color: "#e2d9ff", letterSpacing: "-0.3px" }}>Kalams</span>
+//             </div>
+
+//             {/* Center: search */}
+//             <div
+//               className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
+//               style={{
+//                 background: "rgba(255,255,255,0.05)",
+//                 border: "1px solid rgba(255,255,255,0.09)",
+//                 width: 260,
+//               }}
+//             >
+//               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round">
+//                 <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+//               </svg>
+//               <input
+//                 placeholder="Search kalams..."
+//                 className="bg-transparent outline-none w-full"
+//                 style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", border: "none" }}
+//               />
+//             </div>
+
+//             {/* Right: links + avatar + publish */}
+//             <div className="flex items-center gap-4">
+//               <a style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textDecoration: "none", cursor: "pointer" }}>Explore</a>
+//               <a style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textDecoration: "none", cursor: "pointer" }}>Artists</a>
+//               <div style={{ width: 1, height: 18, background: "rgba(255,255,255,0.08)" }} />
+//               <div
+//                 className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white cursor-pointer"
+//                 style={{ background: "linear-gradient(135deg,#7c4dff,#c16dff)", border: "2px solid rgba(255,255,255,0.1)" }}
+//               >
+//                 A
+//               </div>
+//               <Link
+//                 to="/kalam"
+//                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-white text-sm font-semibold transition-all active:scale-95"
+//                 style={{ background: "linear-gradient(135deg,#7c4dff,#9c6dff)", boxShadow: "0 2px 10px rgba(124,77,255,0.35)" }}
+//               >
+//                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+//                   <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+//                 </svg>
+//                 Publish
+//               </Link>
+//             </div>
+//           </nav>
+
+//           {/* ── Hero Header ── */}
+//           <div
+//             className="relative overflow-hidden px-10 pt-16 pb-12"
+//             style={{ background: "#0a0a10" }}
+//           >
+//             {/* Glow blobs */}
+//             <div style={{ position: "absolute", top: -80, left: -60, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle,rgba(109,40,217,0.18) 0%,transparent 65%)", pointerEvents: "none" }} />
+//             <div style={{ position: "absolute", bottom: -40, right: -40, width: 340, height: 340, borderRadius: "50%", background: "radial-gradient(circle,rgba(139,92,246,0.08) 0%,transparent 65%)", pointerEvents: "none" }} />
+
+//             <div className="max-w-[680px] relative">
+//               {/* Discover label */}
+//               <div className="s-a1 flex items-center gap-2 mb-5">
+//                 <div style={{ width: 3, height: 16, borderRadius: 2, background: "linear-gradient(180deg,#8b5cf6,#6d28d9)", flexShrink: 0 }} />
+//                 <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(139,92,246,0.85)" }}>Discover</span>
+//               </div>
+
+//               {/* Title */}
+//               <h1
+//                 className="s-a2"
+//                 style={{
+//                   fontFamily: "'Cormorant Garamond', Georgia, serif",
+//                   fontSize: "clamp(52px, 6vw, 80px)",
+//                   fontWeight: 300, fontStyle: "italic",
+//                   lineHeight: 0.92, marginBottom: 24, letterSpacing: "-1px",
+//                 }}
+//               >
+//                 <span style={{ color: "#b8aee0", display: "block", fontFamily:"Great Vibes" }}>Browse</span>
+//                 <span style={{ fontWeight: 800, fontStyle: "normal", color: "#fff", display: "block", fontFamily:"Great Vibes", position: "relative", width: "fit-content" }}>
+//                   Kalams
+//                   <span style={{ position: "absolute", bottom: -4, left: 0, right: 0, height: 3, background: "linear-gradient(90deg,#7c3aed,#a78bfa,transparent)", borderRadius: 2 }} />
+//                 </span>
+//               </h1>
+
+//               {/* Subtitle + stats */}
+//               <div className="s-a3 flex items-center gap-6">
+//                 <p style={{ fontSize: 14, color: "rgba(255,255,255,0.35)", lineHeight: 1.6, maxWidth: 380, margin: 0 }}>
+//                   Poetry, qawwali &amp; soulful verses — all in one place.
+//                 </p>
+//                 <div className="flex gap-5 flex-shrink-0 pl-6" style={{ borderLeft: "1px solid rgba(255,255,255,0.07)" }}>
+//                   <div>
+//                     <div style={{ fontSize: 20, fontWeight: 700, color: "#e2d9ff", letterSpacing: "-0.5px" }}>{totalLength || "—"}</div>
+//                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.28)", letterSpacing: "0.06em", textTransform: "uppercase", marginTop: 2 }}>Kalams</div>
+//                   </div>
+//                   <div>
+//                     <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 2 }}>
+//                       <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#8b5cf6", display: "inline-block", boxShadow: "0 0 6px rgba(139,92,246,0.8)" }} />
+//                       <span style={{ fontSize: 13, fontWeight: 700, color: "rgba(167,139,250,0.9)", letterSpacing: "0.02em" }}>Live</span>
+//                     </div>
+//                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.28)", letterSpacing: "0.06em", textTransform: "uppercase" }}>Feed</div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* ── Tab Nav (below header) ── */}
+//           <div
+//            className="s-a4 flex items-center justify-center gap-1 px-10"
+//             style={{ borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)", background: "#0a0a10" }}
+//           >
+//             {[
+//               { id: "kalams", label: "Kalams" },
+//               { id: "kotw",   label: "Kalam of The Week" },
+//               { id: "albums", label: "Albums" },
+//             ].map(({ id, label }) => (
+//               <button
+//                 key={id}
+//                 onClick={() => handleTabClick(id)}
+//                 data-active={activeTab === id}
+//                 className="s-tab-btn"
+//                 style={{
+//                   padding: "14px 20px",
+//                   fontSize: 13,
+//                   fontWeight: activeTab === id ? 600 : 500,
+//                   border: "none",
+//                   background: "transparent",
+//                   color: activeTab === id ? "#a78bfa" : "rgba(255,255,255,0.4)",
+//                   cursor: "pointer",
+//                   borderBottom: activeTab === id ? "2px solid #7c4dff" : "2px solid transparent",
+//                   whiteSpace: "nowrap",
+//                 }}
+//               >
+//                 {label}
+//               </button>
+//             ))}
+//           </div>
+
+//           {/* ── Feed ── */}
+//           <InfiniteScroll
+//             dataLength={kalamDat.length}
+//             next={fetchMoreData}
+//             scrollableTarget="mainScroll"
+//             hasMore={hasMore}
+//             loader={
+//               <div className="flex justify-center py-8">
+//                 <div
+//                   className="w-5 h-5 rounded-full border-2 border-violet-600/30 border-t-violet-600"
+//                   style={{ animation: "spin 0.8s linear infinite" }}
+//                 />
+//                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+//               </div>
+//             }
+//             endMessage={
+//               <p className="text-center py-8 text-white/20 text-xs tracking-widest uppercase font-mono">
+//                 ✦ You've reached the end ✦
+//               </p>
+//             }
+//           >
+//             <div className="flex flex-col items-center pt-6 gap-8 px-4 pb-10">
+//               {kalamDat.map((item) => (
+//                 <div key={item._id} className="w-full max-w-[520px]">
+//                   {
+//                     setTimeout(() => { console.log("hhh", likedKalams2) }, 3000)
+//                   }
+//                   <NewKalam
+//                     customStyles={item.customStyles}
+//                     content={item.content}
+//                     kalId={item._id}
+//                     mUid={uid}
+//                     userName={item.name}
+//                     time={item.createdAt}
+//                     type={item.type}
+//                     title={item.name}
+//                     isImage={isImage}
+//                     isLiked2={likedKalams2.current.has(item._id)}
+//                   />
+//                 </div>
+//               ))}
+//             </div>
+//           </InfiniteScroll>
+
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+//------------------------------------------------------------------------------------------------------------------------------->
 import axiosInstance from "../Apis/axiosInstance";
 import { useState, useEffect, useRef } from "react";
 import { Card } from "./components/Card";
@@ -1223,17 +1546,44 @@ export const Social = () => {
         .s-a4 { animation: social-fu .45s .27s ease both; }
         .s-tab-btn { transition: color .2s, border-color .2s; }
         .s-tab-btn:hover:not([data-active="true"]) { color: rgba(167,139,250,0.7) !important; }
+
+        /* Hide nav search + links on mobile */
+        .s-nav-search, .s-nav-links { display: flex; }
+        .s-nav-publish-inline { display: flex; }
+        .s-fab-publish { display: none; }
+        .s-hero-book { display: block; }
+
+        .s-tabs-row {
+          overflow-x: auto;
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .s-tabs-row::-webkit-scrollbar { display: none; }
+
+        @media (max-width: 768px) {
+          .s-nav-search, .s-nav-links { display: none !important; }
+          .s-nav-publish-inline { display: none !important; }
+          .s-fab-publish { display: flex !important; }
+          .s-hero-book { display: none !important; }
+
+          .s-hero-wrap { padding-left: 24px !important; padding-right: 24px !important; padding-top: 40px !important; padding-bottom: 32px !important; }
+          .s-hero-stats { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
+          .s-hero-stats > div:last-child { padding-left: 0 !important; border-left: none !important; }
+          .s-top-nav { padding-left: 16px !important; padding-right: 16px !important; }
+          .s-tabs-row { padding-left: 16px !important; padding-right: 16px !important; justify-content: flex-start !important; }
+          .s-tab-btn { padding: 12px 14px !important; font-size: 12px !important; }
+        }
       `}</style>
 
       <div
         className="relative z-20"
         style={{ paddingBottom: "max(80px, env(safe-area-inset-bottom))" }}
       >
-        <div className="max-w-[1100px] mx-auto">
+        <div className="max-w-[1600px] mx-auto">
 
           {/* ── Top Nav ── */}
           <nav
-            className="flex items-center justify-between px-10 py-4 sticky top-0 z-30"
+            className="s-top-nav flex items-center justify-between px-10 py-4 sticky top-0 z-30"
             style={{
               background: "rgba(10,10,16,0.98)",
               borderBottom: "1px solid rgba(255,255,255,0.06)",
@@ -1272,7 +1622,7 @@ export const Social = () => {
 
             {/* Center: search */}
             <div
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
+              className="s-nav-search items-center gap-2 px-3 py-1.5 rounded-lg"
               style={{
                 background: "rgba(255,255,255,0.05)",
                 border: "1px solid rgba(255,255,255,0.09)",
@@ -1291,9 +1641,9 @@ export const Social = () => {
 
             {/* Right: links + avatar + publish */}
             <div className="flex items-center gap-4">
-              <a style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textDecoration: "none", cursor: "pointer" }}>Explore</a>
-              <a style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textDecoration: "none", cursor: "pointer" }}>Artists</a>
-              <div style={{ width: 1, height: 18, background: "rgba(255,255,255,0.08)" }} />
+              <a className="s-nav-links" style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textDecoration: "none", cursor: "pointer" }}>Explore</a>
+              <a className="s-nav-links" style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textDecoration: "none", cursor: "pointer" }}>Artists</a>
+              <div className="s-nav-links" style={{ width: 1, height: 18, background: "rgba(255,255,255,0.08)" }} />
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white cursor-pointer"
                 style={{ background: "linear-gradient(135deg,#7c4dff,#c16dff)", border: "2px solid rgba(255,255,255,0.1)" }}
@@ -1302,7 +1652,7 @@ export const Social = () => {
               </div>
               <Link
                 to="/kalam"
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-white text-sm font-semibold transition-all active:scale-95"
+                className="s-nav-publish-inline items-center gap-1.5 px-4 py-2 rounded-lg text-white text-sm font-semibold transition-all active:scale-95"
                 style={{ background: "linear-gradient(135deg,#7c4dff,#9c6dff)", boxShadow: "0 2px 10px rgba(124,77,255,0.35)" }}
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
@@ -1315,20 +1665,50 @@ export const Social = () => {
 
           {/* ── Hero Header ── */}
           <div
-            className="relative overflow-hidden px-10 pt-16 pb-12"
+            className="s-hero-wrap relative overflow-hidden px-10 pt-16 pb-12"
             style={{ background: "#0a0a10" }}
           >
             {/* Glow blobs */}
             <div style={{ position: "absolute", top: -80, left: -60, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle,rgba(109,40,217,0.18) 0%,transparent 65%)", pointerEvents: "none" }} />
             <div style={{ position: "absolute", bottom: -40, right: -40, width: 340, height: 340, borderRadius: "50%", background: "radial-gradient(circle,rgba(139,92,246,0.08) 0%,transparent 65%)", pointerEvents: "none" }} />
 
-            <div className="max-w-[680px] relative">
-              {/* Discover label */}
-              <div className="s-a1 flex items-center gap-2 mb-5">
-                <div style={{ width: 3, height: 16, borderRadius: 2, background: "linear-gradient(180deg,#8b5cf6,#6d28d9)", flexShrink: 0 }} />
-                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(139,92,246,0.85)" }}>Discover</span>
-              </div>
+            {/* Decorative open book motif */}
+            <svg
+              className="s-hero-book"
+              viewBox="0 0 320 320"
+              style={{
+                position: "absolute",
+                right: 30,
+                bottom: -10,
+                width: 320,
+                height: 320,
+                pointerEvents: "none",
+              }}
+              aria-hidden="true"
+            >
+              <circle cx="190" cy="170" r="170" fill="#534AB7" opacity="0.10" />
 
+              <g transform="translate(0,60)" opacity="0.2" stroke="#a78bfa" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M 130 10 C 90 0 40 5 0 25 L 0 150 C 40 130 90 125 130 135 Z" />
+                <path d="M 130 10 C 170 0 220 5 260 25 L 260 150 C 220 130 170 125 130 135 Z" />
+                <path d="M 130 10 L 130 135" />
+                <path d="M 18 40 L 100 28" />
+                <path d="M 18 58 L 100 46" />
+                <path d="M 18 76 L 100 64" />
+                <path d="M 18 94 L 80 84" />
+                <path d="M 160 28 L 242 40" />
+                <path d="M 160 46 L 242 58" />
+                <path d="M 160 64 L 242 76" />
+                <path d="M 180 84 L 242 94" />
+              </g>
+
+              <g opacity="0.15" stroke="#7c3aed" strokeWidth="1.5" fill="none" strokeLinecap="round">
+                <path d="M 110 305 Q 130 290 150 303" strokeDasharray="2 4" />
+                <path d="M 90 320 Q 110 308 130 318" strokeDasharray="2 4" />
+              </g>
+            </svg>
+
+            <div className="max-w-[680px] relative">
               {/* Title */}
               <h1
                 className="s-a2"
@@ -1337,31 +1717,29 @@ export const Social = () => {
                   fontSize: "clamp(52px, 6vw, 80px)",
                   fontWeight: 300, fontStyle: "italic",
                   lineHeight: 0.92, marginBottom: 24, letterSpacing: "-1px",
+                  textShadow: "0 4px 24px rgba(0,0,0,0.6)",
                 }}
               >
-                <span style={{ color: "#b8aee0", display: "block" }}>Browse</span>
-                <span style={{ fontWeight: 600, fontStyle: "normal", color: "#fff", display: "block", position: "relative", width: "fit-content" }}>
+                <span style={{ color: "#b8aee0", display: "block", fontFamily:"Great Vibes" }}>Browse</span>
+                <span style={{ fontWeight: 800, fontStyle: "normal", color: "#fff", display: "block", fontFamily:"Great Vibes", position: "relative", width: "fit-content" }}>
                   Kalams
                   <span style={{ position: "absolute", bottom: -4, left: 0, right: 0, height: 3, background: "linear-gradient(90deg,#7c3aed,#a78bfa,transparent)", borderRadius: 2 }} />
                 </span>
               </h1>
 
               {/* Subtitle + stats */}
-              <div className="s-a3 flex items-center gap-6">
-                <p style={{ fontSize: 14, color: "rgba(255,255,255,0.35)", lineHeight: 1.6, maxWidth: 380, margin: 0 }}>
+              <div className="s-a3 s-hero-stats flex items-center gap-6">
+                <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", lineHeight: 1.6, maxWidth: 380, margin: 0, textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>
                   Poetry, qawwali &amp; soulful verses — all in one place.
                 </p>
-                <div className="flex gap-5 flex-shrink-0 pl-6" style={{ borderLeft: "1px solid rgba(255,255,255,0.07)" }}>
+                <div className="flex gap-5 flex-shrink-0 pl-6" style={{ borderLeft: "1px solid rgba(255,255,255,0.12)" }}>
                   <div>
                     <div style={{ fontSize: 20, fontWeight: 700, color: "#e2d9ff", letterSpacing: "-0.5px" }}>{totalLength || "—"}</div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.28)", letterSpacing: "0.06em", textTransform: "uppercase", marginTop: 2 }}>Kalams</div>
                   </div>
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 2 }}>
                       <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#8b5cf6", display: "inline-block", boxShadow: "0 0 6px rgba(139,92,246,0.8)" }} />
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "rgba(167,139,250,0.9)", letterSpacing: "0.02em" }}>Live</span>
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.28)", letterSpacing: "0.06em", textTransform: "uppercase" }}>Feed</div>
                   </div>
                 </div>
               </div>
@@ -1370,7 +1748,7 @@ export const Social = () => {
 
           {/* ── Tab Nav (below header) ── */}
           <div
-           className="s-a4 flex items-center justify-center gap-1 px-10"
+           className="s-a4 s-tabs-row flex items-center justify-center gap-1 px-10"
             style={{ borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)", background: "#0a0a10" }}
           >
             {[
@@ -1446,6 +1824,29 @@ export const Social = () => {
 
         </div>
       </div>
+
+      {/* ── Floating Publish button (mobile only) ── */}
+      <Link
+        to="/kalam"
+        className="s-fab-publish items-center justify-center"
+        style={{
+          position: "fixed",
+          right: "max(20px, env(safe-area-inset-right))",
+          bottom: "max(24px, env(safe-area-inset-bottom))",
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          background: "linear-gradient(135deg,#7c4dff,#9c6dff)",
+          boxShadow: "0 6px 20px rgba(124,77,255,0.5), 0 2px 8px rgba(0,0,0,0.4)",
+          color: "#fff",
+          zIndex: 50,
+        }}
+        aria-label="Publish"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+          <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </Link>
     </div>
   );
 };

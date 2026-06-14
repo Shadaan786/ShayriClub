@@ -11,7 +11,8 @@ export default {
   	extend: {
 		fontFamily:{
 				allura: ['Allura'],
-				dancingScript: ['Dancing Script']
+				dancingScript: ['Dancing Script'],
+				greatVibes: ['Great Vibes']
 			},
   		animation: {
 			
