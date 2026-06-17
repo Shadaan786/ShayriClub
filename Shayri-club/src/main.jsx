@@ -11,6 +11,7 @@ import '@shoelace-style/shoelace/dist/themes/light.css'
 import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path'
 import { SocialContextProvider } from './pages/Contexts/SocketContext.jsx'
 import TokenContextProvider from './services/push notifications/tokenContextProvider'
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 
 // import 'bootstrap/dist/css/bootstrap.min.css';

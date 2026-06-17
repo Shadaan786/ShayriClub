@@ -1127,15 +1127,17 @@
 
 
 
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
 import { HeartIcon } from "@animateicons/react/lucide";
 import { MessageCircleIcon } from "@animateicons/react/lucide";
 import { ShareIcon } from "@animateicons/react/lucide";
 import { BookmarkIcon } from "@animateicons/react/lucide";
 import { SocialContext } from "../Contexts/SocketContext";
-import { useNavigate } from "react-router-dom";
-// import { useContext } from "react";
+import { data, useNavigate } from "react-router-dom";
+import { MyVerticallyCenteredModal } from "./Modals/MyModal";
+import { WhatsappShareButton, WhatsappIcon } from "react-share";
+import {toJpeg} from "html-to-image" 
 
 const NewKalam=({
         title,
@@ -1219,6 +1221,10 @@ const buildGoogleFontsUrl = () => {
   const scrim = customStyles.scrim;
   const [isLiked, setIsLiked] = useState(false);
   const {send} = useContext(SocialContext)
+  const [isShared, setIsShared] = useState(false);
+  let file;
+  const ref = useRef(null);
+
 
   const Navigate = useNavigate()
 
@@ -1280,12 +1286,42 @@ const buildGoogleFontsUrl = () => {
 
 
   }, [])
-  
+
+  const share=()=>{
+    if(navigator.canShare){
+      
+      
+
+      // const file = new File([Blob], "avatar.jpeg",{
+      //   type: "image/jpeg"
+      // })
+      navigator.share({
+        files: [file],
+        title: "Helo title",
+        url: "https://google.com"
+      })
+      .then(()=>{
+        console.log("Thanks for sharing");
+      }).catch((error)=>{
+        console.error("Error while sharing Please try again after some time");
+      })
+    }
+  }
+
+  const convert=()=>{
+    if(!ref.current)return
+    toJpeg(ref.current, {cacheBust: true,})
+    .then((dataUrl)=>{
+      console.log("see data url", dataUrl)
+    }).catch((error)=>{
+      console.error("Error while converting");
+    })
+  }
 
   return (
     <>
       <style>{`
-        @import url('${buildGoogleFontsUrl()}');
+     
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1988,7 +2024,7 @@ const buildGoogleFontsUrl = () => {
       </div>
 
       {/* ── Preview Card ── */}
-      <div className="k-preview-card">
+      <div ref={ref} className="k-preview-card">
 
         {/* BG layer */}
         <div
@@ -2003,7 +2039,8 @@ const buildGoogleFontsUrl = () => {
         <div className="k-prev-scrim" style={{ background: `rgba(0,0,0,${scrim / 100})` }} />
 
         {(content || title) && (
-          <div className="k-prev-content" style={previewWrapStyle}>
+          <div >
+          <div  className="k-prev-content" style={previewWrapStyle}>
             {title && (
               <div
                 className="k-prev-title"
@@ -2039,6 +2076,7 @@ const buildGoogleFontsUrl = () => {
               </div>
             )}
             <div className="k-prev-author" style={{ color: customStyles.subColor }}>— Arif Karimi</div>
+          </div>
           </div>
         )}
 
@@ -2103,7 +2141,7 @@ const buildGoogleFontsUrl = () => {
         </button>
 
         {/* Share */}
-        <button style={{
+        <button onClick={()=>setIsShared(true)} style={{
           display: "flex", alignItems: "center", gap: "5px",
           padding: "5px 10px", borderRadius: "20px", border: "none",
           background: "transparent", color: "rgba(240,235,227,0.55)",
@@ -2142,7 +2180,28 @@ const buildGoogleFontsUrl = () => {
           Save
         </button>
 
+      
+
       </div>
+        {
+          <MyVerticallyCenteredModal isOpen={isShared} onClose={()=>setIsShared(false)}>
+          {/* //   <WhatsappShareButton  title="http://res.cloudinary.com/dbcocbkit/image/upload/v1781298799/llgt0fobi1nmmhtuyi7y.jpg" url={"http://res.cloudinary.com/dbcocbkit/image/upload/v1781298799/llgt0fobi1nmmhtuyi7y.jpg"} aria-label="Share on WhatsApp">
+          //     <WhatsappIcon size={32} round />
+          //   </WhatsappShareButton>; */}
+          <input
+      type="file"
+      onChange={(e)=>{
+        file = e.target.files[0];
+      }}
+      />
+      <button onClick={convert}>convert</button>
+           <button onClick={share}>
+            check
+          </button>
+          </MyVerticallyCenteredModal>
+
+         
+        }
     </>
   )
 }

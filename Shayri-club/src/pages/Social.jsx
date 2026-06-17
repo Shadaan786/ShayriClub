@@ -1468,7 +1468,7 @@ export const Social = () => {
   const [isReady, setIsReady] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("kalams");
-  const [page, setPage] = useState(1);
+  // const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const socket = useRef(null);
   const navigate = useNavigate();
@@ -1480,10 +1480,11 @@ export const Social = () => {
   let customStyles;
   let likedKalams;
   const likedKalams2 = useRef(new Set())
+  const page = useRef(1)
 
   const handle = () => {
     axiosInstance
-      .get(`/api/social?page=${page}&limit=${limit}`, { withCredentials: true })
+      .get(`/api/social?page=${page.current}&limit=${limit}`, { withCredentials: true })
       .then((response) => {
         setKalamDat(response.data.allKalamsName);
         customStyles = response.data.allKalamsName.customStyles
@@ -1496,8 +1497,8 @@ export const Social = () => {
           likedKalams2.current.add(items._id)
         }
       });
-    setTimeout(() => { console.log("hhhh2", likedKalams2.current) }, 3000)
-    setPage(prev => prev + 1);
+    // setTimeout(() => { console.log("hhhh2", likedKalams2.current) }, 3000)
+    page.current = page.current + 1;
   };
 
   useEffect(() => { handle(); }, []);
@@ -1511,16 +1512,17 @@ export const Social = () => {
   const fetchMoreData = () => {
     console.log("FetchMore_running");
     axiosInstance
-      .get(`/api/social?page=${page}&limit=${limit}`, { withCredentials: true })
+      .get(`/api/social?page=${page.current}&limit=${limit}`, { withCredentials: true })
       .then((response) => {
         newKalams.current = response.data.allKalamsName;
         console.log("checking_newKalams", newKalams.current);
         console.log("CHECKING_TOTAL_LENGTH", totalLength);
         if (newKalams.current.length === 0) {
           setHasMore(false);
+          console.log("hasMore is set false")
         } else {
           setKalamDat(prevItems => [...prevItems, ...newKalams.current]);
-          setPage(prev => prev + 1);
+          page.current = page.current + 1;
           setLength(prev => prev + 10);
         }
       });
@@ -1778,6 +1780,9 @@ export const Social = () => {
             ))}
           </div>
 
+{
+  console.log("seeeeeeeee kalamDat", kalamDat)
+}
           {/* ── Feed ── */}
           <InfiniteScroll
             dataLength={kalamDat.length}
@@ -1799,7 +1804,16 @@ export const Social = () => {
               </p>
             }
           >
+            {
+              console.log("kalamDat", kalamDat)
+            }
             <div className="flex flex-col items-center pt-6 gap-8 px-4 pb-10">
+            
+            <div
+                className="flex flex-col items-center pt-6 gap-8 px-4 pb-10"
+                style={{ minHeight: "120vh" }}
+              >
+
               {kalamDat.map((item) => (
                 <div key={item._id} className="w-full max-w-[520px]">
                   {
@@ -1819,6 +1833,7 @@ export const Social = () => {
                   />
                 </div>
               ))}
+              </div>
             </div>
           </InfiniteScroll>
 
