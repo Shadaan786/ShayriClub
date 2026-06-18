@@ -1308,15 +1308,56 @@ const buildGoogleFontsUrl = () => {
     }
   }
 
-  const convert=()=>{
+  const convert=async()=>{
     if(!ref.current)return
-    toJpeg(ref.current, {cacheBust: true,})
-    .then((dataUrl)=>{
-      console.log("see data url", dataUrl)
-    }).catch((error)=>{
-      console.error("Error while converting");
-    })
-  }
+ try{
+      //conversion from htmml to jpeg
+    const dataUrl = await toJpeg(ref.current, {cacheBust: true,})
+    console.log("See base64 url:", dataUrl)
+    try{
+      const image = await fetch(dataUrl);
+      try{
+        const blob = await image.blob();
+        const file = new File(
+          [blob],
+          "kalam-card.jpg",
+          {type: "image/jpeg"}
+        )
+        if(navigator.canShare){
+      
+      
+
+      // const file = new File([Blob], "avatar.jpeg",{
+      //   type: "image/jpeg"
+      // })
+      
+      //sharing
+      navigator.share({
+        files: [file],
+        title: "Helo title",
+        url: "https://shayriclub.vercel.app"
+      })
+      .then(()=>{
+        console.log("Thanks for sharing");
+      }).catch((error)=>{
+        console.error("Error while sharing Please try again after some time", error);
+      })
+    }
+        
+      }catch(error){
+        console.error("Error while creating a blob of image", error);
+      }
+    }catch(error){
+      console.log("Error while fetching conversion of image", error);
+    }
+
+ }catch(error){
+
+  console.log("Error while converting to jpeg", error)
+ }
+
+    
+ }
 
   return (
     <>
@@ -2141,7 +2182,7 @@ const buildGoogleFontsUrl = () => {
         </button>
 
         {/* Share */}
-        <button onClick={()=>setIsShared(true)} style={{
+        <button onClick={()=>{setIsShared(true);convert()}} style={{
           display: "flex", alignItems: "center", gap: "5px",
           padding: "5px 10px", borderRadius: "20px", border: "none",
           background: "transparent", color: "rgba(240,235,227,0.55)",
@@ -2184,21 +2225,22 @@ const buildGoogleFontsUrl = () => {
 
       </div>
         {
-          <MyVerticallyCenteredModal isOpen={isShared} onClose={()=>setIsShared(false)}>
-          {/* //   <WhatsappShareButton  title="http://res.cloudinary.com/dbcocbkit/image/upload/v1781298799/llgt0fobi1nmmhtuyi7y.jpg" url={"http://res.cloudinary.com/dbcocbkit/image/upload/v1781298799/llgt0fobi1nmmhtuyi7y.jpg"} aria-label="Share on WhatsApp">
-          //     <WhatsappIcon size={32} round />
-          //   </WhatsappShareButton>; */}
-          <input
-      type="file"
-      onChange={(e)=>{
-        file = e.target.files[0];
-      }}
-      />
-      <button onClick={convert}>convert</button>
-           <button onClick={share}>
-            check
-          </button>
-          </MyVerticallyCenteredModal>
+      //     <MyVerticallyCenteredModal isOpen={isShared} onClose={()=>setIsShared(false)}>
+      //     {/* //   <WhatsappShareButton  title="http://res.cloudinary.com/dbcocbkit/image/upload/v1781298799/llgt0fobi1nmmhtuyi7y.jpg" url={"http://res.cloudinary.com/dbcocbkit/image/upload/v1781298799/llgt0fobi1nmmhtuyi7y.jpg"} aria-label="Share on WhatsApp">
+      //     //     <WhatsappIcon size={32} round />
+      //     //   </WhatsappShareButton>; */}
+      //     <input
+      // type="file"
+      // onChange={(e)=>{
+      //   file = e.target.files[0];
+      //   console.log("see file", file)
+      // }}
+      // />
+      // <button onClick={convert}>convert</button>
+      //      <button onClick={share}>
+      //       check
+      //     </button>
+      //     </MyVerticallyCenteredModal>
 
          
         }

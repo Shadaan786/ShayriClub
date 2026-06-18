@@ -2027,6 +2027,7 @@ export const Album = () => {
         setAlbumStat(!!response.data.albumKalams?.[0]?.isLive);
         setAlbumName(response.data.albumKalams || []);
         setLength(response.data.length || kalamCollection.length || 0);
+        console.log("see tracks", kalamCollection[0].kalam.kalamAudio)
         setTracks(
           kalamCollection.map((x) => ({
             _id: x.kalam?._id,
@@ -2439,7 +2440,7 @@ export const Album = () => {
             </MyVerticallyCenteredModal>
 
             {playerOpen && (
-              <MyVerticallyCenteredModal isOpen={playerOpen} onClose={() => setPlayerOpen(false)}>
+              <MyVerticallyCenteredModal isOpen={playerOpen} height={"1/2"} width={"1/2"} onClose={() => setPlayerOpen(false)}>
                 <KalamPlayer tracks={tracks} initialIndex={openIndex ?? 0} onClose={() => setPlayerOpen(false)} />
               </MyVerticallyCenteredModal>
             )}
