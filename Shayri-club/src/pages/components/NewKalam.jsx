@@ -1334,8 +1334,7 @@ const buildGoogleFontsUrl = () => {
       //sharing
       navigator.share({
         files: [file],
-        title: "Helo title",
-        url: "https://shayriclub.vercel.app"
+        title: "Helo title"
       })
       .then(()=>{
         console.log("Thanks for sharing");
