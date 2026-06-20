@@ -28,10 +28,13 @@
 // }
 
 
-import { useState } from "react";
+import { Star } from "lucide-react";
+import { useContext, useState } from "react";
+import { SocialContext } from "../Contexts/SocketContext";
 
 export const AlbumCard = ({ albumName, albumId, albumImg }) => {
   const [hovered, setHovered] = useState(false);
+  const {send} = useContext(SocialContext);
 
   return (
     <>
@@ -148,11 +151,20 @@ export const AlbumCard = ({ albumName, albumId, albumImg }) => {
             </div>
           </div>
         </div>
-
+{/* //-------------------------------------------------------------------------> */}
         <div className="album-info">
           <p className="album-title">{albumName}</p>
+          <button onClick={()=>send({
+            type: "album_star",
+            payload:{
+              albumId: albumId,
+              userId: userId
+
+            }
+          })}><Star/></button>
           {albumId && <p className="album-id"></p>}
         </div>
+        {/* -------------------------------------------------------------------------------> */}
       </div>
     </>
   );

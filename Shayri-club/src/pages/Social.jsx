@@ -1473,6 +1473,7 @@ export const Social = () => {
   const socket = useRef(null);
   const navigate = useNavigate();
   const [length, setLength] = useState(0);
+  const [length2, setLength2] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const newKalams = useRef([null]);
   const [totalLength, setTotalLength] = useState(0);
@@ -1481,6 +1482,10 @@ export const Social = () => {
   let likedKalams;
   const likedKalams2 = useRef(new Set())
   const page = useRef(1)
+  const [isSearch, setIsSearch] = useState(false);
+  const newSearchKalams = useRef([null]);
+  const page2 = useRef(1);
+  const [searchQuery, setSearchQuery] = useState("")
 
   const handle = () => {
     axiosInstance
@@ -1511,6 +1516,33 @@ export const Social = () => {
 
   const fetchMoreData = () => {
     console.log("FetchMore_running");
+    if(isSearch){
+      axiosInstance
+      .get(`/api/search/kalam?page=${page2.current}&limit=${limit}&searchQuery=${searchQuery}`)
+        .then((response)=>{
+
+          console.log("response.data from fetchMoreData if isSearch is true", response.data)
+
+          newSearchKalams.current = response.data.kalamsSearched;
+          if(newSearchKalams.current.length === 0) {
+
+            setHasMore(false);
+            return
+          }else{
+
+                      setKalamDat(prevItems=>[...prevItems, newSearchKalams]);
+                      page.current = page.current + 1;
+                      setLength2(prev=> prev + 10);
+
+
+
+          }
+
+
+
+        })
+      
+    }else{
     axiosInstance
       .get(`/api/social?page=${page.current}&limit=${limit}`, { withCredentials: true })
       .then((response) => {
@@ -1526,7 +1558,21 @@ export const Social = () => {
           setLength(prev => prev + 10);
         }
       });
+    }
   };
+
+    const searchKalams=()=>{
+    axiosInstance
+    .get(`/api/search/kalam?page=${page2.current}&limit=${limit}&searchQuery=${searchQuery}`)
+    .then((response)=>{
+      console.log("response.data from searchKalams module", response.data)
+      setKalamDat(response.data.kalamsSearched)
+
+      page2.current = page2.current + 1;
+
+    }
+  )
+  }
 
   return (
     <div
@@ -1634,11 +1680,14 @@ export const Social = () => {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round">
                 <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
-              <input
+              <input onChange={(e)=>{setSearchQuery(e.target.value); setIsSearch(true)}}
                 placeholder="Search kalams..."
                 className="bg-transparent outline-none w-full"
                 style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", border: "none" }}
               />
+              <button onClick={searchKalams}>
+                search
+              </button>
             </div>
 
             {/* Right: links + avatar + publish */}
@@ -1784,7 +1833,61 @@ export const Social = () => {
   console.log("seeeeeeeee kalamDat", kalamDat)
 }
           {/* ── Feed ── */}
-          <InfiniteScroll
+          {
+            (isSearch)?
+            <InfiniteScroll
+            dataLength={kalamDat.length}
+            next={fetchMoreData}
+            scrollableTarget="mainScroll"
+            hasMore={hasMore}
+            loader={
+              <div className="flex justify-center py-8">
+                <div
+                  className="w-5 h-5 rounded-full border-2 border-violet-600/30 border-t-violet-600"
+                  style={{ animation: "spin 0.8s linear infinite" }}
+                />
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+              </div>
+            }
+            endMessage={
+              <p className="text-center py-8 text-white/20 text-xs tracking-widest uppercase font-mono">
+                ✦ You've reached the end ✦
+              </p>
+            }
+          >
+            {
+              console.log("kalamDat", kalamDat)
+            }
+            <div className="flex flex-col items-center pt-6 gap-8 px-4 pb-10">
+            
+            <div
+                className="flex flex-col items-center pt-6 gap-8 px-4 pb-10"
+                style={{ minHeight: "120vh" }}
+              >
+
+              {kalamDat.map((item) => (
+                <div key={item._id} className="w-full max-w-[520px]">
+                  {
+                    setTimeout(() => { console.log("hhh", likedKalams2) }, 3000)
+                  }
+                  <NewKalam
+                    customStyles={item.customStyles}
+                    content={item.content}
+                    kalId={item._id}
+                    mUid={uid}
+                    userName={item.name}
+                    time={item.createdAt}
+                    type={item.type}
+                    title={item.name}
+                    isImage={isImage}
+                    isLiked2={likedKalams2.current.has(item._id)}
+                  />
+                </div>
+              ))}
+              </div>
+            </div>
+          </InfiniteScroll>:
+                    <InfiniteScroll
             dataLength={kalamDat.length}
             next={fetchMoreData}
             scrollableTarget="mainScroll"
@@ -1836,6 +1939,9 @@ export const Social = () => {
               </div>
             </div>
           </InfiniteScroll>
+          
+          }
+
 
         </div>
       </div>

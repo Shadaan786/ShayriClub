@@ -1212,13 +1212,13 @@ const buildGoogleFontsUrl = () => {
 };
 
   const [showFullPreview, setShowFullPreview] = useState(false);
-  const backdrop = customStyles.backdrop
-  const resolvedTextColor = customStyles.resolvedTextColor;
-  const bgTab = customStyles.bgTab
-  const customColor = customStyles.customColor;
-  const selectedColor = customStyles.selectedColor;
-  const bgOpacity = customStyles.bgOpacity;
-  const scrim = customStyles.scrim;
+  const backdrop = customStyles?.backdrop
+  const resolvedTextColor = customStyles?.resolvedTextColor;
+  const bgTab = customStyles?.bgTab
+  const customColor = customStyles?.customColor;
+  const selectedColor = customStyles?.selectedColor;
+  const bgOpacity = customStyles?.bgOpacity;
+  const scrim = customStyles?.scrim;
   const [isLiked, setIsLiked] = useState(false);
   const {send} = useContext(SocialContext)
   const [isShared, setIsShared] = useState(false);
@@ -1262,8 +1262,8 @@ const buildGoogleFontsUrl = () => {
   })();
 
   const PREVIEW_LIMIT = 160;
-  const previewIsTruncated = content.length > PREVIEW_LIMIT;
-  const previewText = showFullPreview ? content : content.slice(0, PREVIEW_LIMIT);
+  const previewIsTruncated = content?.length > PREVIEW_LIMIT;
+  const previewText = showFullPreview ? content : content?.slice(0, PREVIEW_LIMIT);
 
   useEffect(() => {
     axiosInstance
@@ -2019,6 +2019,7 @@ const buildGoogleFontsUrl = () => {
         width: "100%",
         maxWidth: "400px",
       }}>
+        <button onClick={()=>Navigate(`/profile?userId=${mUid}`)}>
         <div style={{
           width: "36px",
           height: "36px",
@@ -2038,7 +2039,9 @@ const buildGoogleFontsUrl = () => {
         }}>
           A
         </div>
+        </button>
         <div style={{ display: "flex", flexDirection: "column", gap: "3px", minWidth: 0 }}>
+          <button onClick={()=>Navigate(`/profile?userId=${mUid}`)}>
           <span style={{
             fontFamily: "'Playfair Display', serif",
             fontSize: "13px",
@@ -2050,6 +2053,7 @@ const buildGoogleFontsUrl = () => {
           }}>
             Arif Karimi
           </span>
+          </button>
           <span style={{
             fontFamily: "'DM Mono', monospace",
             fontSize: "9px",
