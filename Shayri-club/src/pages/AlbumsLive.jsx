@@ -887,25 +887,36 @@ const AlbumsLive = () => {
     const [category, setCategory] = useState(["all"]);
     const newAlbums = useRef([null]);
     const[hasMore, setHasMore] = useState(true);
-    const [page, setPage] = useState(1);
+    const page = useRef(1)
     const [limit, setLimit] = useState(15);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const query = useRef("all");
 
-    useEffect(() => {
+    
 
-        axiosInstance
-            .get(`/api/albumsLive?category=${category}&page=${page}&limit=${limit}`)
+        const handleFetch=()=>{
+
+            axiosInstance
+            .get(`/api/albumsLive?page=${page.current}&limit=${limit}&query=${query.current}`)
             .then((response) => {
                 console.log("length", response.data.length);
                 console.log("response.data", response.data)
                 setLiveAlbums(response.data)
 
-                setPage(2);
+                page.current = page.current + 1
             })
             .catch((error) => {
                 console.error("error while fetching live albums", error)
             })
-    }, [category])
+
+        }
+
+        useEffect(() => {
+
+            handleFetch();
+
+        
+    }, [])
 
     // const Romantic = () => {
 
@@ -978,7 +989,7 @@ const AlbumsLive = () => {
 
     const fetchMore =()=>{
         axiosInstance
-          .get(`/api/albumsLive?category=${category}&page=${page}&limit=${limit}`)
+          .get(`/api/albumsLive?page=${page.current}&limit=${limit}&query=${query.current}`)
             .then((response) => {
                 console.log("fetchMore_running")
                 console.log("length", response.data.length);
@@ -992,7 +1003,7 @@ const AlbumsLive = () => {
                 }else{
                      
                 setLiveAlbums(prevItems =>[...prevItems, ...newAlbums.current])
-                setPage(prev=> prev + 1)
+                page.current = page.current + 1
 
                 }
             })
@@ -1097,10 +1108,12 @@ const AlbumsLive = () => {
                             <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                         </svg>
                         <input
+                            onChange={(e)=>query.current = e.target.value}
                             placeholder="Search albums..."
                             className="bg-transparent outline-none w-full"
                             style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", border: "none" }}
                         />
+                        <button onClick={()=>{page.current = 1; handleFetch()}}>search</button>
                     </div>
 
                     {/* Right: links + avatar + publish */}
@@ -1202,7 +1215,7 @@ const AlbumsLive = () => {
                     {["all", "romantic", "motivation"].map((cat) => (
                         <button
                             key={cat}
-                            onClick={() => setCategory([cat])}
+                            onClick={() => {query.current = [cat]; page.current = 1; handleFetch()}}
                             className="capitalize transition-all duration-150"
                             style={{
                                 padding: "7px 18px",
