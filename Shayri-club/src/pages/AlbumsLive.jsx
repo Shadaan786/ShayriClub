@@ -891,6 +891,7 @@ const AlbumsLive = () => {
     const [limit, setLimit] = useState(15);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const query = useRef("all");
+    const [initialLoading, setInitialLoading] = useState(true);
 
     
 
@@ -904,6 +905,7 @@ const AlbumsLive = () => {
                 setLiveAlbums(response.data)
 
                 page.current = page.current + 1
+                setInitialLoading(false);
             })
             .catch((error) => {
                 console.error("error while fetching live albums", error)
@@ -988,6 +990,8 @@ const AlbumsLive = () => {
     // }
 
     const fetchMore =()=>{
+        if(initialLoading) return
+        console.log("fetchmore is running")
         axiosInstance
           .get(`/api/albumsLive?page=${page.current}&limit=${limit}&query=${query.current}`)
             .then((response) => {
