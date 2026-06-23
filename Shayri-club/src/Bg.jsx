@@ -149,11 +149,13 @@ const[notificationOpened, setNotificationOpened] = useState(false);
     const gettinUserId = async()=>{
 
       const response =  await axiosInstance
-    .get('/api/userId')
+    .get('/redis/userId')
 
-    console.log("userIdF", response.data._id)
+    
+    const data = JSON.parse(response.data)
+    console.log(data._id)
     // const userId = response.data._id;
-    uuid.current = response.data._id;
+    uuid.current = data._id;
     // axiosInstance
     // .get(`/api/notifictions?uuid=${userId}`)
 
@@ -211,7 +213,7 @@ const[notificationOpened, setNotificationOpened] = useState(false);
     const fetchingNotifications=async()=>{
 
        const response =  await axiosInstance
-    .get('/api/userId')
+    .get('/redis/userId')
 
     const userId = response.data._id;
 

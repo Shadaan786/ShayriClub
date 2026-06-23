@@ -1928,11 +1928,12 @@ const GlobalChat = () => {
 
   useEffect(() => {
     axiosInstance
-    .get('/globalchat/userInfo', {withCredentials: true})
+    .get('/redis/userId', {withCredentials: true})
     .then((Response)=>{
-      userId.current = Response.data._id;
-      profilePic.current = Response.data.profilePic;
-      name.current = Response.data.name;
+      const data = JSON.parse(Response.data)
+      userId.current = data._id;
+      profilePic.current = data.profilePic;
+      name.current = data.name;
 
       ws.current = new WebSocket(`${ws3}?username=anon&userId=${userId.current}`);
 

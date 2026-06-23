@@ -1486,10 +1486,11 @@ export const Social = () => {
   const newSearchKalams = useRef([null]);
   const page2 = useRef(1);
   const [searchQuery, setSearchQuery] = useState("")
+  const [searchClear, setSearchClear] = useState(false);
 
   const handle = () => {
     axiosInstance
-      .get(`/api/social?page=${page.current}&limit=${limit}`, { withCredentials: true })
+      .get(`/api/social?page=1&limit=${limit}`, { withCredentials: true })
       .then((response) => {
         setKalamDat(response.data.allKalamsName);
         customStyles = response.data.allKalamsName.customStyles
@@ -1680,7 +1681,7 @@ export const Social = () => {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round">
                 <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
-              <input onChange={(e)=>{setSearchQuery(e.target.value); setIsSearch(true)}}
+              <input onChange={(e)=>{setSearchQuery(e.target.value); setIsSearch(true);(e.target.value.trim()==="")?handle():null}}
                 placeholder="Search kalams..."
                 className="bg-transparent outline-none w-full"
                 style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", border: "none" }}

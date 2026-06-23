@@ -897,6 +897,12 @@ const AlbumsLive = () => {
 
         const handleFetch=()=>{
 
+            if(query.current.trim() === ""){
+
+                page.current = 1;
+                query.current = "all";
+
+                
             axiosInstance
             .get(`/api/albumsLive?page=${page.current}&limit=${limit}&query=${query.current}`)
             .then((response) => {
@@ -910,6 +916,24 @@ const AlbumsLive = () => {
             .catch((error) => {
                 console.error("error while fetching live albums", error)
             })
+                
+            }else{
+
+            axiosInstance
+            .get(`/api/albumsLive?page=${page.current}&limit=${limit}&query=${query.current}`)
+            .then((response) => {
+                console.log("length", response.data.length);
+                console.log("response.data", response.data)
+                setLiveAlbums(response.data)
+
+                page.current = page.current + 1
+                setInitialLoading(false);
+            })
+            .catch((error) => {
+                console.error("error while fetching live albums", error)
+            })
+
+        }
 
         }
 
