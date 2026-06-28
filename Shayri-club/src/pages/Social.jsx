@@ -1498,10 +1498,10 @@ export const Social = () => {
         setLength(response.data.allKalamsName.length);
         setUid(response.data.userId[0]._id);
         setTotalLength(response.data.totalLength);
-        likedKalams = new Set(response.data.likedKalams)
-        for (const items of likedKalams) {
-          likedKalams2.current.add(items._id)
-        }
+        // likedKalams = new Set(response.data.likedKalams)
+        // for (const items of likedKalams) {
+        //   likedKalams2.current.add(items._id)
+        // }
       });
     // setTimeout(() => { console.log("hhhh2", likedKalams2.current) }, 3000)
     page.current = page.current + 1;
@@ -1574,6 +1574,21 @@ export const Social = () => {
     }
   )
   }
+
+  useEffect(()=>{
+    axiosInstance
+    .get('/api/likedKalams',{
+      withCredentials: true
+    })
+    .then((response)=>{
+      likedKalams = new Set(JSON.parse(response.data))
+      console.log("see redis res", likedKalams)
+       for (const items of likedKalams) {
+          likedKalams2.current.add(items._id)
+        }
+    })
+
+  }, [])
 
   return (
     <div
@@ -1869,7 +1884,8 @@ export const Social = () => {
               {kalamDat.map((item) => (
                 <div key={item._id} className="w-full max-w-[520px]">
                   {
-                    setTimeout(() => { console.log("hhh", likedKalams2) }, 3000)
+
+                    console.log("likes!!!!!!!!!", likedKalams2.current.has(item._id))
                   }
                   <NewKalam
                     customStyles={item.customStyles}

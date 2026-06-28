@@ -144,35 +144,35 @@ const[notificationOpened, setNotificationOpened] = useState(false);
 
     })
   })
-  useEffect(()=>{
+  // useEffect(()=>{
 
-    const gettinUserId = async()=>{
+  //   const gettinUserId = async()=>{
 
-      const response =  await axiosInstance
-    .get('/redis/userId')
+  //     const response =  await axiosInstance
+  //   .get('/redis/userId')
 
     
-    const data = JSON.parse(response.data)
-    console.log(data._id)
-    // const userId = response.data._id;
-    uuid.current = data._id;
-    // axiosInstance
-    // .get(`/api/notifictions?uuid=${userId}`)
+  //   const data = JSON.parse(response.data)
+  //   console.log(data._id)
+  //   // const userId = response.data._id;
+  //   uuid.current = data._id;
+  //   // axiosInstance
+  //   // .get(`/api/notifictions?uuid=${userId}`)
 
-    // .then((response)=>{
-    //   console.log("response.data", response.data)
-    //   setNotifications(response.data)
-    // }).catch((error)=>{
-    //   console.log("Error while fetching user notifications", error);
-    // })
+  //   // .then((response)=>{
+  //   //   console.log("response.data", response.data)
+  //   //   setNotifications(response.data)
+  //   // }).catch((error)=>{
+  //   //   console.log("Error while fetching user notifications", error);
+  //   // })
 
 
-    }
+  //   }
 
-    gettinUserId()
+  //   gettinUserId()
 
    
-  }, [])
+  // }, [])
 
   //------------------------------------------------------------------------------------------------>
 
@@ -212,8 +212,10 @@ const[notificationOpened, setNotificationOpened] = useState(false);
 
     const fetchingNotifications=async()=>{
 
-       const response =  await axiosInstance
-    .get('/redis/userId')
+       const response =  await axiosInstance.get('/api/userId',{
+      withCredentials: true
+    })
+        uuid.current = response.data._id
 
     const userId = response.data._id;
 

@@ -2015,7 +2015,7 @@ export const ProfileCard = ({
   const [searchParams, setSearchParams] = useSearchParams();
   // const [userId, setUserId] = useState("")
   const[isVisible, setIsVisible] = useState(false);
-  const userId = useRef(false);
+  const userId = useRef("");
   const [following, setFollowing] = useState(false)
   const[status, setStatus] = useState("")
   const[isOpen, setIsOpen] = useState(false);
@@ -2383,6 +2383,9 @@ export const ProfileCard = ({
                   <span className="pp-stat-label">Total Kalams</span>
                 </div>
               </div>
+              {
+                console.log("see isVisible", isVisible)
+              }
 
               {/* 5. Meta — joined date + streak */}
               {(joiningDate || Streak) && (

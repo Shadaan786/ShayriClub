@@ -48,26 +48,30 @@ const UserProfile = () =>{
           withCredentials: true
         })
         .then(response =>{
+          console.log("see response.data", response.data);
             
 
             // currentstreak
+            const followers = response.data.netFollowers?.followers.length || response.data.userFollowers
+            console.log("see followers",followers)
 
-           setFollowerCount(response.data.netFollowers.followers.length)
+           setFollowerCount(followers)
 
-           console.log("follower_count", response.data.netFollowers.followers.length)
+          //  console.log("follower_count", response.data.netFollowers.followers.length)
 
-             const currentValue =  response.data.counter[0].streak
+            //  const currentValue =  response.data.counter[0].streak
 
-             const trial = Number(response.data.counter[0].streak);
+            //  const trial = Number(response.data.counter[0].streak);
              
 
-            setCurrent(currentValue)
+            // setCurrent(currentValue)
 
-             console.log(current)
+            //  console.log(current)
 
              // ProfilePic Link from cloudinary
 
-             setProfilePic(response.data.userDb[0].profilePic)
+
+            //  setProfilePic(response.data.userDb[0].profilePic)
 
 
 
@@ -76,8 +80,8 @@ const UserProfile = () =>{
 
             console.log(response.data)
 
-            const res = response.data.userDb[0].name
-            console.log(res)
+            const res = response.data.userDb?.[0].name || JSON.parse(response.data.userInfo).name
+            console.log("see name",res)
 
             setUserName(res);
 
@@ -85,37 +89,54 @@ const UserProfile = () =>{
             // Total contributions made
 
              const red = response.data.leng
-            console.log(red);
+             if(!red){
+              setNetKalam(response.data.userKalamLength)
+              console.log("red1", response.data.userKalamLength)
+             }else{
 
-            setNetKalam(red);
+               console.log("red2", red);
 
+            setNetKalam(red );
+
+
+             }
+           
 
             // date when account created
 
-            const date = response.data.userDb[0].createdAt;
+            const date = response.data.userDb?.[0].createdAt || JSON.parse(response.data.userInfo).createdAt
 
             setJoining(date);
 
             // contributions made in shayri category
 
             const sherLen = response.data.sherCollectionLen;
+            if(!sherLen){
+              setSherLength(response.data.userSherLength)
+            }
             setSherLength(sherLen);
 
 
             // Contributions made in ghazal category
 
             const ghazal = response.data.ghazalLen;
+            if(!ghazal){
+              setGhazalLength(response.data.userGhazalLength)
+            }
             setGhazalLength(ghazal);
 
             
             // Contributions made in nazm Category
 
             const nazm = response.data.nazmLen;
+            if(!nazm){
+              setNazmLength(response.data.userNazmLength)
+            }
             setNazmLength(nazm);
 
             //
 
-            const tareekh = response.data.userDb[0].createdAt
+            const tareekh = response.data.userDb?.[0].createdAt || JSON.parse(response.data.userInfo).createdAt
 
             // current streak
 

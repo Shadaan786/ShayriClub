@@ -1265,13 +1265,13 @@ const buildGoogleFontsUrl = () => {
   const previewIsTruncated = content?.length > PREVIEW_LIMIT;
   const previewText = showFullPreview ? content : content?.slice(0, PREVIEW_LIMIT);
 
-  useEffect(() => {
-    axiosInstance
-      .get('/api/customKalam')
-      .then((Response) => {
-        console.log("Response.data[0]", Response.data[0])
-      })
-  }, [])
+  // useEffect(() => {
+  //   axiosInstance
+  //     .get('/api/customKalam')
+  //     .then((Response) => {
+  //       console.log("Response.data[0]", Response.data[0])
+  //     })
+  // }, [])
 
   const handleLike =()=>{
     send(JSON.stringify({
