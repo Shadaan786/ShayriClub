@@ -20,6 +20,10 @@ export default {
   			caret: 'typewriter 4s steps(28) forwards, blink 2s steps(28) infinite 2s'
   		},
   		keyframes: {
+			 scrollUp: {
+				'0%':   { transform: 'translateY(0)' },
+				'100%': { transform: 'translateY(-50%)' },
+			},
   			typewriter: {
   				to: {
   					left: '100%'

@@ -31,6 +31,29 @@ const CanvasStars = () => (
   </div>
 );
 
+
+function FeatureScrollDots() {
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const el = document.getElementById('featureScroll');
+    if (!el) return;
+    const handler = () => setActive(Math.round(el.scrollLeft / el.offsetWidth));
+    el.addEventListener('scroll', handler);
+    return () => el.removeEventListener('scroll', handler);
+  }, []);
+  return (
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+      {[0,1,2].map(i => (
+        <button key={i}
+          onClick={() => document.getElementById('featureScroll')?.scrollTo({ left: i * window.innerWidth, behavior: 'smooth' })}
+          className="h-2 rounded-full transition-all duration-300"
+          style={{ width: active === i ? '26px' : '8px', background: active === i ? '#fff' : 'rgba(255,255,255,0.3)' }}
+          aria-label={`Go to slide ${i+1}`} />
+      ))}
+    </div>
+  );
+}
+
 const Carousel = ({ children }) => {
   const [current, setCurrent] = useState(0);
   
@@ -126,6 +149,16 @@ const[notificationOpened, setNotificationOpened] = useState(false);
   ];
 
   // console.log("fcm_tokennnnn", fcm_token)
+  // Auto-advance the feature scroll hero
+useEffect(() => {
+  const el = document.getElementById('featureScroll');
+  if (!el) return;
+  const timer = setInterval(() => {
+    const next = Math.round(el.scrollLeft / el.offsetWidth) + 1;
+    el.scrollTo({ left: (next % 3) * el.offsetWidth, behavior: 'smooth' });
+  }, 5000);
+  return () => clearInterval(timer);
+}, []);
 
   useEffect(()=>{
     axiosInstance
@@ -332,10 +365,259 @@ const[notificationOpened, setNotificationOpened] = useState(false);
             </div>
           )}
         </nav>
+
+        {/* // ─── ADD THIS SECTION COMPONENT (insert just before the existing <section className="pt-32 pb-20"> Hero) ─── */}
+
+{/* ── Full-Screen Horizontal Scroll Feature Hero ── */}
+<section className="relative w-full" style={{ marginTop: '80px' }}>
+  {/* Scroll track */}
+  <div
+    id="featureScroll"
+    className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+    style={{ scrollbarWidth: 'none', cursor: 'grab' }}
+    onMouseDown={(e) => {
+      const el = document.getElementById('featureScroll');
+      el._isDragging = true; el._startX = e.pageX; el._scrollLeft = el.scrollLeft;
+      el.style.cursor = 'grabbing';
+    }}
+    onMouseMove={(e) => {
+      const el = document.getElementById('featureScroll');
+      if (!el._isDragging) return;
+      el.scrollLeft = el._scrollLeft - (e.pageX - el._startX);
+    }}
+    onMouseUp={() => { const el = document.getElementById('featureScroll'); el._isDragging = false; el.style.cursor = 'grab'; }}
+    onMouseLeave={() => { const el = document.getElementById('featureScroll'); el._isDragging = false; el.style.cursor = 'grab'; }}
+  >
+{/* ── Slide 1: Audio Kalam ── */}
+<div className="relative flex-shrink-0 w-full h-screen snap-start flex items-center justify-center overflow-hidden min-h-[560px]">
+  <div
+    className="absolute inset-0 bg-cover bg-center"
+    style={{
+      backgroundImage: "url('https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=1400&q=80')",
+      filter: 'brightness(0.18) saturate(0.6)',
+    }}
+  />
+  <div className="absolute inset-0" style={{ background: 'linear-gradient(120deg,rgba(60,10,90,0.72) 0%,rgba(10,5,30,0.55) 55%,rgba(0,0,0,0.15) 100%)' }} />
+
+  <div className="relative z-10 flex items-center w-full h-full px-16 py-14 gap-12">
+    {/* LEFT: all text content */}
+    <div className="flex flex-col gap-5 flex-[0_0_50%] max-w-[520px]">
+      <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+        style={{ background: 'rgba(168,85,247,0.18)', border: '1.5px solid rgba(168,85,247,0.4)' }}>🎙️</div>
+
+      <span className="inline-block text-xs tracking-widest uppercase px-4 py-1.5 rounded-full font-semibold w-fit"
+        style={{ background: 'rgba(168,85,247,0.18)', color: '#c084fc', border: '1px solid rgba(168,85,247,0.3)' }}>
+        New feature
+      </span>
+
+      <h2 className="text-5xl font-extrabold text-white leading-tight tracking-tight">
+        Build & publish your<br />
+        <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">kalam with audio</span>
+      </h2>
+
+      <p className="text-gray-300 text-base leading-relaxed max-w-[440px]">
+        Give your shayari a voice. Record, edit, and layer ambient sounds with your words — then publish a full audio experience your audience can feel.
+      </p>
+
+      <div className="flex flex-wrap gap-2">
+        {['🎚️ Sound mixing','🎤 Voice recording','🎶 Ambient music','📢 One-tap publish'].map(t => (
+          <span key={t} className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-white/75"
+            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.18)' }}>{t}</span>
+        ))}
+      </div>
+
+      <div className="flex gap-3 flex-wrap mt-1">
+        <button className="px-7 py-3.5 rounded-xl font-semibold text-white text-sm"
+          style={{ background: 'linear-gradient(90deg,#9333ea,#ec4899)' }}>Start recording ›</button>
+        <button className="px-7 py-3.5 rounded-xl font-semibold text-sm"
+          style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)' }}>
+          See examples
+        </button>
+      </div>
+    </div>
+
+{/* RIGHT: auto-scrolling screenshot with glassmorphism, tilt, glow & badges */}
+<div className="flex-1 flex items-center justify-center h-full py-4 relative">
+
+  {/* Purple glow behind */}
+  <div
+    className="absolute inset-0 pointer-events-none z-0"
+    style={{
+      background: 'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(139,92,246,0.35) 0%, transparent 70%)',
+    }}
+  />
+
+  {/* Tilt wrapper */}
+  <div className="relative z-10" style={{ transform: 'rotate(2deg)' }}>
+
+    {/* Floating badges */}
+    {/* Top-left */}
+    <div className="absolute -top-4 -left-8 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white"
+      style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.2)', whiteSpace: 'nowrap' }}>
+      🎨 120+ Themes
+    </div>
+    {/* Top-right */}
+    <div className="absolute -top-4 -right-8 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white"
+      style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.2)', whiteSpace: 'nowrap' }}>
+      🖋️ 40 Fonts
+    </div>
+    {/* Bottom-left */}
+    <div className="absolute -bottom-4 -left-8 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white"
+      style={{ background: 'rgba(168,85,247,0.25)', backdropFilter: 'blur(12px)', border: '1px solid rgba(168,85,247,0.4)', whiteSpace: 'nowrap' }}>
+      ✨ Live Preview
+    </div>
+    {/* Bottom-right */}
+    <div className="absolute -bottom-4 -right-8 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white"
+      style={{ background: 'rgba(168,85,247,0.25)', backdropFilter: 'blur(12px)', border: '1px solid rgba(168,85,247,0.4)', whiteSpace: 'nowrap' }}>
+      🌈 Unlimited Colors
+    </div>
+
+    {/* Glassmorphism card */}
+    <div
+      className="relative overflow-hidden rounded-2xl w-full max-w-[600px] max-h-[600px]"
+      style={{
+        background: 'rgba(255,255,255,0.05)',
+        backdropFilter: 'blur(16px)',
+        border: '1.5px solid rgba(255,255,255,0.15)',
+        boxShadow: '0 0 80px rgba(139,92,246,0.3), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.1)',
+        padding: '6px',
+      }}
+    >
+      {/* Inner rounded clip for the scroll */}
+      <div className="relative overflow-hidden rounded-xl" style={{ maxHeight: '588px' }}>
+
+        {/* Fade top */}
+        <div className="absolute top-0 left-0 right-0 h-16 z-10 pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, rgba(6,4,15,0.85), transparent)' }} />
+        {/* Fade bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 z-10 pointer-events-none"
+          style={{ background: 'linear-gradient(to top, rgba(6,4,15,0.85), transparent)' }} />
+
+        {/* Scrolling track */}
+        <div className="flex flex-col animate-[scrollUp_18s_linear_infinite] hover:[animation-play-state:paused]">
+          <img src="/2nd hero.png" alt="App preview" className="w-full block" />
+          <img src="/2nd hero.png" alt="App preview" className="w-full block" />
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+  </div>
+</div>
+
+    {/* ── Slide 2: Kalam of the Week ── */}
+    <div className="relative flex-shrink-0 w-full h-screen snap-start flex items-center justify-center overflow-hidden min-h-[560px]">
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=1400&q=80')",
+          filter: 'brightness(0.28)',
+        }}
+      />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,rgba(15,76,129,0.65) 0%,rgba(0,0,0,0.5) 100%)' }} />
+      <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
+        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl"
+          style={{ background: 'rgba(251,191,36,0.18)', border: '1.5px solid rgba(251,191,36,0.4)' }}>🏆</div>
+        <span className="inline-block text-xs tracking-widest uppercase px-4 py-1.5 rounded-full mb-5 font-medium"
+          style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.3)' }}>Weekly spotlight</span>
+        <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
+          Kalam <br />
+          <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">of the Week</span>
+        </h2>
+        <p className="text-gray-300 text-lg mb-6 max-w-xl mx-auto leading-relaxed">
+          Every week, our community votes for the piece that moved them most. Get featured, earn recognition, and inspire the next generation of poets.
+        </p>
+        {/* Winner card */}
+        <div className="flex items-center gap-4 text-left p-4 rounded-xl mb-7 mx-auto max-w-sm"
+          style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)' }}>
+          <div className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center text-2xl"
+            style={{ background: 'linear-gradient(135deg,#a855f7,#ec4899)' }}>📜</div>
+          <div>
+            <p className="text-xs uppercase tracking-widest text-white/40 mb-0.5">This week's winner</p>
+            <p className="font-semibold text-white text-base">Tanhaiyon Ki Baat</p>
+            <p className="text-xs text-white/50">by @aditi_shayar · 2.4k votes</p>
+          </div>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button className="px-7 py-3.5 rounded-lg font-semibold text-white"
+            style={{ background: 'linear-gradient(90deg,#d97706,#ea580c)' }}>Nominate a kalam ›</button>
+          <button className="px-7 py-3.5 rounded-lg font-semibold text-white"
+            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.2)' }}>Past winners</button>
+        </div>
+      </div>
+    </div>
+
+    {/* ── Slide 3: Album Creation ── */}
+    <div className="relative flex-shrink-0 w-full h-screen snap-start flex items-center justify-center overflow-hidden min-h-[560px]">
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1614680376408-81e91ffe3db7?w=1400&q=80')",
+          filter: 'brightness(0.28)',
+        }}
+      />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,rgba(5,78,72,0.65) 0%,rgba(0,0,0,0.5) 100%)' }} />
+      <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
+        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl"
+          style={{ background: 'rgba(20,184,166,0.18)', border: '1.5px solid rgba(20,184,166,0.4)' }}>📚</div>
+        <span className="inline-block text-xs tracking-widest uppercase px-4 py-1.5 rounded-full mb-5 font-medium"
+          style={{ background: 'rgba(20,184,166,0.15)', color: '#2dd4bf', border: '1px solid rgba(20,184,166,0.3)' }}>Collections</span>
+        <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
+          Create your own <br />
+          <span className="bg-gradient-to-r from-teal-400 to-indigo-400 bg-clip-text text-transparent">poetry albums</span>
+        </h2>
+        <p className="text-gray-300 text-lg mb-5 max-w-xl mx-auto leading-relaxed">
+          Curate your best work into beautiful themed albums. Add cover art, arrange pieces, and share a collection that tells your story from first verse to last.
+        </p>
+        {/* Mini album grid */}
+        <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto mb-7">
+          {[
+            { label: 'Ishq', bg: 'linear-gradient(135deg,#1e1b4b,#4c1d95)' },
+            { label: 'Dard', bg: 'linear-gradient(135deg,#1c1917,#78350f)' },
+            { label: 'Zindagi', bg: 'linear-gradient(135deg,#022c22,#14532d)' },
+            { label: 'Aasman', bg: 'linear-gradient(135deg,#1e3a5f,#1e40af)' },
+            { label: '＋', bg: 'linear-gradient(135deg,#4c0519,#9f1239)', center: true },
+            { label: 'Raatein', bg: 'linear-gradient(135deg,#1c1917,#44403c)' },
+          ].map((a, i) => (
+            <div key={i} className="aspect-square rounded-xl flex items-end p-2 text-xs font-bold text-white"
+              style={{ background: a.bg, alignItems: a.center ? 'center' : 'flex-end', justifyContent: a.center ? 'center' : 'flex-start', fontSize: a.center ? '20px' : undefined }}>
+              {a.label}
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button className="px-7 py-3.5 rounded-lg font-semibold text-white"
+            style={{ background: 'linear-gradient(90deg,#0d9488,#6366f1)' }}>Create album ›</button>
+          <button className="px-7 py-3.5 rounded-lg font-semibold text-white"
+            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.2)' }}>Browse albums</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* ── Nav arrows ── */}
+  {[{ dir: 'left', label: '‹', delta: -1 }, { dir: 'right', label: '›', delta: 1 }].map(({ dir, label, delta }) => (
+    <button
+      key={dir}
+      className={`absolute top-1/2 -translate-y-1/2 ${dir === 'left' ? 'left-5' : 'right-5'} z-20 w-10 h-10 rounded-full flex items-center justify-center text-white text-xl transition`}
+      style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)' }}
+      onClick={() => {
+        const el = document.getElementById('featureScroll');
+        el.scrollBy({ left: delta * el.offsetWidth, behavior: 'smooth' });
+      }}
+      aria-label={dir === 'left' ? 'Previous slide' : 'Next slide'}
+    >{label}</button>
+  ))}
+
+  {/* ── Dot indicators ── */}
+  <FeatureScrollDots />
+</section>
        
 
         {/* Hero Section */}
-        <section className="pt-32 pb-20 px-4">
+        {/* <section className="pt-32 pb-20 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center max-w-4xl mx-auto">
               <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
@@ -359,7 +641,11 @@ const[notificationOpened, setNotificationOpened] = useState(false);
                 </button>
               </div>
             </div>
-             <MyVerticallyCenteredModal isOpen={notificationOpened} onClose={()=>setNotificationOpened(false)}>
+          
+          </div>
+        </section> */}
+
+           <MyVerticallyCenteredModal isOpen={notificationOpened} onClose={()=>setNotificationOpened(false)}>
 
               {console.log("see_notifications", typeof(notifications))}
               {console.log("see_notifications", notifications)}
@@ -383,8 +669,6 @@ const[notificationOpened, setNotificationOpened] = useState(false);
              
              
              </MyVerticallyCenteredModal>
-          </div>
-        </section>
 
         {/* Featured Section */}
         <section className="py-20 px-4">
