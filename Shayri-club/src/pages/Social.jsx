@@ -1884,6 +1884,9 @@ export const Social = () => {
               {kalamDat.map((item) => (
                 <div key={item._id} className="w-full max-w-[520px]">
                   {
+                    (item.current.isImage)?setIsImage(true):setIsImage(false)
+                  }
+                  {
 
                     console.log("likes!!!!!!!!!", likedKalams2.current.has(item._id))
                   }
@@ -1896,7 +1899,9 @@ export const Social = () => {
                     time={item.createdAt}
                     type={item.type}
                     title={item.name}
-                    isImage={isImage}
+                    isImage={item.customStyles.isImage}
+                    imageSrc={item.customStyles.imageSrc}
+                  
                     isLiked2={likedKalams2.current.has(item._id)}
                   />
                 </div>

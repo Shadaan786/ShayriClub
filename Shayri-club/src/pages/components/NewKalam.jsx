@@ -1161,7 +1161,7 @@ const NewKalam=({
       // selectedColor,
       // bgOpacity,
       // scrim,
-      isImage,
+      imageSrc,
       mUid,
       kalId,
       isLiked2,
@@ -1171,6 +1171,7 @@ const NewKalam=({
 
   console.log("checking_isLiked",isLiked2)
   console.log("kalId", kalId)
+
  
 
 const TITLE_FONTS = [
@@ -1224,11 +1225,29 @@ const buildGoogleFontsUrl = () => {
   const [isShared, setIsShared] = useState(false);
   let file;
   const ref = useRef(null);
+  // const[isImage, setIsImage] = useState(false);
+  // const[imageSrc, setImageSrc] = useState("")
+  const isImage = useRef(false)
 
 
   const Navigate = useNavigate()
 
-  // Checking like state
+  // if(customStyles.isImage){
+  //   setIsImage(true);
+  //   setImageSrc(customStyles.imageSrc)
+
+  // }
+
+  // Checking like 
+  
+  if(customStyles.imageSrc){
+
+    isImage.current = true
+    
+  }
+
+  
+  
 
    
 
@@ -2074,8 +2093,8 @@ const buildGoogleFontsUrl = () => {
         <div
           className="k-prev-bg border"
           style={
-            isImage && imageSrc
-              ? { backgroundImage: `url(${imageSrc})`, backgroundSize: "cover", backgroundPosition: "center", opacity: bgOpacity / 100 }
+            isImage.current && customStyles?.imageSrc
+              ? { backgroundImage: `url(${customStyles.imageSrc})`, backgroundSize: "cover", backgroundPosition: "center", opacity: bgOpacity / 100 }
               : { backgroundColor: bgTab === "custom" ? customColor : selectedColor, opacity: bgOpacity / 100 }
           }
         />
@@ -2223,6 +2242,12 @@ const buildGoogleFontsUrl = () => {
           />
           Save
         </button>
+        {
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", customStyles?.imageSrc)
+        }
+{  
+console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", isImage.current)
+}        
 
       
 
