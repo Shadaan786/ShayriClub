@@ -43,6 +43,7 @@ import logo from './image.png'
 import { LogOut } from 'lucide-react';
 import NewKalam from './pages/components/NewKalam';
 import KalamOfTheWeek from './pages/KalamOfTheWeek';
+import OtpVerification from './pages/otp';
 
 
 function App() {
@@ -123,6 +124,7 @@ onMessage(messaging, (data) => {
       <Route path='/albumsLive' element= {<AlbumsLive/>}/>
       <Route path='/NewKalam' element= {<NewKalam/>}/>
       <Route path='/Kotw' element= {<KalamOfTheWeek/>}/>
+      <Route path='/verification' element= {<OtpVerification/>}/>
 
       {/* <ContextProvider>
         <Kalam/>

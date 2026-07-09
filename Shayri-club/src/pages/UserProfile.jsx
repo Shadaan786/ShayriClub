@@ -70,8 +70,10 @@ const UserProfile = () =>{
 
              // ProfilePic Link from cloudinary
 
+             const profilePic = response.data.userDb?.[0].profilePic || response.data.profilePic
 
-            //  setProfilePic(response.data.userDb[0].profilePic)
+
+             setProfilePic(profilePic)
 
 
 

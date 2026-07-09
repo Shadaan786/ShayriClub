@@ -81,376 +81,377 @@
 
 
 
-//-------------------------------------------------------------------------------->
+//---------------------------------------------------------------------------------------------------------------------------------->
+//----------------------------------------------------------------------------->
 
 
 
 
+// import { useContext } from "react";
+// import axiosInstance from "../Apis/axiosInstance";
+// import { useEffect, useState } from "react";
+// import { Link } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
-import { useContext } from "react";
-import axiosInstance from "../Apis/axiosInstance";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
+// const typeColors = {
+//   poem:    { bg: "rgba(120,200,180,0.07)", border: "rgba(120,200,180,0.25)", text: "rgba(120,200,180,0.9)" },
+//   thought: { bg: "rgba(180,140,255,0.07)", border: "rgba(180,140,255,0.25)", text: "rgba(180,140,255,0.9)" },
+//   note:    { bg: "rgba(255,200,100,0.07)", border: "rgba(255,200,100,0.25)", text: "rgba(255,200,100,0.9)" },
+// };
 
-const typeColors = {
-  poem:    { bg: "rgba(120,200,180,0.07)", border: "rgba(120,200,180,0.25)", text: "rgba(120,200,180,0.9)" },
-  thought: { bg: "rgba(180,140,255,0.07)", border: "rgba(180,140,255,0.25)", text: "rgba(180,140,255,0.9)" },
-  note:    { bg: "rgba(255,200,100,0.07)", border: "rgba(255,200,100,0.25)", text: "rgba(255,200,100,0.9)" },
-};
+// const getTypeStyle = (type = "") => {
+//   return typeColors[type.toLowerCase()] || {
+//     bg: "rgba(255,255,255,0.04)",
+//     border: "rgba(255,255,255,0.12)",
+//     text: "rgba(255,255,255,0.4)",
+//   };
+// };
 
-const getTypeStyle = (type = "") => {
-  return typeColors[type.toLowerCase()] || {
-    bg: "rgba(255,255,255,0.04)",
-    border: "rgba(255,255,255,0.12)",
-    text: "rgba(255,255,255,0.4)",
-  };
-};
-
-const UrKalam = () => {
-  const [kalam, setKalam] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState("");
-  const Navigate = useNavigate();
+// const UrKalam = () => {
+//   const [kalam, setKalam] = useState({});
+//   const [loading, setLoading] = useState(true);
+//   const [userId, setUserId] = useState("");
+//   const Navigate = useNavigate();
   
-  useEffect(()=>{
+//   useEffect(()=>{
 
-    axiosInstance
-    .get('/api/userId',{
+//     axiosInstance
+//     .get('/api/userId',{
 
-      withCredentials: true
-    })
-    .then((Response)=>{
+//       withCredentials: true
+//     })
+//     .then((Response)=>{
 
-      setUserId(Response.data._id)
+//       setUserId(Response.data._id)
 
-    })
-  })
+//     })
+//   })
 
-  useEffect(() => {
-    axiosInstance
-      .get("/api/UrKalam",
-        {
+//   useEffect(() => {
+//     axiosInstance
+//       .get("/api/UrKalam",
+//         {
 
-          withCredentials: true
+//           withCredentials: true
 
-      })
-      .then((res) => {
-        setKalam(res.data);
-        console.log(res.data);
-
-
+//       })
+//       .then((res) => {
+//         setKalam(res.data);
+//         console.log(res.data);
 
 
 
 
-      })
-      .finally(() => setLoading(false));
-  }, []);
 
-  const entries = Object.values(kalam);
 
-  return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Mono:wght@300;400&display=swap');
+//       })
+//       .finally(() => setLoading(false));
+//   }, []);
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+//   const entries = Object.values(kalam);
 
-        .ur-root {
-          min-height: 100vh;
-          background-color: #0a0a0c;
-          background-image:
-            radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 80, 255, 0.08) 0%, transparent 60%),
-            radial-gradient(ellipse 40% 30% at 80% 80%, rgba(60, 200, 180, 0.05) 0%, transparent 50%);
-          font-family: 'DM Mono', monospace;
-          color: #e8e2d9;
-        }
+//   return (
+//     <>
+//       <style>{`
+//         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Mono:wght@300;400&display=swap');
 
-        .ur-container {
-          max-width: 680px;
-          margin: 0 auto;
-          padding: 60px 24px 100px;
-        }
+//         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Header */
-        .ur-header {
-          margin-bottom: 48px;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-          padding-bottom: 32px;
-          display: flex;
-          align-items: flex-end;
-          justify-content: space-between;
-          gap: 16px;
-          flex-wrap: wrap;
-        }
+//         .ur-root {
+//           min-height: 100vh;
+//           background-color: #0a0a0c;
+//           background-image:
+//             radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 80, 255, 0.08) 0%, transparent 60%),
+//             radial-gradient(ellipse 40% 30% at 80% 80%, rgba(60, 200, 180, 0.05) 0%, transparent 50%);
+//           font-family: 'DM Mono', monospace;
+//           color: #e8e2d9;
+//         }
 
-        .ur-header-left {}
+//         .ur-container {
+//           max-width: 680px;
+//           margin: 0 auto;
+//           padding: 60px 24px 100px;
+//         }
 
-        .ur-eyebrow {
-          font-size: 10px;
-          letter-spacing: 0.3em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.25);
-          margin-bottom: 10px;
-        }
+//         /* Header */
+//         .ur-header {
+//           margin-bottom: 48px;
+//           border-bottom: 1px solid rgba(255,255,255,0.06);
+//           padding-bottom: 32px;
+//           display: flex;
+//           align-items: flex-end;
+//           justify-content: space-between;
+//           gap: 16px;
+//           flex-wrap: wrap;
+//         }
 
-        .ur-title {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(36px, 7vw, 56px);
-          font-weight: 300;
-          letter-spacing: -0.02em;
-          line-height: 1;
-          color: #f0ebe3;
-        }
+//         .ur-header-left {}
 
-        .ur-title span { color: rgba(120, 200, 180, 0.9); }
+//         .ur-eyebrow {
+//           font-size: 10px;
+//           letter-spacing: 0.3em;
+//           text-transform: uppercase;
+//           color: rgba(255,255,255,0.25);
+//           margin-bottom: 10px;
+//         }
 
-        .ur-count {
-          font-size: 10px;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.2);
-          margin-top: 10px;
-        }
+//         .ur-title {
+//           font-family: 'Cormorant Garamond', serif;
+//           font-size: clamp(36px, 7vw, 56px);
+//           font-weight: 300;
+//           letter-spacing: -0.02em;
+//           line-height: 1;
+//           color: #f0ebe3;
+//         }
 
-        /* Nav link */
-        .ur-nav-link {
-          font-size: 10px;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.3);
-          text-decoration: none;
-          border: 1px solid rgba(255,255,255,0.08);
-          padding: 10px 18px;
-          border-radius: 3px;
-          transition: border-color 0.2s, color 0.2s;
-          white-space: nowrap;
-        }
+//         .ur-title span { color: rgba(120, 200, 180, 0.9); }
 
-        .ur-nav-link:hover {
-          border-color: rgba(255,255,255,0.2);
-          color: rgba(255,255,255,0.6);
-        }
+//         .ur-count {
+//           font-size: 10px;
+//           letter-spacing: 0.2em;
+//           text-transform: uppercase;
+//           color: rgba(255,255,255,0.2);
+//           margin-top: 10px;
+//         }
 
-        /* Loading state */
-        .ur-loading {
-          text-align: center;
-          padding: 80px 0;
-          font-size: 11px;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.15);
-        }
+//         /* Nav link */
+//         .ur-nav-link {
+//           font-size: 10px;
+//           letter-spacing: 0.2em;
+//           text-transform: uppercase;
+//           color: rgba(255,255,255,0.3);
+//           text-decoration: none;
+//           border: 1px solid rgba(255,255,255,0.08);
+//           padding: 10px 18px;
+//           border-radius: 3px;
+//           transition: border-color 0.2s, color 0.2s;
+//           white-space: nowrap;
+//         }
 
-        .ur-loading-dots span {
-          display: inline-block;
-          animation: blink 1.2s infinite;
-        }
-        .ur-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .ur-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+//         .ur-nav-link:hover {
+//           border-color: rgba(255,255,255,0.2);
+//           color: rgba(255,255,255,0.6);
+//         }
 
-        @keyframes blink {
-          0%, 80%, 100% { opacity: 0.15; }
-          40% { opacity: 1; }
-        }
+//         /* Loading state */
+//         .ur-loading {
+//           text-align: center;
+//           padding: 80px 0;
+//           font-size: 11px;
+//           letter-spacing: 0.2em;
+//           text-transform: uppercase;
+//           color: rgba(255,255,255,0.15);
+//         }
 
-        /* Empty state */
-        .ur-empty {
-          text-align: center;
-          padding: 80px 0;
-          border: 1px dashed rgba(255,255,255,0.07);
-          border-radius: 6px;
-        }
+//         .ur-loading-dots span {
+//           display: inline-block;
+//           animation: blink 1.2s infinite;
+//         }
+//         .ur-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+//         .ur-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
 
-        .ur-empty-glyph {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 48px;
-          color: rgba(255,255,255,0.06);
-          margin-bottom: 16px;
-        }
+//         @keyframes blink {
+//           0%, 80%, 100% { opacity: 0.15; }
+//           40% { opacity: 1; }
+//         }
 
-        .ur-empty-text {
-          font-size: 11px;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.2);
-        }
+//         /* Empty state */
+//         .ur-empty {
+//           text-align: center;
+//           padding: 80px 0;
+//           border: 1px dashed rgba(255,255,255,0.07);
+//           border-radius: 6px;
+//         }
 
-        /* Entry list */
-        .ur-list {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
+//         .ur-empty-glyph {
+//           font-family: 'Cormorant Garamond', serif;
+//           font-size: 48px;
+//           color: rgba(255,255,255,0.06);
+//           margin-bottom: 16px;
+//         }
 
-        .ur-entry {
-          display: flex;
-          align-items: baseline;
-          gap: 20px;
-          padding: 20px 22px;
-          border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 4px;
-          background: rgba(255,255,255,0.02);
-          transition: border-color 0.2s, background 0.2s;
-          animation: fadeUp 0.4s ease both;
-        }
+//         .ur-empty-text {
+//           font-size: 11px;
+//           letter-spacing: 0.2em;
+//           text-transform: uppercase;
+//           color: rgba(255,255,255,0.2);
+//         }
 
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
+//         /* Entry list */
+//         .ur-list {
+//           display: flex;
+//           flex-direction: column;
+//           gap: 2px;
+//         }
 
-        .ur-entry:hover {
-          border-color: rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.035);
-        }
+//         .ur-entry {
+//           display: flex;
+//           align-items: baseline;
+//           gap: 20px;
+//           padding: 20px 22px;
+//           border: 1px solid rgba(255,255,255,0.06);
+//           border-radius: 4px;
+//           background: rgba(255,255,255,0.02);
+//           transition: border-color 0.2s, background 0.2s;
+//           animation: fadeUp 0.4s ease both;
+//         }
 
-        .ur-entry-index {
-          font-size: 10px;
-          color: rgba(255,255,255,0.15);
-          letter-spacing: 0.05em;
-          min-width: 24px;
-          flex-shrink: 0;
-          user-select: none;
-        }
+//         @keyframes fadeUp {
+//           from { opacity: 0; transform: translateY(10px); }
+//           to   { opacity: 1; transform: translateY(0); }
+//         }
 
-        .ur-entry-body {
-          flex: 1;
-          min-width: 0;
-        }
+//         .ur-entry:hover {
+//           border-color: rgba(255,255,255,0.1);
+//           background: rgba(255,255,255,0.035);
+//         }
 
-        .ur-entry-content {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 17px;
-          font-weight: 400;
-          color: rgba(240, 235, 227, 0.85);
-          line-height: 1.5;
-          word-break: break-word;
-        }
+//         .ur-entry-index {
+//           font-size: 10px;
+//           color: rgba(255,255,255,0.15);
+//           letter-spacing: 0.05em;
+//           min-width: 24px;
+//           flex-shrink: 0;
+//           user-select: none;
+//         }
 
-        .ur-entry-type-pill {
-          display: inline-block;
-          margin-top: 8px;
-          font-family: 'DM Mono', monospace;
-          font-size: 9px;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          padding: 3px 10px;
-          border-radius: 2px;
-          border: 1px solid;
-        }
+//         .ur-entry-body {
+//           flex: 1;
+//           min-width: 0;
+//         }
 
-        /* Footer */
-        .ur-footer {
-          margin-top: 56px;
-          padding-top: 32px;
-          border-top: 1px solid rgba(255,255,255,0.05);
-          display: flex;
-          justify-content: flex-end;
-        }
+//         .ur-entry-content {
+//           font-family: 'Cormorant Garamond', serif;
+//           font-size: 17px;
+//           font-weight: 400;
+//           color: rgba(240, 235, 227, 0.85);
+//           line-height: 1.5;
+//           word-break: break-word;
+//         }
 
-        .ur-profile-link {
-          font-size: 10px;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: rgba(120, 200, 180, 0.6);
-          text-decoration: none;
-          border: 1px solid rgba(120, 200, 180, 0.2);
-          padding: 12px 22px;
-          border-radius: 3px;
-          transition: border-color 0.2s, color 0.2s, background 0.2s;
-        }
+//         .ur-entry-type-pill {
+//           display: inline-block;
+//           margin-top: 8px;
+//           font-family: 'DM Mono', monospace;
+//           font-size: 9px;
+//           letter-spacing: 0.2em;
+//           text-transform: uppercase;
+//           padding: 3px 10px;
+//           border-radius: 2px;
+//           border: 1px solid;
+//         }
 
-        .ur-profile-link:hover {
-          border-color: rgba(120, 200, 180, 0.5);
-          color: rgba(120, 200, 180, 1);
-          background: rgba(120, 200, 180, 0.06);
-        }
-      `}</style>
+//         /* Footer */
+//         .ur-footer {
+//           margin-top: 56px;
+//           padding-top: 32px;
+//           border-top: 1px solid rgba(255,255,255,0.05);
+//           display: flex;
+//           justify-content: flex-end;
+//         }
 
-      <div className="ur-root">
-        <div className="ur-container">
+//         .ur-profile-link {
+//           font-size: 10px;
+//           letter-spacing: 0.2em;
+//           text-transform: uppercase;
+//           color: rgba(120, 200, 180, 0.6);
+//           text-decoration: none;
+//           border: 1px solid rgba(120, 200, 180, 0.2);
+//           padding: 12px 22px;
+//           border-radius: 3px;
+//           transition: border-color 0.2s, color 0.2s, background 0.2s;
+//         }
 
-          {/* Header */}
-          <header className="ur-header">
-            <div className="ur-header-left">
-              <p className="ur-eyebrow">Collection</p>
-              <h1 className="ur-title">Your <span>Kalams</span></h1>
-              {!loading && (
-                <p className="ur-count">
-                  {entries.length} {entries.length === 1 ? "entry" : "entries"}
-                </p>
-              )}
-            </div>
-            <Link to="/kalam" className="ur-nav-link">
-              + New Entry
-            </Link>
-          </header>
+//         .ur-profile-link:hover {
+//           border-color: rgba(120, 200, 180, 0.5);
+//           color: rgba(120, 200, 180, 1);
+//           background: rgba(120, 200, 180, 0.06);
+//         }
+//       `}</style>
 
-          {/* Content */}
-          {loading ? (
-            <div className="ur-loading">
-              <div className="ur-loading-dots">
-                <span>▪</span><span>▪</span><span>▪</span>
-              </div>
-            </div>
-          ) : entries.length === 0 ? (
-            <div className="ur-empty">
-              <div className="ur-empty-glyph">✦</div>
-              <p className="ur-empty-text">No kalams yet — start writing</p>
-            </div>
-          ) : (
-            <div className="ur-list">
-              {entries.map((item, idx) => {
-                const style = getTypeStyle(item.type);
-                return (
-                  <div
-                    className="ur-entry"
-                    key={item._id || idx}
-                    style={{ animationDelay: `${idx * 0.05}s` }}
-                  >
-                    <span className="ur-entry-index">
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    <div className="ur-entry-body">
-                      <p className="ur-entry-content">{item.content}</p>
-                      {item.type && (
-                        <span
-                          className="ur-entry-type-pill"
-                          style={{
-                            background: style.bg,
-                            borderColor: style.border,
-                            color: style.text,
-                          }}
-                        >
-                          {item.type}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+//       <div className="ur-root">
+//         <div className="ur-container">
 
-          {/* Footer */}
-          <div className="ur-footer">
-            <Link to={`/Profile?userId=${userId}`} className="ur-profile-link">
-              View Profile →
-            </Link>
+//           {/* Header */}
+//           <header className="ur-header">
+//             <div className="ur-header-left">
+//               <p className="ur-eyebrow">Collection</p>
+//               <h1 className="ur-title">Your <span>Kalams</span></h1>
+//               {!loading && (
+//                 <p className="ur-count">
+//                   {entries.length} {entries.length === 1 ? "entry" : "entries"}
+//                 </p>
+//               )}
+//             </div>
+//             <Link to="/kalam" className="ur-nav-link">
+//               + New Entry
+//             </Link>
+//           </header>
+
+//           {/* Content */}
+//           {loading ? (
+//             <div className="ur-loading">
+//               <div className="ur-loading-dots">
+//                 <span>▪</span><span>▪</span><span>▪</span>
+//               </div>
+//             </div>
+//           ) : entries.length === 0 ? (
+//             <div className="ur-empty">
+//               <div className="ur-empty-glyph">✦</div>
+//               <p className="ur-empty-text">No kalams yet — start writing</p>
+//             </div>
+//           ) : (
+//             <div className="ur-list">
+//               {entries.map((item, idx) => {
+//                 const style = getTypeStyle(item.type);
+//                 return (
+//                   <div
+//                     className="ur-entry"
+//                     key={item._id || idx}
+//                     style={{ animationDelay: `${idx * 0.05}s` }}
+//                   >
+//                     <span className="ur-entry-index">
+//                       {String(idx + 1).padStart(2, "0")}
+//                     </span>
+//                     <div className="ur-entry-body">
+//                       <p className="ur-entry-content">{item.content}</p>
+//                       {item.type && (
+//                         <span
+//                           className="ur-entry-type-pill"
+//                           style={{
+//                             background: style.bg,
+//                             borderColor: style.border,
+//                             color: style.text,
+//                           }}
+//                         >
+//                           {item.type}
+//                         </span>
+//                       )}
+//                     </div>
+//                   </div>
+//                 );
+//               })}
+//             </div>
+//           )}
+
+//           {/* Footer */}
+//           <div className="ur-footer">
+//             <Link to={`/Profile?userId=${userId}`} className="ur-profile-link">
+//               View Profile →
+//             </Link>
             
-          </div> 
+//           </div> 
 
-        </div>
-      </div>
-    </>
-  );
-};
+//         </div>
+//       </div>
+//     </>
+//   );
+// };
 
-export default UrKalam;
+// export default UrKalam;
 
+//------------------------------------------------------------------------------------------>
 //---------------------------------------------------------------------------------------------------------------------------->
 
 
@@ -1109,3 +1110,412 @@ export default UrKalam;
 // };
 
 // export default UrKalam;
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "@/Apis/axiosInstance";
+import NewKalam from "./components/NewKalam";
+
+// ── Type → badge / icon mapping (same spirit as Kalam.jsx's SINF_OPTIONS) ──
+const TYPE_META = {
+  ghazal: { icon: "☽", badge: "bg-[rgba(15,110,86,0.12)] border-[rgba(120,200,180,0.28)] text-[rgba(120,200,180,0.9)]" },
+  nazm:   { icon: "✿", badge: "bg-[rgba(83,74,183,0.12)] border-[rgba(175,169,236,0.35)] text-[#AFA9EC]" },
+  sher:   { icon: "✦", badge: "bg-[rgba(180,140,50,0.14)] border-[rgba(210,170,90,0.4)] text-[rgba(230,190,110,0.95)]" },
+  qita:   { icon: "❝", badge: "bg-[rgba(153,53,86,0.12)] border-[rgba(255,130,170,0.3)] text-[rgba(255,130,170,0.85)]" },
+  rubai:  { icon: "❋", badge: "bg-[rgba(190,130,20,0.12)] border-[rgba(255,180,80,0.3)] text-[rgba(255,180,80,0.85)]" },
+  masnavi:{ icon: "✧", badge: "bg-[rgba(80,40,140,0.14)] border-[rgba(175,169,236,0.3)] text-[#AFA9EC]" },
+  marsiya:{ icon: "◈", badge: "bg-[rgba(160,30,70,0.12)] border-[rgba(255,130,170,0.3)] text-[rgba(255,130,170,0.85)]" },
+};
+const getTypeMeta = (type = "") =>
+  TYPE_META[type.toLowerCase()] || {
+    icon: "✦",
+    badge: "bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.12)] text-[rgba(255,255,255,0.4)]",
+  };
+
+const UrKalam = () => {
+  const [kalams, setKalams] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeNav, setActiveNav] = useState("Collection");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axiosInstance
+      .get("/api/urKalam", { withCredentials: true })
+      .then((response) => {
+        setKalams(response.data);
+        console.log("response", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching user kalams", error);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const ghazalCount = kalams.filter((k) =>
+    ["ghazal", "sher"].includes((k.type || "").toLowerCase())
+  ).length;
+  const nazmCount = kalams.filter((k) => (k.type || "").toLowerCase() === "nazm").length;
+
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        .uk-root {
+          --border-sm: rgba(255,255,255,0.05);
+          --border-md: rgba(255,255,255,0.08);
+          --text-pri: #f0ebe3;
+          --text-sec: rgba(240,235,227,0.55);
+          --text-ter: rgba(240,235,227,0.28);
+          --gold: rgba(210,170,90,0.85);
+          --r-md: 6px;
+          --r-lg: 10px;
+
+          min-height: 100vh;
+          background-color: #07060d;
+          background-image:
+            radial-gradient(ellipse 70% 55% at 50% -10%, rgba(120,60,180,0.18) 0%, transparent 55%),
+            radial-gradient(ellipse 50% 40% at 15% 60%,  rgba(160,30,70,0.10)  0%, transparent 50%),
+            radial-gradient(ellipse 40% 35% at 90% 80%,  rgba(180,120,20,0.07) 0%, transparent 50%),
+            radial-gradient(ellipse 60% 30% at 50% 100%, rgba(80,40,140,0.12)  0%, transparent 60%);
+          font-family: 'DM Mono', monospace;
+          color: var(--text-pri);
+          overflow-x: hidden;
+        }
+
+        /* ── Nav (matches Kalam.jsx) ───────────────── */
+        .uk-nav {
+          background: rgba(10,10,14,0.92);
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
+          border-bottom: 0.5px solid var(--border-sm);
+          padding: 0 1.25rem;
+          display: flex; align-items: center; justify-content: space-between;
+          height: 52px; position: sticky; top: 0; z-index: 50;
+        }
+        .uk-brand { display: flex; align-items: center; gap: 9px; }
+        .uk-logo {
+          width: 30px; height: 30px; flex-shrink: 0;
+          background: linear-gradient(135deg, #2d2060, #4a3580);
+          border: 0.5px solid rgba(210,170,90,0.3); border-radius: 7px;
+          display: flex; align-items: center; justify-content: center;
+          color: rgba(210,170,90,0.9); font-size: 14px;
+        }
+        .uk-wordmark {
+          font-family: 'Playfair Display', serif;
+          font-size: 19px; font-weight: 700; font-style: italic;
+          background: linear-gradient(135deg, #e8d5a3 0%, #c9a84c 50%, #f0d890 100%);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .uk-nav-links { display: flex; align-items: center; gap: 2px; }
+        .uk-nl {
+          padding: 6px 12px; font-size: 11px; letter-spacing: 0.08em;
+          color: var(--text-sec); border-radius: var(--r-md);
+          cursor: pointer; border: none; background: transparent;
+          transition: background 0.12s, color 0.12s; font-family: 'DM Mono', monospace;
+          white-space: nowrap; min-height: 36px;
+        }
+        .uk-nl:hover  { background: rgba(255,255,255,0.04); color: var(--text-pri); }
+        .uk-nl.active { color: rgba(210,170,90,0.9); background: rgba(180,140,50,0.1); }
+        .uk-nav-right { display: flex; align-items: center; gap: 8px; }
+        .uk-avatar {
+          width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+          background: rgba(83,74,183,0.18); border: 0.5px solid rgba(210,170,90,0.3);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 11px; font-weight: 500; color: rgba(210,170,90,0.8); cursor: pointer;
+        }
+        .uk-hamburger {
+          display: none; flex-direction: column; justify-content: center;
+          align-items: center; gap: 4px; width: 32px; height: 32px;
+          background: transparent; border: none; cursor: pointer;
+        }
+        .uk-hamburger span { display: block; width: 18px; height: 1.5px; background: rgba(210,170,90,0.7); border-radius: 2px; }
+        .uk-mobile-menu {
+          position: fixed; top: 52px; left: 0; right: 0; z-index: 49;
+          background: rgba(10,10,14,0.97); backdrop-filter: blur(20px);
+          border-bottom: 0.5px solid rgba(210,170,90,0.1); padding: 0.5rem 0;
+          display: flex; flex-direction: column;
+        }
+        .uk-mobile-menu .uk-nl { padding: 13px 1.25rem; font-size: 12px; border-radius: 0; border-bottom: 0.5px solid var(--border-sm); text-align: left; }
+
+        .uk-btn-primary {
+          background: linear-gradient(135deg, #4a3080, #3C3489, #5a3d9a);
+          border: 0.5px solid rgba(180,140,80,0.25); border-radius: var(--r-md);
+          padding: 8px 16px; font-size: 11px; color: rgba(240,220,160,0.95);
+          cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+          font-family: 'DM Mono', monospace; letter-spacing: 0.1em;
+          transition: opacity 0.12s, box-shadow 0.12s; text-decoration: none;
+          box-shadow: 0 2px 12px rgba(100,60,180,0.25); white-space: nowrap;
+        }
+        .uk-btn-primary:hover { opacity: 0.88; box-shadow: 0 4px 20px rgba(100,60,180,0.4); }
+
+        .uk-btn-ghost {
+          background: transparent; border: 0.5px solid var(--border-md);
+          border-radius: var(--r-md); padding: 6px 12px; font-size: 11px;
+          color: var(--text-sec); cursor: pointer; display: inline-flex; align-items: center;
+          gap: 5px; transition: all 0.12s; font-family: 'DM Mono', monospace;
+          letter-spacing: 0.07em; text-decoration: none; white-space: nowrap;
+        }
+        .uk-btn-ghost:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.18); color: var(--text-pri); }
+
+        /* ── Hero ──────────────────────────────────── */
+        .uk-hero {
+          position: relative; overflow: hidden;
+          border-bottom: 0.5px solid rgba(180,140,80,0.15);
+          padding: 2rem 0.5rem 1.75rem;
+        }
+        .uk-hero::before {
+          content: ''; position: absolute; inset: 0; pointer-events: none;
+          background:
+            radial-gradient(ellipse 90% 100% at 50% 0%,  rgba(100,50,160,0.22) 0%, transparent 65%),
+            radial-gradient(ellipse 60% 80%  at 10% 50%, rgba(150,25,60,0.10)  0%, transparent 55%),
+            radial-gradient(ellipse 50% 60%  at 90% 60%, rgba(190,130,20,0.07) 0%, transparent 50%);
+        }
+        .uk-hero::after {
+          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+          background: linear-gradient(90deg,
+            transparent, rgba(180,140,80,0) 10%, rgba(200,160,80,0.5) 30%,
+            rgba(220,180,100,0.8) 50%, rgba(200,160,80,0.5) 70%, rgba(180,140,80,0) 90%, transparent);
+        }
+        .uk-hero-inner {
+          max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;
+          display: flex; align-items: flex-end; justify-content: space-between;
+          flex-wrap: wrap; gap: 16px;
+        }
+        .uk-eyebrow {
+          font-size: 9px; color: rgba(210,170,90,0.75);
+          letter-spacing: 0.4em; text-transform: uppercase; margin-bottom: 8px;
+          display: flex; align-items: center; gap: 10px;
+        }
+        .uk-eyebrow::before, .uk-eyebrow::after {
+          content: ''; display: inline-block; width: 20px; height: 0.5px;
+          background: rgba(210,170,90,0.4);
+        }
+        @keyframes goldShimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        .uk-hero-title {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(32px, 5.5vw, 54px);
+          font-weight: 700; font-style: italic; line-height: 0.95; letter-spacing: -0.03em;
+          background: linear-gradient(135deg, #e8d5a3 0%, #f5e6c0 18%, #c9a84c 35%, #f0d890 50%, #b8860b 65%, #e8d5a3 80%, #f5edd5 100%);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+          display: block; background-size: 200% auto;
+          animation: goldShimmer 5s linear infinite;
+          filter: drop-shadow(0 2px 20px rgba(200,160,60,0.18));
+        }
+        .uk-hero-sub {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(12px, 2vw, 14px); color: rgba(240,235,220,0.3); font-style: italic;
+          margin-top: 8px;
+        }
+        .uk-stats { display: flex; gap: 1.5rem; flex-shrink: 0; }
+        .uk-stat { text-align: right; }
+        .uk-stat-num {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(20px, 3vw, 26px); font-weight: 400; line-height: 1;
+          background: linear-gradient(135deg, #e8d5a3, #c9a84c);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .uk-stat-label { font-size: 9px; color: rgba(210,170,90,0.4); letter-spacing: 0.25em; text-transform: uppercase; margin-top: 3px; }
+        .uk-stat-divider { width: 0.5px; align-self: stretch; background: rgba(210,170,90,0.12); margin: 2px 0; }
+
+        /* ── Body ──────────────────────────────────── */
+        .uk-body { max-width: 1400px; margin: 0 auto; padding: 1.75rem 0.5rem 4rem; }
+        .uk-section-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+        .uk-section-label {
+          font-size: 9px; font-weight: 500; color: var(--text-ter);
+          letter-spacing: 0.35em; text-transform: uppercase;
+          display: flex; align-items: center; gap: 8px;
+        }
+
+        /* ── Grid ──────────────────────────────────── */
+        /* flex instead of grid so NewKalam's own card width is preserved,
+           not stretched/shrunk to fill a track */
+        .uk-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .uk-grid > div {
+          flex: 0 0 auto;
+        }
+
+        /* ── Loading ───────────────────────────────── */
+        .uk-loading { text-align: center; padding: 100px 0; }
+        .uk-loading-dots { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(210,170,90,0.4); }
+        .uk-loading-dots span { display: inline-block; animation: uk-blink 1.2s infinite; }
+        .uk-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .uk-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes uk-blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+
+        /* ── Empty state ───────────────────────────── */
+        .uk-empty {
+          text-align: center; padding: 90px 24px;
+          border: 0.5px dashed rgba(210,170,90,0.18);
+          border-radius: var(--r-lg);
+          background: rgba(255,255,255,0.015);
+        }
+        .uk-empty-glyph {
+          font-family: 'Playfair Display', serif;
+          font-size: 48px; font-style: italic;
+          background: linear-gradient(135deg, #e8d5a3, #c9a84c);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+          opacity: 0.3; margin-bottom: 14px;
+        }
+        .uk-empty-text {
+          font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+          color: rgba(255,255,255,0.2); margin-bottom: 20px;
+        }
+
+        /* ── Footer ────────────────────────────────── */
+        .uk-footer {
+          margin-top: 2.5rem; padding-top: 1.5rem;
+          border-top: 0.5px solid rgba(210,170,90,0.1);
+          display: flex; align-items: center; justify-content: space-between;
+          flex-wrap: wrap; gap: 10px;
+        }
+        .uk-footer-note { font-size: 10px; color: var(--text-ter); letter-spacing: 0.12em; }
+
+        @media (max-width: 480px) {
+          .uk-nav { padding: 0 1rem; }
+          .uk-hero { padding: 1.5rem 1rem 1.25rem; }
+          .uk-hero-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .uk-stats { justify-content: flex-start; }
+          .uk-stat { text-align: left; }
+          .uk-stat-divider { display: none; }
+          .uk-body { padding: 1.25rem 1rem 3rem; }
+          .uk-hamburger { display: flex; }
+          .uk-nav-links { display: none; }
+          .uk-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
+
+      <div className="uk-root">
+
+        {/* ── Navbar ── */}
+        <nav className="uk-nav">
+          <div className="uk-brand">
+            <div className="uk-logo">✦</div>
+            <span className="uk-wordmark">Kalam</span>
+          </div>
+          <div className="uk-nav-links">
+            {["Compose", "Collection", "Explore", "Analytics"].map((n) => (
+              <button
+                key={n}
+                className={`uk-nl${activeNav === n ? " active" : ""}`}
+                onClick={() => {
+                  setActiveNav(n);
+                  if (n === "Compose") navigate("/kalam");
+                }}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+          <div className="uk-nav-right">
+            <Link to="/kalam" className="uk-btn-primary" style={{ display: "none" }}>+ New Kalam</Link>
+            <div className="uk-avatar">AK</div>
+            <button className="uk-hamburger" onClick={() => setMobileMenuOpen((o) => !o)} aria-label="Menu">
+              <span /><span /><span />
+            </button>
+          </div>
+        </nav>
+
+        {mobileMenuOpen && (
+          <div className="uk-mobile-menu">
+            {["Compose", "Collection", "Explore", "Analytics"].map((n) => (
+              <button
+                key={n}
+                className={`uk-nl${activeNav === n ? " active" : ""}`}
+                onClick={() => {
+                  setActiveNav(n);
+                  setMobileMenuOpen(false);
+                  if (n === "Compose") navigate("/kalam");
+                }}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ── Hero ── */}
+        <div className="uk-hero">
+          <div className="uk-hero-inner">
+            <div>
+              <div className="uk-eyebrow">Collection</div>
+              <h1 className="uk-hero-title">Your Kalams</h1>
+              <p className="uk-hero-sub">Har lafz jo tumne likha — ہر لفظ جو تم نے لکھا</p>
+            </div>
+            <div className="uk-stats">
+              <div className="uk-stat">
+                <div className="uk-stat-num">{loading ? "—" : kalams.length}</div>
+                <div className="uk-stat-label">Kalams</div>
+              </div>
+              <div className="uk-stat-divider" />
+              <div className="uk-stat">
+                <div className="uk-stat-num">{loading ? "—" : ghazalCount}</div>
+                <div className="uk-stat-label">Ghazals</div>
+              </div>
+              <div className="uk-stat-divider" />
+              <div className="uk-stat">
+                <div className="uk-stat-num">{loading ? "—" : nazmCount}</div>
+                <div className="uk-stat-label">Nazms</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Body ── */}
+        <div className="uk-body">
+
+          {loading ? (
+            <div className="uk-loading">
+              <div className="uk-loading-dots"><span>▪</span><span>▪</span><span>▪</span></div>
+            </div>
+          ) : kalams.length === 0 ? (
+            <div className="uk-empty">
+              <div className="uk-empty-glyph">✦</div>
+              <p className="uk-empty-text">No kalams yet — start writing</p>
+              <Link to="/kalam" className="uk-btn-primary">✦ Compose your first kalam</Link>
+            </div>
+          ) : (
+            <>
+              <div className="uk-section-row">
+                <span className="uk-section-label">
+                  {kalams.length} {kalams.length === 1 ? "entry" : "entries"} in your collection
+                </span>
+                <Link to="/kalam" className="uk-btn-primary">✦ New Kalam</Link>
+              </div>
+
+              <div className="uk-grid">
+                {kalams.map((item) => (
+                  <div key={item._id}>
+                    <NewKalam
+                      title={item.name}
+                      content={item.content}
+                      type={item.type}
+                      imageSrc={item.customStyles?.imageSrc}
+                      mUid={item.createdBy}
+                      kalId={item._id}
+                      customStyles={item.customStyles}
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="uk-footer">
+            <span className="uk-footer-note">
+              {!loading && kalams.length > 0 && "— Arif Karimi"}
+            </span>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default UrKalam;

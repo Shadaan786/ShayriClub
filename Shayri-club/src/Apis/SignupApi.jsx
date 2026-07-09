@@ -139,8 +139,8 @@ const SignupApi = () => {
       });
       const data = response.data;
       if (data.success) {
-        setSuccess(`Account created! Welcome, ${name}.`);
-        setTimeout(() => navigate(data.redirectUrl), 900);
+        // setSuccess(`Account created! Welcome, ${name}.`);
+        setTimeout(() => navigate(`/verification?email=${userID}`), 900);
       } else {
         setError(data.message || "Signup failed. Try again.");
       }

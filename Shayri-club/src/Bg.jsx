@@ -10,6 +10,8 @@ import { BellRingIcon } from "@animateicons/react/lucide";
 import { NotiicationCard } from "./pages/components/NotificationCard";
 import { UserRoundIcon } from "@animateicons/react/lucide";
 import { LogoutIcon } from "@animateicons/react/lucide";
+import logo from "../public/logo2.svg"
+import Dropdown from "./pages/components/Dropdown";
 
 // Placeholder components - replace with your actual imports
 const CanvasStars = () => (
@@ -137,10 +139,63 @@ export default function ShayriClub() {
   const Navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const uuid = useRef(null);
+  const [profilePic, setProfilePic] = useState(null)
   // const [token, setToken] = useState("");
   const[notificationsAvailable, setNotificationsAvailable] = useState(false);
 
 const[notificationOpened, setNotificationOpened] = useState(false);
+
+  const handleLogOut=()=>{
+
+    getFCMToken()
+    .then((token)=>{
+
+
+      axiosInstance.
+    get(`/api/logout?token=${token}`)
+
+    .then((response)=>{
+         console.log(response.data);
+    }).catch((error)=>{
+      console.error("Error while Signing out", error)
+    })
+
+
+    })
+
+    
+  }
+
+
+ const menuItems = [
+    {
+      label: "Profile",
+      onClick: () => Navigate(`/profile?userId=${uuid.current}`),
+    },
+    {
+      label: "Saved kalams"
+    },
+    {
+      label: "Logout",
+      onClick: ()=>handleLogOut(),
+    },
+      {
+      label: "Settings",
+      onClick: () => console.log("Settings"),
+    },
+    {
+      label: "Get Support"
+    },
+    {
+      label: "Feedback"
+    },
+    {
+      label: "Privacy policy"
+    },
+    {
+      label: "About us"
+    },
+  ];
   
   const slides = [
     "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&q=80",
@@ -209,26 +264,6 @@ useEffect(() => {
 
   //------------------------------------------------------------------------------------------------>
 
-  const handleLogOut=()=>{
-
-    getFCMToken()
-    .then((token)=>{
-
-
-      axiosInstance.
-    get(`/api/logout?token=${token}`)
-
-    .then((response)=>{
-         console.log(response.data);
-    }).catch((error)=>{
-      console.error("Error while Signing out", error)
-    })
-
-
-    })
-
-    
-  }
 
   //-----------------------------------------------------------------------------------------------------
   
@@ -249,6 +284,7 @@ useEffect(() => {
       withCredentials: true
     })
         uuid.current = response.data._id
+        setProfilePic(response.data.profilePic)
 
     const userId = response.data._id;
 
@@ -278,93 +314,156 @@ useEffect(() => {
       {/* Content */}
       <div className="relative z-10">
         {/* Navbar */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
-              {/* Logo */}
-              <div className="flex-shrink-0">
-                <h1 className="text-3xl sm:text-3xl font-black bg-gradient-to-r from-yellow-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Shayri Club
-                </h1>
-              </div>
+<nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-black via-[#1a0828] to-black backdrop-blur-lg border-b border-amber-500/20">  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-between h-20">
 
-              {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center space-x-1">
-                <a href="/kalam" className="px-4 py-2 text-gray-300 hover:text-white transition rounded-lg hover:bg-white/5">
-                  Kalam
-                </a>
-                <a href="/DispCommunities" className="px-4 py-2 text-gray-300 hover:text-white transition rounded-lg hover:bg-white/5">
-                  Community
-                </a>
-                <a href="/Social" className="px-4 py-2 text-gray-300 hover:text-white transition rounded-lg hover:bg-white/5">
-                  Browse
-                </a>
-              </div>
+     {/* Logo */}
+<div className="flex-shrink-0 flex items-center gap-2.5 group cursor-pointer -ml-2 sm:-ml-4 lg:-ml-6">
+  <div className="relative">
+    <div className="absolute  inset-0 bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 rounded-full blur-md opacity-30 group-hover:opacity-60 transition-opacity duration-500" />
+    <img
+      src={logo}
+      alt="Shayri Club Logo"
+      className="relative h-16 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] transition-transform duration-300 ease-out group-hover:scale-105"
+    />
+  </div>
 
-              {/* Auth Buttons */}
-              <div className="hidden md:flex items-center space-x-3">
-               {!isLoggedIn && <button onClick={()=>Navigate('/Signup/Login')} className="px-5 py-2 text-white hover:bg-white/10 transition rounded-lg border border-white/20">
-                  Login
-                </button>}
-              { !isLoggedIn &&  <button onClick={()=>Navigate('/Signup')} className="px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transition">
-                  Sign Up
-                </button>}
-                {isLoggedIn && <button onClick={()=>Navigate(`/Profile?userId=${uuid.current}`)} className="w-8 h-8">
-                  <UserRoundIcon
-                    size={25}
-                    duration={1}
-                    color="#ffffff"
-                  /></button>}
-                {isLoggedIn && <button onClick={()=>{setNotificationOpened(true)}}>
-                  <BellRingIcon
-                      size={25}
-                      duration={1}
-                      color="#840606"
-                      /></button>}
-                {isLoggedIn && <button onClick={handleLogOut}>
-                <LogoutIcon
-                size={25}
-                duration={1}
-                color="#ffffff"
-              /></button>}
+<h1
+  className="relative inline-block text-3xl sm:text-5xl leading-none font-black tracking-wide cursor-default group"
+>
+  {/* soft glow layer behind the text */}
+  <span
+    aria-hidden="true"
+    className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-amber-400 via-rose-400 to-orange-400 bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-70"
+    style={{ fontFamily: "Playfair Display" }}
+  >
+    Alfaz
+  </span>
 
-              </div>
+  {/* main text, floating */}
+  <span className="relative inline-block">
+    <span
+      className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
+      style={{ fontFamily: "'Dancing Script', cursive" }}
+    >
+      A
+    </span>
+    <bdi
+      className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
+      style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+    >
+      لف
+    </bdi>
+    <span
+      className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
+      style={{ fontFamily: "'Dancing Script', cursive" }}
+    >
+      az
+    </span>
+  </span>
+</h1>
 
-              {/* Mobile menu button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
-              >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
-          </div>
+{/* <style jsx>{`
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+  .animate-float {
+    animation: float 3.5s ease-in-out infinite;
+  }
+`}</style> */}
+</div>
+      {/* Desktop Navigation */}
+      <div className="hidden md:flex items-center space-x-1">
+        <a href="/kalam" className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-lg hover:bg-amber-400/10">
+          Kalam
+        </a>
+        <a href="/DispCommunities" className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-lg hover:bg-amber-400/10">
+          Community
+        </a>
+        <a href="/Social" className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-lg hover:bg-amber-400/10">
+          Browse
+        </a>
+        
+      </div>
 
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden bg-black/95 backdrop-blur-lg border-t border-white/10">
-              <div className="px-4 py-4 space-y-2">
-                <a href="/kalam" className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition">
-                  Kalam
-                </a>
-                <a href="/community" className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition">
-                  Community
-                </a>
-                <a href="/browse" className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition">
-                  Browse
-                </a>
-                <div className="pt-4 space-y-2 border-t border-white/10">
-                  <button className="w-full px-4 py-3 text-white border border-white/20 rounded-lg hover:bg-white/10 transition">
-                    Login
-                  </button>
-                  <button className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg">
-                    Sign Up
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </nav>
+       {isLoggedIn && (
+          <button 
+          className=""
+          onClick={() => setNotificationOpened(true)}>
+            <BellRingIcon size={30} duration={1} color="#ffffff" />
+          </button>
+        )}
+
+      {/* Auth Buttons */}
+      <div className="hidden md:flex items-center space-x-3">
+        {!isLoggedIn && (
+          <button
+            onClick={() => Navigate('/Signup/Login')}
+            className="px-5 py-2 text-sm font-medium text-white hover:bg-white/10 transition rounded-lg border border-white/20"
+          >
+            Login
+          </button>
+        )}
+        {!isLoggedIn && (
+          <button
+            onClick={() => Navigate('/Signup')}
+            className="px-5 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 text-black rounded-lg hover:shadow-lg hover:shadow-orange-500/40 transition"
+          >
+            Sign Up
+          </button>
+        )}
+        {/* {isLoggedIn && (
+          <button onClick={() => Navigate(`/Profile?userId=${uuid.current}`)} className="w-8 h-8">
+            <UserRoundIcon size={25} duration={1} color="#ffffff" />
+          </button>
+        )}
+       
+        {isLoggedIn && (
+          <button onClick={handleLogOut}>
+            <LogoutIcon size={25} duration={1} color="#ffffff" />
+          </button>
+        )} */}
+        {
+          isLoggedIn && <Dropdown title={"Profile ^"} items={menuItems}/>
+        }
+      </div>
+
+      {/* Mobile menu button */}
+      <button
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        className="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
+      >
+        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+    </div>
+  </div>
+
+  {/* Mobile Menu */}
+  {mobileMenuOpen && (
+    <div className="md:hidden bg-black/95 backdrop-blur-lg border-t border-white/10">
+      <div className="px-4 py-4 space-y-2">
+        <a href="/kalam" className="block px-4 py-3 text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg transition">
+          Kalam
+        </a>
+        <a href="/community" className="block px-4 py-3 text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg transition">
+          Community
+        </a>
+        <a href="/browse" className="block px-4 py-3 text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg transition">
+          Browse
+        </a>
+        <div className="pt-4 space-y-2 border-t border-white/10">
+          <button className="w-full px-4 py-3 text-white border border-white/20 rounded-lg hover:bg-white/10 transition">
+            Login
+          </button>
+          <button className="w-full px-4 py-3 bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 text-black font-semibold rounded-lg">
+            Sign Up
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+</nav>
 
         {/* // ─── ADD THIS SECTION COMPONENT (insert just before the existing <section className="pt-32 pb-20"> Hero) ─── */}
 
@@ -428,7 +527,9 @@ useEffect(() => {
 
       <div className="flex gap-3 flex-wrap mt-1">
         <button className="px-7 py-3.5 rounded-xl font-semibold text-white text-sm"
-          style={{ background: 'linear-gradient(90deg,#9333ea,#ec4899)' }}>Start recording ›</button>
+           style={{
+    background: "linear-gradient(to right, #fbbf24, #fb923c, #eab308)",
+  }}>Start recording ›</button>
         <button className="px-7 py-3.5 rounded-xl font-semibold text-sm"
           style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)' }}>
           See examples
