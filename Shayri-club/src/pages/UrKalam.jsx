@@ -1110,7 +1110,7 @@
 // };
 
 // export default UrKalam;
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "@/Apis/axiosInstance";
 import NewKalam from "./components/NewKalam";
@@ -1137,6 +1137,9 @@ const UrKalam = () => {
   const [activeNav, setActiveNav] = useState("Collection");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const [savedKalams, setSavedKalams] = useState([])
+  const savedKalams2 = useRef(new Set())
+  const[isDone, setIsDone] = useState(false);
 
   useEffect(() => {
     axiosInstance
@@ -1155,6 +1158,31 @@ const UrKalam = () => {
     ["ghazal", "sher"].includes((k.type || "").toLowerCase())
   ).length;
   const nazmCount = kalams.filter((k) => (k.type || "").toLowerCase() === "nazm").length;
+
+  useEffect(()=>{
+    axiosInstance
+    .get('/api/savedKalams',{
+      withCredentials: true
+    }).then((response)=>{
+      setSavedKalams(response.data)
+      response.data.forEach((item)=>{
+        savedKalams2.current.add(item.savedKalam._id)
+      })
+
+      console.log("dhan",savedKalams2.current)
+      setIsDone(true);
+      
+
+    })
+  }, [])
+
+  if(!isDone){
+    return (
+      <>
+      <h1 className="text-9xl">Loading</h1>
+      </>
+    )
+  }
 
   return (
     <>
@@ -1492,6 +1520,12 @@ const UrKalam = () => {
               <div className="uk-grid">
                 {kalams.map((item) => (
                   <div key={item._id}>
+                    {
+                      console.log("checkig=ng he he he", savedKalams2.current.has(item._id))
+                      
+                        
+                      
+                    }
                     <NewKalam
                       title={item.name}
                       content={item.content}
@@ -1500,8 +1534,11 @@ const UrKalam = () => {
                       mUid={item.createdBy}
                       kalId={item._id}
                       customStyles={item.customStyles}
+                      isSaved={savedKalams2.current.has(item._id)}
                     />
+                     <br></br>
                   </div>
+                 
                 ))}
               </div>
             </>

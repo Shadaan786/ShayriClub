@@ -44,6 +44,7 @@ import { LogOut } from 'lucide-react';
 import NewKalam from './pages/components/NewKalam';
 import KalamOfTheWeek from './pages/KalamOfTheWeek';
 import OtpVerification from './pages/otp';
+import SavedKalams from './pages/SavedKalams';
 
 
 function App() {
@@ -125,6 +126,7 @@ onMessage(messaging, (data) => {
       <Route path='/NewKalam' element= {<NewKalam/>}/>
       <Route path='/Kotw' element= {<KalamOfTheWeek/>}/>
       <Route path='/verification' element= {<OtpVerification/>}/>
+      <Route path='/savedKalams' element= {<SavedKalams/>}/>
 
       {/* <ContextProvider>
         <Kalam/>

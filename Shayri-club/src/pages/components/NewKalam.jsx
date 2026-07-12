@@ -1132,12 +1132,13 @@ import axiosInstance from "@/Apis/axiosInstance";
 import { HeartIcon } from "@animateicons/react/lucide";
 import { MessageCircleIcon } from "@animateicons/react/lucide";
 import { ShareIcon } from "@animateicons/react/lucide";
-import { BookmarkIcon } from "@animateicons/react/lucide";
+// import { BookmarkIcon } from "@animateicons/react/lucide";
 import { SocialContext } from "../Contexts/SocketContext";
 import { data, useNavigate } from "react-router-dom";
 import { MyVerticallyCenteredModal } from "./Modals/MyModal";
 import { WhatsappShareButton, WhatsappIcon } from "react-share";
 import {toJpeg} from "html-to-image" 
+import BookmarkIcon from '../components/icons/BookmarkIcon'
 
 const NewKalam=({
         title,
@@ -1165,12 +1166,12 @@ const NewKalam=({
       mUid,
       kalId,
       isLiked2,
-      
+      isSaved,
       customStyles
 })=>{
 
-  console.log("checking_isLiked",isLiked2)
-  console.log("kalId", kalId)
+  // console.log("checking_isLiked",isLiked2)
+  // console.log("kalId", kalId)
 
  
 
@@ -1228,6 +1229,9 @@ const buildGoogleFontsUrl = () => {
   // const[isImage, setIsImage] = useState(false);
   // const[imageSrc, setImageSrc] = useState("")
   const isImage = useRef(false)
+  const[isSaved2, setIsSaved2] = useState(isSaved)
+
+
 
 
   const Navigate = useNavigate()
@@ -1239,6 +1243,7 @@ const buildGoogleFontsUrl = () => {
   // }
 
   // Checking like 
+
   
   if(customStyles.imageSrc){
 
@@ -1302,6 +1307,8 @@ const buildGoogleFontsUrl = () => {
   useEffect(()=>{
 
     (isLiked2)?setIsLiked(true):setIsLiked(false)
+      setIsSaved2(isSaved)
+
 
 
   }, [])
@@ -1375,6 +1382,19 @@ const buildGoogleFontsUrl = () => {
  }
 
     
+ }
+
+ const savingKalam=()=>{
+  axiosInstance
+  .post(`/api/savingKalam`, {
+    kalamId: kalId
+  },{
+    withCredentials: true
+  }).then((response)=>{
+    console.log("done")
+  }).catch((error)=>{
+    console.error("error while fetching", error)
+  })
  }
 
   return (
@@ -2224,30 +2244,51 @@ const buildGoogleFontsUrl = () => {
         </button>
 
         {/* Save */}
-        <button style={{
-          display: "flex", alignItems: "center", gap: "5px",
-          padding: "5px 10px", borderRadius: "20px", border: "none",
-          background: "transparent", color: "rgba(240,235,227,0.55)",
-          fontSize: "10px", fontFamily: "'DM Mono', monospace",
-          letterSpacing: "0.07em", cursor: "pointer", transition: "all 0.15s",
-          minHeight: "44px",
-        }}
-          onMouseEnter={e => { e.currentTarget.style.color = "rgba(210,170,90,0.9)"; e.currentTarget.style.background = "rgba(210,170,90,0.08)"; }}
-          onMouseLeave={e => { e.currentTarget.style.color = "rgba(240,235,227,0.55)"; e.currentTarget.style.background = "transparent"; }}
-        >
-          <BookmarkIcon
-            size={15}
-            duration={1}
-            color="#ffffff"
-          />
-          Save
-        </button>
-        {
+       {/* <button
+  onClick={savingKalam}
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    padding: "5px 10px",
+    borderRadius: "20px",
+    border: "none",
+    // background: isSaved ? "rgba(210,170,90,0.12)" : "transparent",
+    color: isSaved ? "rgba(210,170,90,1)" : "rgba(240,235,227,0.55)",
+    fontSize: "10px",
+    fontFamily: "'DM Mono', monospace",
+    letterSpacing: "0.07em",
+    cursor: "pointer",
+    transition: "all 0.15s",
+    minHeight: "0px",
+  }}
+  // onMouseEnter={(e) => {
+  //   e.currentTarget.style.color = "rgba(210,170,90,1)";
+  //   e.currentTarget.style.background = "rgba(210,170,90,0.12)";
+  // }}
+  // onMouseLeave={(e) => {
+  //   e.currentTarget.style.color = isSaved
+  //     ? "rgba(210,170,90,1)"
+  //     : "rgba(240,235,227,0.55)";
+  //   e.currentTarget.style.background = isSaved
+  //     ? "rgba(210,170,90,0.12)"
+  //     : "transparent";
+  // }}
+> */}
+  {/* <BookmarkIcon
+    size={15}
+    duration={1}
+    color={isSaved ? "#d2aa5a" : "#ffffff"}
+  /> */}
+  <BookmarkIcon isSaved={isSaved2} onClick={()=>{savingKalam();(isSaved)?setIsSaved2(false):setIsSaved2(true)}} />
+  
+{/* </button> */}
+        {/* {
             console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", customStyles?.imageSrc)
         }
 {  
 console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", isImage.current)
-}        
+}         */}
 
       
 
