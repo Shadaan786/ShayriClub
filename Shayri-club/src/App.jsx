@@ -45,6 +45,7 @@ import NewKalam from './pages/components/NewKalam';
 import KalamOfTheWeek from './pages/KalamOfTheWeek';
 import OtpVerification from './pages/otp';
 import SavedKalams from './pages/SavedKalams';
+import ProfileKalams from './pages/ProfileKalams';
 
 
 function App() {
@@ -127,6 +128,7 @@ onMessage(messaging, (data) => {
       <Route path='/Kotw' element= {<KalamOfTheWeek/>}/>
       <Route path='/verification' element= {<OtpVerification/>}/>
       <Route path='/savedKalams' element= {<SavedKalams/>}/>
+      <Route path='/userKalams' element= {<ProfileKalams/>}/>
 
       {/* <ContextProvider>
         <Kalam/>

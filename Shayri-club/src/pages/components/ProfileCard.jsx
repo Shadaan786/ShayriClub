@@ -4260,10 +4260,12 @@ export const ProfileCard = ({
                   <span className="pp-stat-label">Followers</span>
                 </button>
                 <div className="pp-stat-divider" />
+                <button onClick={()=>Navigate('/userKalams')}>
                 <div className="pp-stat-cell">
                   <span className="pp-stat-num">{totalKalams}</span>
                   <span className="pp-stat-label">Total Kalams</span>
                 </div>
+                </button>
               </div>
               {
                 console.log("see isVisible", isVisible)

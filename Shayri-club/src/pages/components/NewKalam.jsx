@@ -1124,9 +1124,6 @@
 
 // export default NewKalam
 
-
-
-
 import { useState, useEffect, useContext, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
 import { HeartIcon } from "@animateicons/react/lucide";
@@ -2106,6 +2103,9 @@ const buildGoogleFontsUrl = () => {
         </div>
       </div>
 
+      {/* ── Preview Card + Action Strip Wrapper (position: relative anchor) ── */}
+      <div style={{ position: "relative", width: "100%", maxWidth: "400px" }}>
+
       {/* ── Preview Card ── */}
       <div ref={ref} className="k-preview-card">
 
@@ -2165,20 +2165,20 @@ const buildGoogleFontsUrl = () => {
 
       </div>
 
-      {/* ── Action Strip ── */}
+     {/* ── Action Strip ── */}
       <div style={{
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "space-around",
-        padding: "10px 16px",
-        background: "rgba(255,255,255,0.03)",
-        border: "0.5px solid rgba(255,255,255,0.06)",
-        borderTop: "none",
-        borderRadius: "0 0 14px 14px",
-        width: "100%",
-        maxWidth: "400px",
-        boxSizing: "border-box",
-        height: "15px"
+        padding: "10px 8px",
+        position: "absolute",
+        right: "0px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        height: "auto",
+        gap: "8px",
+        zIndex: 20,
       }}>
 
         {/* Like */}
@@ -2196,11 +2196,11 @@ const buildGoogleFontsUrl = () => {
           
          <HeartIcon
          
-  size={15}
+  size={18}
   duration={1}
   color={(isLiked)?"#771818":"#ffffff"}
 />
-          Like
+          
         </button>
 
         {/* Comment */}
@@ -2216,11 +2216,11 @@ const buildGoogleFontsUrl = () => {
           onMouseLeave={e => { e.currentTarget.style.color = "rgba(240,235,227,0.55)"; e.currentTarget.style.background = "transparent"; }}
         >
           <MessageCircleIcon
-            size={15}
+            size={18}
             duration={1}
             color="#ffffff"
           />
-          Comment
+          
         </button>
 
         {/* Share */}
@@ -2236,11 +2236,11 @@ const buildGoogleFontsUrl = () => {
           onMouseLeave={e => { e.currentTarget.style.color = "rgba(240,235,227,0.55)"; e.currentTarget.style.background = "transparent"; }}
         >
           <ShareIcon
-            size={15}
+            size={18}
             duration={1}
             color="#ffffff"
           />
-          Share
+          
         </button>
 
         {/* Save */}
@@ -2293,6 +2293,10 @@ console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", isImage.current)
       
 
       </div>
+
+      </div>
+      {/* ── End Preview Card + Action Strip Wrapper ── */}
+
         {
       //     <MyVerticallyCenteredModal isOpen={isShared} onClose={()=>setIsShared(false)}>
       //     {/* //   <WhatsappShareButton  title="http://res.cloudinary.com/dbcocbkit/image/upload/v1781298799/llgt0fobi1nmmhtuyi7y.jpg" url={"http://res.cloudinary.com/dbcocbkit/image/upload/v1781298799/llgt0fobi1nmmhtuyi7y.jpg"} aria-label="Share on WhatsApp">
