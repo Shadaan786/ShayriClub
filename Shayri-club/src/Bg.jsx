@@ -746,30 +746,56 @@ useEffect(() => {
           </div>
         </section> */}
 
-           <MyVerticallyCenteredModal isOpen={notificationOpened} onClose={()=>setNotificationOpened(false)}>
+<MyVerticallyCenteredModal isOpen={notificationOpened} onClose={() => setNotificationOpened(false)}>
+  <div className="bg-[#0d1117] rounded-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden border border-gray-800">
+    
+    {/* Header */}
+    <div className="px-5 py-4 border-b border-gray-800 flex items-center justify-between">
+      <h2 className="text-white text-lg font-semibold">Notifications</h2>
+      <button
+        onClick={() => setNotificationOpened(false)}
+        className="text-gray-400 hover:text-white transition-colors"
+        aria-label="Close notifications"
+      >
+        ✕
+      </button>
+    </div>
 
-              {console.log("see_notifications", typeof(notifications))}
-              {console.log("see_notifications", notifications)}
-
-              {
-                
-                notifications.map((item, i)=>(
-                  <div>
-                  
-                  <div key={i}>
-                  <button onClick={()=>Navigate(item.toNavigate)}>
-                  <NotiicationCard notificationTitle={item.notificationTitle} notificationBody={item.notificationBody}/>
-                  </button>
-                  </div>
-                  </div>
-                ))
-
-                // (!notifications) && <h1 className="text-3xl">Your notifications will appear here</h1>
-              }
-              
-             
-             
-             </MyVerticallyCenteredModal>
+    {/* List */}
+    <div className="overflow-y-auto flex-1 p-3 space-y-2">
+      {notifications.length > 0 ? (
+        notifications.map((item, i) => (
+          <button
+            key={item.id ?? i}
+            onClick={() => Navigate(item.toNavigate)}
+            className="w-full text-left bg-[#161b22] hover:bg-[#1c232c] rounded-lg px-4 py-3 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2 min-w-0">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-white font-semibold text-sm truncate">
+                    {item.notificationTitle}
+                  </p>
+                  <p className="text-gray-400 text-sm truncate">
+                    {item.notificationBody}
+                  </p>
+                </div>
+              </div>
+              <span className="text-gray-500 text-xs whitespace-nowrap shrink-0">
+                {item.timeAgo ?? "Just now"}
+              </span>
+            </div>
+          </button>
+        ))
+      ) : (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <p className="text-gray-400 text-lg">Your notifications will appear here</p>
+        </div>
+      )}
+    </div>
+  </div>
+</MyVerticallyCenteredModal>
 
         {/* Featured Section */}
         <section className="py-20 px-4">

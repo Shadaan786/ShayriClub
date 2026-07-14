@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef} from "react";
 import axiosInstance from "@/Apis/axiosInstance";
 import NewKalam from "./components/NewKalam";
+import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
+import { useSearchParams } from "react-router-dom";
 
 const ProfileKalams = () => {
   const [kalams, setKalams] = useState([]);
@@ -9,6 +11,14 @@ const ProfileKalams = () => {
   let likedKalams;
   const likedKalams2 = useRef(new Set())
   const[isFinished, setIsFinished] = useState(false);
+  const[isOpen, setIsOpen] = useState(false);
+  const [SearchParams] = useSearchParams();
+  const [modalKalamInfo, setModalKalamInfo] = useState('')
+  const[isModalDone, setIsModalDone] = useState(false);
+
+  const kalamId = SearchParams.get("kalamId")
+
+
 
   useEffect(() => {
     axiosInstance.get("/api/customKalam").then((response) => {
@@ -18,6 +28,12 @@ const ProfileKalams = () => {
   }, []);
 
     useEffect(()=>{
+
+        if(!kalamId){
+    null
+  }else{
+    setIsOpen(true);
+  }
     axiosInstance
     .get('/api/likedKalams',{
       withCredentials: true
@@ -30,6 +46,25 @@ const ProfileKalams = () => {
         }
         setIsFinished(true);
     })
+
+  }, [])
+  
+  const handleModalKalam=()=>{
+    axiosInstance
+    .get(`/api/kalam?kalamId=${kalamId}`,{
+      withCredentials: true
+    })
+    .then((response)=>{
+      setModalKalamInfo(response.data)
+      console.log("modal", response.data)
+      setIsModalDone(true)
+    })
+  }
+
+  useEffect(()=>{
+    if(!kalamId) return
+    handleModalKalam()
+    
 
   }, [])
 
@@ -210,6 +245,15 @@ if (!isFinished) {
           </div>
         )}
       </div>
+      <MyVerticallyCenteredModal isOpen={isOpen} onClose={()=>setIsOpen(false)}>
+        {
+          (isModalDone)?<NewKalam title={modalKalamInfo.name} content={modalKalamInfo.content} 
+          mUid={modalKalamInfo.createdBy} kalId={modalKalamInfo._id} isLiked2={true} isSaved={true} 
+          type={modalKalamInfo.type} customStyles={modalKalamInfo.customStyles} />
+           : <h1 className="text-9xl">Loading...</h1>
+        }
+        
+      </MyVerticallyCenteredModal>
     </div>
   );
 };
