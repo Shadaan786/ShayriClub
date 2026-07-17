@@ -1487,10 +1487,12 @@ export const Social = () => {
   const page2 = useRef(1);
   const [searchQuery, setSearchQuery] = useState("")
   const [searchClear, setSearchClear] = useState(false);
+  // const searchType = useRef("feed_search")
+  const[searchType, setSearchType] = useState("feed_search");
 
   const handle = () => {
     axiosInstance
-      .get(`/api/social?page=1&limit=${limit}`, { withCredentials: true })
+      .get(`/api/social?page=1&limit=${limit}&searchType=${searchType}`, { withCredentials: true })
       .then((response) => {
         setKalamDat(response.data.allKalamsName);
         customStyles = response.data.allKalamsName.customStyles
@@ -1545,18 +1547,32 @@ export const Social = () => {
       
     }else{
     axiosInstance
-      .get(`/api/social?page=${page.current}&limit=${limit}`, { withCredentials: true })
+      .get(`/api/social?page=${page.current}&limit=${limit}&searchType=${searchType}`, { withCredentials: true })
       .then((response) => {
         newKalams.current = response.data.allKalamsName;
         console.log("checking_newKalams", newKalams.current);
         console.log("CHECKING_TOTAL_LENGTH", totalLength);
-        if (newKalams.current.length === 0) {
+        console.log("see1", newKalams.current.length);
+        console.log("see2", searchType)
+        if (newKalams.current.length === 0 && searchType === "feed_search") {
+          // setHasMore(false);
+          // console.log("hasMore is set false")
+          setSearchType("all_kalams")
+          console.log("all_kalams type field is ended")
+          page2.current = 1
+        } else if(newKalams.current === 0 && searchType === "all_kalams"){
+
+         
           setHasMore(false);
           console.log("hasMore is set false")
-        } else {
-          setKalamDat(prevItems => [...prevItems, ...newKalams.current]);
+
+        }
+        else {
+              setKalamDat(prevItems => [...prevItems, ...newKalams.current]);
           page.current = page.current + 1;
           setLength(prev => prev + 10);
+
+       
         }
       });
     }
