@@ -1560,6 +1560,10 @@ export const Social = () => {
           setSearchType("all_kalams")
           console.log("all_kalams type field is ended")
           page2.current = 1
+         (()=>{
+
+          handleFeed()
+         }) 
         } else if(newKalams.current === 0 && searchType === "all_kalams"){
 
          
@@ -1605,6 +1609,9 @@ export const Social = () => {
     })
 
   }, [])
+  const handleFeed=()=>{
+    fetchMoreData()
+  }
 
   return (
     <div
