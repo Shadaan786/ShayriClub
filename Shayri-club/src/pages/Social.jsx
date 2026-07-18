@@ -1559,11 +1559,10 @@ export const Social = () => {
           // console.log("hasMore is set false")
           searchType.current = "all_kalams"
           console.log("all_kalams type field is ended")
-          page2.current = 1
-         (()=>{
+          page2.current = 1;
 
           handleFeed()
-         }) 
+
         } else if(newKalams.current === 0 && searchType.current === "all_kalams"){
 
          
