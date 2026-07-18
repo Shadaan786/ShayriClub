@@ -1563,7 +1563,7 @@ export const Social = () => {
 
           handleFeed()
 
-        } else if(newKalams.current === 0 && searchType.current === "all_kalams"){
+        } else if(newKalams.current.length === 0 && searchType.current === "all_kalams"){
 
          
           setHasMore(false);
