@@ -43,12 +43,14 @@ const ExploreAlbums = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [sortBy, setSortBy] = useState("recent");
     const [activeGenre, setActiveGenre] = useState(null);
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
     // Same pattern as AlbumsLive: refs drive the request params so we don't
     // need to worry about stale closures inside the InfiniteScroll callbacks.
     const page = useRef(1);
     const query = useRef("all");
     const newAlbums = useRef([]);
+    const isFetchingMore = useRef(false);
     const [searchValue, setSearchValue] = useState("");
 
     const handleFetch = () => {
@@ -84,8 +86,34 @@ const ExploreAlbums = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // Desktop viewports are often tall enough that a single page of
+    // LIMIT albums doesn't produce a scrollbar at all, so the user can
+    // never "scroll" to trigger InfiniteScroll's next(). After every
+    // successful render, check whether the scroll container is actually
+    // scrollable yet; if not (and there's more to load), fetch the next
+    // page automatically until it is (or until hasMore is false).
+    useEffect(() => {
+        if (initialLoading || !hasMore || isFetchingMore.current) return;
+
+        const container = document.getElementById("scrollable-explore-albums");
+        if (!container) return;
+
+        if (container.scrollHeight <= container.clientHeight) {
+            fetchMore();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [albums, initialLoading, hasMore]);
+
     const fetchMore = () => {
         if (initialLoading) return;
+        // Prevent overlapping requests: on tall/desktop viewports a single
+        // page may not fill the scroll container, so InfiniteScroll can
+        // call next() again before the previous request resolves. Without
+        // this guard both calls request the same page.current, appending
+        // duplicate items (which React collapses on key) and the loader
+        // never clears.
+        if (isFetchingMore.current) return;
+        isFetchingMore.current = true;
 
         axiosInstance
             .get(`/api/albumsLive?page=${page.current}&limit=${LIMIT}&query=${query.current}`)
@@ -106,6 +134,9 @@ const ExploreAlbums = () => {
             })
             .catch((error) => {
                 console.error("error while fetching albums", error);
+            })
+            .finally(() => {
+                isFetchingMore.current = false;
             });
     };
 
@@ -121,8 +152,13 @@ const ExploreAlbums = () => {
     return (
         <div
             id="scrollable-explore-albums"
-            className="h-screen w-full overflow-y-auto overflow-x-hidden"
-            style={{ background: COLORS.background, color: COLORS.onSurface, fontFamily: "Inter, system-ui, sans-serif" }}
+            className="w-full overflow-y-auto overflow-x-hidden"
+            style={{
+                height: "100svh",
+                background: COLORS.background,
+                color: COLORS.onSurface,
+                fontFamily: "Inter, system-ui, sans-serif",
+            }}
         >
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -158,7 +194,17 @@ const ExploreAlbums = () => {
                 @media (max-width: 767px) {
                     .ea-nav-search { display: none !important; }
                     .ea-nav-links { display: none !important; }
+                    .ea-header-inner { height: 64px !important; }
+                    .ea-content-offset { padding-top: 64px !important; }
+                    .ea-album-grid {
+                        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                        gap: 14px;
+                    }
+                    .ea-now-playing { display: none !important; }
+                    .ea-main-scroll { padding-bottom: 88px !important; }
+                    .ea-mobile-search-bar { display: flex !important; }
                 }
+                .ea-mobile-search-bar { display: none; }
             `}</style>
 
             {/* ── Top Navigation ── */}
@@ -166,17 +212,17 @@ const ExploreAlbums = () => {
                 className="fixed top-0 left-0 w-full z-50"
                 style={{ background: "rgba(5,20,36,0.7)", backdropFilter: "blur(40px)", borderBottom: `1px solid ${COLORS.borderSubtle}` }}
             >
-                <div className="flex justify-between items-center h-20 px-6 w-full max-w-[1440px] mx-auto">
-                    <div className="flex items-center gap-8">
+                <div className="ea-header-inner flex justify-between items-center h-20 px-4 md:px-6 w-full max-w-[1440px] mx-auto">
+                    <div className="flex items-center gap-4 md:gap-8">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden mr-1 w-9 h-9 flex items-center justify-center rounded-lg"
+                            className="lg:hidden mr-1 w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
                             style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
                             aria-label="Open sidebar"
                         >
                             <span className="material-symbols-outlined text-lg">menu</span>
                         </button>
-                        <span className="font-extrabold text-2xl md:text-3xl tracking-tight">Library</span>
+                        <span className="font-extrabold text-xl md:text-3xl tracking-tight">Library</span>
 
                         <nav className="ea-nav-links hidden md:flex gap-6">
                             <Link to="/artists" className="ea-nav-link">Artists</Link>
@@ -188,7 +234,7 @@ const ExploreAlbums = () => {
                         </nav>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 md:gap-4">
                         <div
                             className="ea-nav-search hidden sm:flex items-center relative"
                         >
@@ -208,14 +254,44 @@ const ExploreAlbums = () => {
                                 style={{ background: "rgba(39,54,71,0.4)", border: "none", color: COLORS.onSurface }}
                             />
                         </div>
-                        <button style={{ color: COLORS.onSurfaceVariant }}>
+                        <button
+                            onClick={() => setMobileSearchOpen((prev) => !prev)}
+                            className="sm:hidden w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
+                            style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
+                            aria-label="Toggle search"
+                        >
+                            <span className="material-symbols-outlined text-lg" style={{ color: COLORS.onSurfaceVariant }}>search</span>
+                        </button>
+                        <button style={{ color: COLORS.onSurfaceVariant }} className="flex-shrink-0">
                             <span className="material-symbols-outlined" style={{ fontSize: 28 }}>account_circle</span>
                         </button>
                     </div>
                 </div>
+
+                {/* Mobile search row — toggled by the search icon above */}
+                {mobileSearchOpen && (
+                    <div className="ea-mobile-search-bar items-center relative px-4 pb-3 sm:hidden">
+                        <span
+                            className="material-symbols-outlined absolute left-7 top-1/2 -translate-y-1/2"
+                            style={{ color: COLORS.onSurfaceVariant }}
+                        >
+                            search
+                        </span>
+                        <input
+                            autoFocus
+                            type="text"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                            placeholder="Search collection..."
+                            className="rounded-full py-2 pl-10 pr-4 text-sm w-full outline-none transition-all"
+                            style={{ background: "rgba(39,54,71,0.4)", border: "none", color: COLORS.onSurface }}
+                        />
+                    </div>
+                )}
             </header>
 
-            <div className="flex pt-20">
+            <div className="ea-content-offset flex pt-20">
                 {/* ── Sidebar (desktop) ── */}
                 <aside
                     className="ea-sidebar hidden lg:flex flex-col fixed left-0 top-20 z-40 overflow-y-auto"
@@ -283,7 +359,7 @@ const ExploreAlbums = () => {
                 </aside>
 
                 {/* ── Main Content ── */}
-                <main className="flex-1 min-h-screen px-4 md:px-12 py-8 md:py-12 pb-32 lg:ml-64 lg:w-[calc(100%-16rem)]">
+                <main className="ea-main-scroll flex-1 min-h-screen px-4 md:px-12 py-6 md:py-12 pb-32 lg:ml-64 lg:w-[calc(100%-16rem)]">
                     {/* Page Header */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
                         <div>
@@ -427,7 +503,7 @@ const ExploreAlbums = () => {
 
             {/* ── Now Playing bar ── */}
             <footer
-                className="fixed bottom-0 left-0 w-full h-24 z-[100] px-6"
+                className="ea-now-playing fixed bottom-0 left-0 w-full h-24 z-[100] px-6"
                 style={{ background: "rgba(5,20,36,0.7)", backdropFilter: "blur(40px)", borderTop: `1px solid ${COLORS.borderSubtle}` }}
             >
                 <div className="max-w-[1440px] mx-auto h-full flex items-center justify-between">
