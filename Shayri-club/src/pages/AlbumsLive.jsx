@@ -1064,6 +1064,10 @@ const AlbumsLive = () => {
                     .lib-nav-search { display: none !important; }
                     .lib-nav-links { display: none !important; }
                 }
+                /* Mobile/tablet only: always show carousel arrows since there is no hover state on touch */
+                @media (max-width: 767px) {
+                    .lib-carousel-arrow { opacity: 1 !important; width: 36px !important; height: 36px !important; }
+                }
             `}</style>
 
             {/* ── Top Navigation ── */}
@@ -1071,17 +1075,17 @@ const AlbumsLive = () => {
                 className="fixed top-0 left-0 w-full z-50"
                 style={{ background: "rgba(5,20,36,0.7)", backdropFilter: "blur(40px)", borderBottom: `1px solid ${COLORS.borderSubtle}` }}
             >
-                <div className="flex justify-between items-center h-20 px-6 w-full max-w-[1440px] mx-auto">
+                <div className="flex justify-between items-center h-16 md:h-20 px-3 sm:px-6 w-full max-w-[1440px] mx-auto">
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden mr-2 w-9 h-9 flex items-center justify-center rounded-lg"
+                            className="lg:hidden mr-1 sm:mr-2 w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
                             style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
                             aria-label="Open sidebar"
                         >
                             <span className="material-symbols-outlined text-lg">menu</span>
                         </button>
-                        <span className="font-extrabold text-2xl md:text-3xl tracking-tight">Library</span>
+                        <span className="font-extrabold text-xl sm:text-2xl md:text-3xl tracking-tight">Library</span>
                     </div>
 
                     <nav className="lib-nav-links hidden md:flex items-center gap-8">
@@ -1093,7 +1097,15 @@ const AlbumsLive = () => {
                         <Link to="/genres" className="lib-nav-link">Genres</Link>
                     </nav>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        <button
+                            className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
+                            style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
+                            aria-label="Search"
+                            onClick={() => Navigate("/search")}
+                        >
+                            <span className="material-symbols-outlined text-lg" style={{ color: COLORS.onSurfaceVariant }}>search</span>
+                        </button>
                         <div
                             className="lib-nav-search hidden lg:flex items-center rounded-full px-4 py-2"
                             style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
@@ -1113,7 +1125,7 @@ const AlbumsLive = () => {
                 </div>
             </header>
 
-            <div className="flex pt-20">
+            <div className="flex pt-16 md:pt-20">
                 {/* ── Sidebar (desktop) ── */}
                 <aside
                     className="lib-sidebar hidden lg:flex flex-col py-8 px-4 gap-4 fixed left-0 top-20 z-40 overflow-y-auto"
@@ -1167,27 +1179,27 @@ const AlbumsLive = () => {
                 </aside>
 
                 {/* ── Main Content ── */}
-                <main className="flex-1 min-h-screen px-4 md:px-12 py-12 lg:ml-64 lg:w-[calc(100%-16rem)]">
+                <main className="flex-1 min-h-screen px-4 md:px-12 py-6 md:py-12 lg:ml-64 lg:w-[calc(100%-16rem)]">
                     {/* Hero */}
-                    <section className="mb-16">
-                        <div className="relative w-full h-80 rounded-[32px] overflow-hidden shadow-2xl flex items-end p-8">
+                    <section className="mb-10 md:mb-16">
+                        <div className="relative w-full h-64 sm:h-72 md:h-80 rounded-2xl sm:rounded-[32px] overflow-hidden shadow-2xl flex items-end p-5 sm:p-6 md:p-8">
                             <div className="lib-sunset-gradient absolute inset-0 z-0" />
                             <div className="relative z-10">
-                                <div className="flex items-center gap-2 mb-4 w-fit px-3 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(8px)" }}>
+                                <div className="flex items-center gap-2 mb-3 md:mb-4 w-fit px-3 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(8px)" }}>
                                     <span className="material-symbols-outlined text-sm">star</span>
-                                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">Featured Curator</span>
+                                    <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-semibold">Featured Curator</span>
                                 </div>
-                                <h1 className="font-extrabold text-3xl md:text-5xl text-white mb-4">Sunset Sessions</h1>
-                                <p className="text-white/90 max-w-xl mb-6">
+                                <h1 className="font-extrabold text-2xl sm:text-3xl md:text-5xl text-white mb-3 md:mb-4">Sunset Sessions</h1>
+                                <p className="text-white/90 max-w-xl mb-4 md:mb-6 text-sm sm:text-base line-clamp-2 sm:line-clamp-none">
                                     Explore the warmest vibrations of the golden hour. A curated selection for deep listening and cinematic horizons.
                                 </p>
-                                <div className="flex gap-4">
-                                    <button className="bg-white text-orange-500 font-bold px-8 py-3 rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform shadow-lg">
+                                <div className="flex flex-wrap gap-3 sm:gap-4">
+                                    <button className="bg-white text-orange-500 font-bold px-5 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform shadow-lg">
                                         <span className="material-symbols-outlined">play_arrow</span>
                                         Listen Now
                                     </button>
                                     <button
-                                        className="text-white font-bold px-8 py-3 rounded-full transition-all"
+                                        className="text-white font-bold px-5 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-full transition-all"
                                         style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.2)" }}
                                     >
                                         Follow
@@ -1198,43 +1210,43 @@ const AlbumsLive = () => {
                     </section>
 
                     {/* Trending Now */}
-                    <section className="mb-16">
-                        <div className="flex justify-between items-end mb-8">
-                            <div>
-                                <h2 className="text-2xl font-bold mb-2">Trending Now</h2>
-                                <p style={{ color: COLORS.onSurfaceVariant }}>The hottest sounds in the digital underground.</p>
+                    <section className="mb-10 md:mb-16">
+                        <div className="flex justify-between items-end mb-4 md:mb-8">
+                            <div className="min-w-0">
+                                <h2 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2">Trending Now</h2>
+                                <p className="text-xs sm:text-base truncate" style={{ color: COLORS.onSurfaceVariant }}>The hottest sounds in the digital underground.</p>
                             </div>
                         </div>
 
                         <div className="relative group">
                             <div
                                 ref={trendingRef}
-                                className="flex gap-6 overflow-x-auto pb-8"
+                                className="flex gap-3 sm:gap-6 overflow-x-auto pb-6 md:pb-8"
                                 style={{ scrollbarWidth: "none", scrollSnapType: "x mandatory" }}
                             >
                                 {trendingItems.map((item) => (
                                     <div
                                         key={item.title}
-                                        className="relative min-w-full md:min-w-[80%] h-[400px] rounded-[32px] overflow-hidden shadow-2xl flex-shrink-0 bg-cover bg-center"
+                                        className="relative min-w-[78%] sm:min-w-[80%] h-[260px] sm:h-[350px] md:h-[400px] rounded-2xl sm:rounded-[32px] overflow-hidden shadow-2xl flex-shrink-0 bg-cover bg-center"
                                         style={{ backgroundImage: `url('${item.img}')`, scrollSnapAlign: "center" }}
                                     >
-                                        <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.2), transparent)" }} />
-                                        <div className="relative h-full flex flex-col justify-center p-12 max-w-2xl">
-                                            <div className="lib-glass-card p-8 rounded-3xl" style={{ backdropFilter: "blur(12px)" }}>
+                                        <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.85), rgba(0,0,0,0.3), transparent)" }} />
+                                        <div className="relative h-full flex flex-col justify-end sm:justify-center p-4 sm:p-8 md:p-12 max-w-2xl">
+                                            <div className="lib-glass-card p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-3xl" style={{ backdropFilter: "blur(12px)" }}>
                                                 {item.badge && (
-                                                    <div className="flex items-center gap-2 mb-4" style={{ color: COLORS.primary }}>
+                                                    <div className="hidden sm:flex items-center gap-2 mb-2 sm:mb-4" style={{ color: COLORS.primary }}>
                                                         <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>trending_up</span>
                                                         <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">{item.badge}</span>
                                                     </div>
                                                 )}
-                                                <h3 className="font-extrabold text-3xl md:text-4xl text-white mb-2">{item.title}</h3>
-                                                <p className="font-bold mb-4" style={{ color: COLORS.primary }}>{item.artist}</p>
-                                                {item.desc && <p className="text-white/80 mb-8">{item.desc}</p>}
+                                                <h3 className="font-extrabold text-lg sm:text-2xl md:text-4xl text-white mb-1 sm:mb-2 leading-tight">{item.title}</h3>
+                                                <p className="font-bold mb-2 sm:mb-4 text-xs sm:text-base" style={{ color: COLORS.primary }}>{item.artist}</p>
+                                                {item.desc && <p className="text-white/80 mb-4 sm:mb-8 text-xs sm:text-sm hidden sm:block">{item.desc}</p>}
                                                 <button
-                                                    className="font-bold px-8 py-3 rounded-full w-fit flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform shadow-lg"
+                                                    className="font-bold px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-base rounded-full w-fit flex items-center gap-1.5 sm:gap-2 hover:scale-105 active:scale-95 transition-transform shadow-lg"
                                                     style={{ background: COLORS.primary, color: COLORS.onPrimary }}
                                                 >
-                                                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
+                                                    <span className="material-symbols-outlined text-base sm:text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                                                     Listen Now
                                                 </button>
                                             </div>
@@ -1245,60 +1257,59 @@ const AlbumsLive = () => {
 
                             <button
                                 onClick={() => scrollByAmount(trendingRef, -600)}
-                                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="hidden sm:flex absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
                                 style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", border: `1px solid ${COLORS.borderSubtle}` }}
                             >
                                 <span className="material-symbols-outlined">chevron_left</span>
                             </button>
                             <button
                                 onClick={() => scrollByAmount(trendingRef, 600)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="hidden sm:flex absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
                                 style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", border: `1px solid ${COLORS.borderSubtle}` }}
                             >
                                 <span className="material-symbols-outlined">chevron_right</span>
                             </button>
 
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                            <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2">
                                 {trendingItems.map((_, i) => (
-                                    <div key={i} className="w-2 h-2 rounded-full" style={{ background: i === 0 ? COLORS.primary : "rgba(255,255,255,0.2)" }} />
+                                    <div key={i} className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full" style={{ background: i === 0 ? COLORS.primary : "rgba(255,255,255,0.2)" }} />
                                 ))}
                             </div>
                         </div>
                     </section>
 
                     {/* Recently Added */}
-                    <section className="mb-16">
-                        <div className="flex justify-between items-end mb-8">
-                            <div>
-                                <h2 className="text-2xl font-bold mb-2">Recently Added</h2>
-                                <p style={{ color: COLORS.onSurfaceVariant }}>Fresh tracks from your favorite genres.</p>
+                    <section className="mb-10 md:mb-16">
+                        <div className="flex justify-between items-center gap-2 mb-4 md:mb-8">
+                            <div className="min-w-0">
+                                <h2 className="text-lg sm:text-2xl font-bold mb-0.5 sm:mb-2">Recently Added</h2>
+                                <p className="text-xs sm:text-base truncate" style={{ color: COLORS.onSurfaceVariant }}>Fresh tracks from your favorite genres.</p>
                             </div>
-                            <Link to="/albums" className="text-xs font-semibold tracking-widest uppercase hover:underline" style={{ color: COLORS.primary }}>
+                            <Link to="/albums" className="flex-shrink-0 text-[10px] sm:text-xs font-semibold tracking-widest uppercase hover:underline whitespace-nowrap" style={{ color: COLORS.primary }}>
                                 View All
                             </Link>
                         </div>
 
-                        <div className="flex gap-12 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
+                        <div className="flex gap-3 sm:gap-8 md:gap-12 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
                             {liveAlbums.slice(0, 20).map((item) => (
                                 <div
                                     key={item._id}
                                     onClick={() => Navigate(`/album?albumId=${item._id}`)}
-                                    className="p-4 rounded-xl cursor-pointer group flex-shrink-0"
-                                    style={{ width: 220 }}
+                                    className="p-2 sm:p-3 md:p-4 rounded-xl cursor-pointer group flex-shrink-0 w-[150px] sm:w-[190px] md:w-[220px]"
                                 >
-                                    <div className="relative aspect-square w-60 h-60 rounded-lg overflow-hidden mb-4 shadow-xl">
+                                    <div className="relative aspect-square w-full h-auto rounded-lg overflow-hidden mb-2 sm:mb-3 md:mb-4 shadow-xl">
                                         <div
                                             className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                                             style={{ backgroundImage: `url('${item.albumCover}')` }}
                                         />
                                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "rgba(0,0,0,0.4)" }}>
-                                            <div className="lib-sunset-gradient w-12 h-12 rounded-full flex items-center justify-center text-white scale-75 group-hover:scale-100 transition-transform shadow-lg">
+                                            <div className="lib-sunset-gradient w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white scale-75 group-hover:scale-100 transition-transform shadow-lg">
                                                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <h3 className="font-bold text-base text-left truncate mb-1">{item.name}</h3>
-                                    <p className="text-sm text-left truncate" style={{ color: COLORS.primary }}>{item.curator || item.category}</p>
+                                    <h3 className="font-bold text-sm sm:text-base text-left truncate mb-1">{item.name}</h3>
+                                    <p className="text-xs sm:text-sm text-left truncate" style={{ color: COLORS.primary }}>{item.curator || item.category}</p>
                                 </div>
                             ))}
                             {liveAlbums.length === 0 && !initialLoading && (
@@ -1310,22 +1321,22 @@ const AlbumsLive = () => {
                     </section>
 
                     {/* Featured Curators */}
-                    <section className="mb-16 py-8">
-                        <div className="flex justify-between items-end mb-8">
-                            <div>
-                                <h2 className="text-2xl font-bold mb-2">Featured Curators</h2>
-                                <p style={{ color: COLORS.onSurfaceVariant }}>The visionaries behind your favorite sounds.</p>
+                    <section className="mb-10 md:mb-16 py-4 md:py-8">
+                        <div className="flex justify-between items-center gap-2 mb-4 md:mb-8">
+                            <div className="min-w-0">
+                                <h2 className="text-lg sm:text-2xl font-bold mb-0.5 sm:mb-2">Featured Curators</h2>
+                                <p className="text-xs sm:text-base truncate" style={{ color: COLORS.onSurfaceVariant }}>The visionaries behind your favorite sounds.</p>
                             </div>
-                            <button onClick={()=>Navigate('/authors')} className="text-xs font-semibold tracking-widest uppercase hover:underline" style={{ color: COLORS.primary }}>
+                            <button onClick={()=>Navigate('/authors')} className="flex-shrink-0 text-[10px] sm:text-xs font-semibold tracking-widest uppercase hover:underline whitespace-nowrap" style={{ color: COLORS.primary }}>
                                 View All
                             </button>
                         </div>
 
-                        <div className="flex gap-8 overflow-x-auto pb-4" style={{ scrollbarWidth: "none" }}>
+                        <div className="flex gap-4 sm:gap-8 overflow-x-auto pb-4" style={{ scrollbarWidth: "none" }}>
                             {featuredCurators.map((curator) => (
-                                <div key={curator.name} className="flex flex-col items-center gap-4 group cursor-pointer" style={{ minWidth: 120 }}>
+                                <div key={curator.name} className="flex flex-col items-center gap-3 sm:gap-4 group cursor-pointer flex-shrink-0" style={{ minWidth: 96 }}>
                                     <div
-                                        className="w-24 h-24 rounded-full overflow-hidden transition-all duration-300"
+                                        className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full overflow-hidden transition-all duration-300"
                                         style={{ border: "2px solid transparent" }}
                                         onMouseEnter={(e) => (e.currentTarget.style.borderColor = COLORS.primary)}
                                         onMouseLeave={(e) => (e.currentTarget.style.borderColor = "transparent")}
@@ -1333,48 +1344,48 @@ const AlbumsLive = () => {
                                         <img src={curator.img} alt={curator.name} className="w-full h-full object-cover" />
                                     </div>
                                     <div className="text-center">
-                                        <h3 className="font-bold text-sm mb-1">{curator.name}</h3>
-                                        <p className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(203,196,210,0.6)" }}>
+                                        <h3 className="font-bold text-xs sm:text-sm mb-1">{curator.name}</h3>
+                                        <p className="text-[9px] sm:text-[10px] uppercase tracking-wider" style={{ color: "rgba(203,196,210,0.6)" }}>
                                             {curator.followers}
                                         </p>
                                     </div>
-                                    <button className="text-xs font-bold hover:underline" style={{ color: COLORS.primary }}>Follow</button>
+                                    <button className="text-[11px] sm:text-xs font-bold hover:underline" style={{ color: COLORS.primary }}>Follow</button>
                                 </div>
                             ))}
                         </div>
                     </section>
 
                     {/* All Time Favorites */}
-                    <section className="mb-16">
-                        <div className="flex justify-between items-end mb-8">
-                            <div>
-                                <h2 className="text-2xl font-bold mb-2">All Time Favorites</h2>
-                                <p style={{ color: COLORS.onSurfaceVariant }}>The timeless masterpieces of our collection.</p>
+                    <section className="mb-10 md:mb-16">
+                        <div className="flex justify-between items-end mb-4 md:mb-8">
+                            <div className="min-w-0">
+                                <h2 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2">All Time Favorites</h2>
+                                <p className="text-xs sm:text-base truncate" style={{ color: COLORS.onSurfaceVariant }}>The timeless masterpieces of our collection.</p>
                             </div>
                         </div>
 
                         <div className="relative group">
                             <div
                                 ref={favoritesRef}
-                                className="flex gap-6 overflow-x-auto pb-8"
+                                className="flex gap-3 sm:gap-6 overflow-x-auto pb-6 md:pb-8"
                                 style={{ scrollbarWidth: "none", scrollSnapType: "x mandatory" }}
                             >
                                 {allTimeFavorites.map((item) => (
                                     <div
                                         key={item.title}
-                                        className="relative min-w-full md:min-w-[80%] h-[400px] rounded-[32px] overflow-hidden shadow-2xl flex-shrink-0 bg-cover bg-center"
+                                        className="relative min-w-[78%] sm:min-w-[80%] h-[260px] sm:h-[350px] md:h-[400px] rounded-2xl sm:rounded-[32px] overflow-hidden shadow-2xl flex-shrink-0 bg-cover bg-center"
                                         style={{ backgroundImage: `url('${item.img}')`, scrollSnapAlign: "center" }}
                                     >
-                                        <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.2), transparent)" }} />
-                                        <div className="relative h-full flex flex-col justify-center p-12 max-w-2xl">
-                                            <div className="lib-glass-card p-8 rounded-3xl" style={{ backdropFilter: "blur(12px)" }}>
-                                                <h3 className="font-extrabold text-3xl md:text-4xl text-white mb-2">{item.title}</h3>
-                                                <p className="font-bold mb-4" style={{ color: COLORS.primary }}>{item.artist}</p>
+                                        <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.85), rgba(0,0,0,0.3), transparent)" }} />
+                                        <div className="relative h-full flex flex-col justify-end sm:justify-center p-4 sm:p-8 md:p-12 max-w-2xl">
+                                            <div className="lib-glass-card p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-3xl" style={{ backdropFilter: "blur(12px)" }}>
+                                                <h3 className="font-extrabold text-lg sm:text-2xl md:text-4xl text-white mb-1 sm:mb-2 leading-tight">{item.title}</h3>
+                                                <p className="font-bold mb-2 sm:mb-4 text-xs sm:text-base" style={{ color: COLORS.primary }}>{item.artist}</p>
                                                 <button
-                                                    className="font-bold px-8 py-3 rounded-full w-fit flex items-center gap-2 hover:scale-105 transition-transform"
+                                                    className="font-bold px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-base rounded-full w-fit flex items-center gap-1.5 sm:gap-2 hover:scale-105 transition-transform"
                                                     style={{ background: COLORS.primary, color: COLORS.onPrimary }}
                                                 >
-                                                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
+                                                    <span className="material-symbols-outlined text-base sm:text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                                                     Listen Now
                                                 </button>
                                             </div>
@@ -1385,22 +1396,22 @@ const AlbumsLive = () => {
 
                             <button
                                 onClick={() => scrollByAmount(favoritesRef, -600)}
-                                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="hidden sm:flex absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
                                 style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", border: `1px solid ${COLORS.borderSubtle}` }}
                             >
                                 <span className="material-symbols-outlined">chevron_left</span>
                             </button>
                             <button
                                 onClick={() => scrollByAmount(favoritesRef, 600)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="hidden sm:flex absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
                                 style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", border: `1px solid ${COLORS.borderSubtle}` }}
                             >
                                 <span className="material-symbols-outlined">chevron_right</span>
                             </button>
 
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                            <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2">
                                 {allTimeFavorites.map((_, i) => (
-                                    <div key={i} className="w-2 h-2 rounded-full" style={{ background: i === 0 ? COLORS.primary : "rgba(255,255,255,0.2)" }} />
+                                    <div key={i} className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full" style={{ background: i === 0 ? COLORS.primary : "rgba(255,255,255,0.2)" }} />
                                 ))}
                             </div>
                         </div>
@@ -1408,65 +1419,107 @@ const AlbumsLive = () => {
 
                     {/* Personalized Mixes (bento) */}
                   {/* Personalized Mixes (bento) */}
-<section className="pb-32">
-    <h2 className="text-2xl font-bold mb-8">Personalized Mixes</h2>
-    <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-[500px]">
+<section className="pb-24 md:pb-32">
+    <h2 className="text-xl sm:text-2xl font-bold mb-5 md:mb-8">Personalized Mixes</h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 md:grid-rows-2 gap-3 sm:gap-4 h-auto md:h-[500px]">
         <div
-            className="lib-glass-card md:col-span-2 md:row-span-2 rounded-2xl relative overflow-hidden group cursor-pointer bg-cover bg-center"
+            className="lib-glass-card sm:col-span-2 md:col-span-2 md:row-span-2 rounded-2xl relative overflow-hidden group cursor-pointer bg-cover bg-center h-52 sm:h-64 md:h-auto"
             style={{
                 backgroundImage:
                     "url('https://lh3.googleusercontent.com/aida-public/AB6AXuClwBiiL_a0yxdAaD6xPm2xlv_P1imJIdES012wALMXY-z6xBB25j4n5UBxk5vot9QXjvKCX5GvD-Enuokn_bujWjqGZa9OIfym8LT-LcPL-630E5_-2FcfqRtnVmaKWBBL5OMiNnvbJHVAXh-3i_0Ctc9ITw9uHLo0Y1EdNozyOnDxf6LSzZMAegYwqU9WIX-C9nlUADeK-0JM-f9Xmvsfdnz8I0LXrtSC2iD-XvjH5fpAA-1RN_2s')",
             }}
         >
-            <div className="absolute inset-0 p-8 flex flex-col justify-end" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2), transparent)" }}>
-                <h4 className="text-2xl font-bold mb-2">After Hours Focus</h4>
-                <p className="text-white/70">Deep techno for midnight creation.</p>
+            <div className="absolute inset-0 p-5 sm:p-6 md:p-8 flex flex-col justify-end" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2), transparent)" }}>
+                <h4 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2">After Hours Focus</h4>
+                <p className="text-white/70 text-xs sm:text-sm md:text-base">Deep techno for midnight creation.</p>
             </div>
         </div>
 
         <div
-            className="lib-glass-card md:col-span-2 rounded-2xl relative overflow-hidden group cursor-pointer bg-cover bg-center"
+            className="lib-glass-card md:col-span-2 rounded-2xl relative overflow-hidden group cursor-pointer bg-cover bg-center h-40 sm:h-48 md:h-auto"
             style={{
                 backgroundImage:
                     "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCkXNyMlpMqmDzsqveaiSy6Y6zpRMd0EX-4KRo2qOw1YzOXEOVZ3WgziOnj9CqjX0-oJHahAwmeBTagfmu2U9jedsuxIqtUNuf5jwTFB31vxBQ0IFk6iAtHmUs0uxeygbKIa0mG2r3VynxYT1l0wqMQCddVScwMNW65Rwn3te8I-F5iy52-ThMK9HC9Y45HWtMqTnbIgrfBYQpI8F5q0wALAOK27WF22VMhpM0k9BKmhoJghHwghiyw')",
             }}
         >
-            <div className="absolute inset-0 p-6 flex flex-col justify-end" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2), transparent)" }}>
-                <h4 className="text-xl font-bold mb-1">Acoustic Mornings</h4>
-                <p className="text-white/70">Gentle piano and strings.</p>
+            <div className="absolute inset-0 p-5 sm:p-6 flex flex-col justify-end" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2), transparent)" }}>
+                <h4 className="text-base sm:text-lg md:text-xl font-bold mb-1">Acoustic Mornings</h4>
+                <p className="text-white/70 text-xs sm:text-sm">Gentle piano and strings.</p>
             </div>
         </div>
 
-        <div className="lib-glass-card rounded-2xl relative overflow-hidden group cursor-pointer">
+        <div className="lib-glass-card rounded-2xl relative overflow-hidden group cursor-pointer h-32 sm:h-36 md:h-auto">
             <div className="lib-sunset-gradient absolute inset-0 opacity-80" />
             <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-                <span className="material-symbols-outlined text-4xl mb-2 text-white">bolt</span>
-                <h4 className="font-bold text-white">Vibe High</h4>
+                <span className="material-symbols-outlined text-3xl sm:text-4xl mb-2 text-white">bolt</span>
+                <h4 className="font-bold text-white text-sm sm:text-base">Vibe High</h4>
             </div>
         </div>
 
         <div
             onClick={() => setModalOpen(true)}
-            className="lib-glass-card rounded-2xl relative overflow-hidden group cursor-pointer flex flex-col items-center justify-center p-4 text-center"
+            className="lib-glass-card rounded-2xl relative overflow-hidden group cursor-pointer flex flex-col items-center justify-center p-4 text-center h-32 sm:h-36 md:h-auto"
             style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
         >
-            <span className="material-symbols-outlined text-4xl mb-2" style={{ color: COLORS.primary }}>add_circle</span>
-            <h4 className="font-bold">Create New</h4>
+            <span className="material-symbols-outlined text-3xl sm:text-4xl mb-2" style={{ color: COLORS.primary }}>add_circle</span>
+            <h4 className="font-bold text-sm sm:text-base">Create New</h4>
         </div>
     </div>
 </section>
 
                     {/* ── Footer (themed to match Library's navy/amber palette) ── */}
                     <footer
-                        className="mt-16 pb-8 rounded-[32px] overflow-hidden"
+                        className="mt-10 md:mt-16 pb-8 rounded-2xl sm:rounded-[32px] overflow-hidden"
                         style={{
                             background: `linear-gradient(90deg, ${COLORS.surfaceContainerLowest ?? "#010f1f"} 0%, ${COLORS.surfaceContainer} 55%, #010f1f 100%)`,
                             borderTop: `1px solid ${COLORS.borderSubtle}`,
                         }}
                     >
-                        <div className="max-w-7xl mx-auto px-8 pt-12">
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                        <div className="max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-12">
+                            <div className="flex flex-col items-center text-center gap-6 sm:hidden mb-8">
                                 <div>
+                                    <h1 className="relative inline-block text-3xl leading-none font-black tracking-wide cursor-default group">
+                                        <span className="relative inline-block">
+                                            <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent" style={{ fontFamily: "'Dancing Script', cursive" }}>A</span>
+                                            <bdi className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent" style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}>لف</bdi>
+                                            <span className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent" style={{ fontFamily: "'Dancing Script', cursive" }}>az</span>
+                                        </span>
+                                    </h1>
+                                    <p className="text-xs mt-2 max-w-xs mx-auto" style={{ color: COLORS.onSurfaceVariant }}>
+                                        A platform for poets and writers to share their art with the world.
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-4 w-full">
+                                    <div>
+                                        <h4 className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Explore</h4>
+                                        <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
+                                            <li className="lib-nav-link cursor-pointer transition">Kalam</li>
+                                            <li className="lib-nav-link cursor-pointer transition">Community</li>
+                                            <li className="lib-nav-link cursor-pointer transition">Browse</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Resources</h4>
+                                        <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
+                                            <li className="lib-nav-link cursor-pointer transition">About Us</li>
+                                            <li className="lib-nav-link cursor-pointer transition">Guidelines</li>
+                                            <li className="lib-nav-link cursor-pointer transition">Help Center</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Legal</h4>
+                                        <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
+                                            <li className="lib-nav-link cursor-pointer transition">Privacy</li>
+                                            <li className="lib-nav-link cursor-pointer transition">Terms</li>
+                                            <li className="lib-nav-link cursor-pointer transition">Contact</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8">
+                                <div className="col-span-2 md:col-span-1">
                                     <h1 className="relative inline-block text-3xl sm:text-5xl leading-none font-black tracking-wide cursor-default group">
                                        <span className="relative inline-block">
     <span
@@ -1490,14 +1543,14 @@ const AlbumsLive = () => {
   </span>
                                     </h1>
 
-                                    <p className="text-sm mt-2" style={{ color: COLORS.onSurfaceVariant }}>
+                                    <p className="text-xs sm:text-sm mt-2" style={{ color: COLORS.onSurfaceVariant }}>
                                         A platform for poets and writers to share their art with the world.
                                     </p>
                                 </div>
 
                                 <div>
-                                    <h4 className="font-semibold mb-4" style={{ color: COLORS.onSurface }}>Explore</h4>
-                                    <ul className="space-y-2 text-sm" style={{ color: COLORS.onSurfaceVariant }}>
+                                    <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base" style={{ color: COLORS.onSurface }}>Explore</h4>
+                                    <ul className="space-y-2 text-xs sm:text-sm" style={{ color: COLORS.onSurfaceVariant }}>
                                         <li className="lib-nav-link cursor-pointer transition">Kalam</li>
                                         <li className="lib-nav-link cursor-pointer transition">Community</li>
                                         <li className="lib-nav-link cursor-pointer transition">Browse</li>
@@ -1505,8 +1558,8 @@ const AlbumsLive = () => {
                                 </div>
 
                                 <div>
-                                    <h4 className="font-semibold mb-4" style={{ color: COLORS.onSurface }}>Resources</h4>
-                                    <ul className="space-y-2 text-sm" style={{ color: COLORS.onSurfaceVariant }}>
+                                    <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base" style={{ color: COLORS.onSurface }}>Resources</h4>
+                                    <ul className="space-y-2 text-xs sm:text-sm" style={{ color: COLORS.onSurfaceVariant }}>
                                         <li className="lib-nav-link cursor-pointer transition">About Us</li>
                                         <li className="lib-nav-link cursor-pointer transition">Guidelines</li>
                                         <li className="lib-nav-link cursor-pointer transition">Help Center</li>
@@ -1514,8 +1567,8 @@ const AlbumsLive = () => {
                                 </div>
 
                                 <div>
-                                    <h4 className="font-semibold mb-4" style={{ color: COLORS.onSurface }}>Legal</h4>
-                                    <ul className="space-y-2 text-sm" style={{ color: COLORS.onSurfaceVariant }}>
+                                    <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base" style={{ color: COLORS.onSurface }}>Legal</h4>
+                                    <ul className="space-y-2 text-xs sm:text-sm" style={{ color: COLORS.onSurfaceVariant }}>
                                         <li className="lib-nav-link cursor-pointer transition">Privacy Policy</li>
                                         <li className="lib-nav-link cursor-pointer transition">Terms of Service</li>
                                         <li className="lib-nav-link cursor-pointer transition">Contact</li>
@@ -1524,7 +1577,7 @@ const AlbumsLive = () => {
                             </div>
 
                             <div
-                                className="text-center text-sm pt-8"
+                                className="text-center text-xs sm:text-sm pt-6 sm:pt-8"
                                 style={{ color: "rgba(203,196,210,0.5)", borderTop: `1px solid ${COLORS.borderSubtle}` }}
                             >
                                 © 2025 Alfaz. All rights reserved.
@@ -1537,37 +1590,37 @@ const AlbumsLive = () => {
             {/* ── Floating Action Button ── */}
             <button
                 onClick={() => setModalOpen(true)}
-                className="lib-sunset-gradient fixed bottom-24 right-8 w-14 h-14 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40"
+                className={`lib-sunset-gradient fixed right-4 sm:right-8 w-12 h-12 sm:w-14 sm:h-14 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 ${isPlayerOpen ? "bottom-40 lg:bottom-24" : "bottom-24 lg:bottom-24"}`}
                 aria-label="Create album"
             >
-                <span className="material-symbols-outlined text-3xl">add</span>
+                <span className="material-symbols-outlined text-2xl sm:text-3xl">add</span>
             </button>
 
             {/* ── Now Playing bar ── */}
             {isPlayerOpen && <footer
-                className="fixed bottom-0 left-0 w-full h-20 z-50 px-6 flex items-center justify-between"
+                className="fixed bottom-16 lg:bottom-0 left-0 w-full h-16 sm:h-20 z-50 px-3 sm:px-6 flex items-center justify-between"
                 style={{ background: "rgba(5,20,36,0.9)", backdropFilter: "blur(20px)", borderTop: `1px solid ${COLORS.borderSubtle}` }}
             >
-                <div className="flex items-center gap-4 w-1/3">
-                    <div className="w-12 h-12 rounded shadow-lg" style={{ background: "linear-gradient(135deg,#fb923c,#111)" }} />
-                    <div className="hidden sm:block">
+                <div className="flex items-center gap-2 sm:gap-4 w-1/3">
+                    <div className="w-9 h-9 sm:w-12 sm:h-12 rounded shadow-lg flex-shrink-0" style={{ background: "linear-gradient(135deg,#fb923c,#111)" }} />
+                    <div className="hidden sm:block min-w-0">
                         <p className="font-bold text-sm truncate">Amber Waves</p>
                         <p className="text-xs truncate" style={{ color: COLORS.onSurfaceVariant }}>The Golden Duo</p>
                     </div>
-                    <span className="material-symbols-outlined text-xl ml-2 cursor-pointer" style={{ color: COLORS.primary }}>favorite</span>
+                    <span className="material-symbols-outlined text-lg sm:text-xl ml-1 sm:ml-2 cursor-pointer flex-shrink-0" style={{ color: COLORS.primary }}>favorite</span>
                 </div>
 
                 <div className="flex flex-col items-center w-1/3 gap-1">
-                    <div className="flex items-center gap-6">
-                        <span className="material-symbols-outlined cursor-pointer" style={{ color: COLORS.onSurfaceVariant }}>shuffle</span>
-                        <span className="material-symbols-outlined cursor-pointer" style={{ color: COLORS.onSurfaceVariant }}>skip_previous</span>
-                        <button className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform">
-                            <span className="material-symbols-outlined">play_arrow</span>
+                    <div className="flex items-center gap-3 sm:gap-6">
+                        <span className="material-symbols-outlined cursor-pointer hidden sm:inline" style={{ color: COLORS.onSurfaceVariant }}>shuffle</span>
+                        <span className="material-symbols-outlined cursor-pointer text-lg sm:text-2xl" style={{ color: COLORS.onSurfaceVariant }}>skip_previous</span>
+                        <button className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform">
+                            <span className="material-symbols-outlined text-lg sm:text-xl">play_arrow</span>
                         </button>
-                        <span className="material-symbols-outlined cursor-pointer" style={{ color: COLORS.onSurfaceVariant }}>skip_next</span>
-                        <span className="material-symbols-outlined cursor-pointer" style={{ color: COLORS.onSurfaceVariant }}>repeat</span>
+                        <span className="material-symbols-outlined cursor-pointer text-lg sm:text-2xl" style={{ color: COLORS.onSurfaceVariant }}>skip_next</span>
+                        <span className="material-symbols-outlined cursor-pointer hidden sm:inline" style={{ color: COLORS.onSurfaceVariant }}>repeat</span>
                     </div>
-                    <div className="w-full max-w-md flex items-center gap-2">
+                    <div className="w-full max-w-md items-center gap-2 hidden sm:flex">
                         <span className="text-[10px] w-8" style={{ color: COLORS.onSurfaceVariant }}>1:24</span>
                         <div className="flex-1 h-1 rounded-full overflow-hidden cursor-pointer" style={{ background: "rgba(255,255,255,0.1)" }}>
                             <div className="lib-sunset-gradient h-full w-1/3" />
@@ -1576,10 +1629,10 @@ const AlbumsLive = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-4 w-1/3">
+                <div className="flex items-center justify-end gap-2 sm:gap-4 w-1/3">
                     <span className="material-symbols-outlined cursor-pointer hidden md:block" style={{ color: COLORS.onSurfaceVariant }}>lyrics</span>
                     <span className="material-symbols-outlined cursor-pointer hidden md:block" style={{ color: COLORS.onSurfaceVariant }}>queue_music</span>
-                    <div className="flex items-center gap-2">
+                    <div className="items-center gap-2 hidden md:flex">
                         <span className="material-symbols-outlined" style={{ color: COLORS.onSurfaceVariant }}>volume_up</span>
                         <div className="w-24 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
                             <div className="h-full w-2/3" style={{ background: COLORS.primary }} />
@@ -1593,7 +1646,7 @@ const AlbumsLive = () => {
                 <div className="fixed inset-0 z-[70] lg:hidden" onClick={() => setSidebarOpen(false)} style={{ background: "rgba(0,0,0,0.6)" }}>
                     <aside
                         onClick={(e) => e.stopPropagation()}
-                        className="h-full w-64 flex flex-col py-8 px-4 gap-4"
+                        className="h-full w-64 max-w-[80vw] flex flex-col py-8 px-4 gap-4"
                         style={{ background: COLORS.surfaceContainer }}
                     >
                         {[
@@ -1644,17 +1697,17 @@ const AlbumsLive = () => {
             {/* ── Create Album Modal ── */}
             {modalOpen && (
                 <div
-                    className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+                    className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
                     style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}
                     onClick={() => setModalOpen(false)}
                 >
                     <div
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full max-w-lg rounded-3xl p-8"
+                        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 sm:p-8 max-h-[92vh] overflow-y-auto"
                         style={{ background: COLORS.surfaceContainerHigh, border: `1px solid ${COLORS.borderSubtle}` }}
                     >
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold">Create New Album</h2>
+                        <div className="flex justify-between items-center mb-5 sm:mb-6">
+                            <h2 className="text-xl sm:text-2xl font-bold">Create New Album</h2>
                             <button
                                 onClick={() => setModalOpen(false)}
                                 className="material-symbols-outlined p-2 rounded-full"
@@ -1664,7 +1717,7 @@ const AlbumsLive = () => {
                             </button>
                         </div>
 
-                        <div className="space-y-6">
+                        <div className="space-y-5 sm:space-y-6">
                             <div>
                                 <label className="block text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: COLORS.onSurfaceVariant }}>
                                     Album Title
@@ -1711,11 +1764,11 @@ const AlbumsLive = () => {
                             </div>
 
                             <label
-                                className="rounded-2xl p-12 text-center flex flex-col items-center gap-3 cursor-pointer"
+                                className="rounded-2xl p-6 sm:p-8 md:p-12 text-center flex flex-col items-center gap-3 cursor-pointer"
                                 style={{ border: `2px dashed ${COLORS.borderSubtle}` }}
                             >
                                 <span className="material-symbols-outlined text-4xl" style={{ color: COLORS.onSurfaceVariant }}>cloud_upload</span>
-                                <p className="text-sm" style={{ color: COLORS.onSurfaceVariant }}>
+                                <p className="text-sm text-center" style={{ color: COLORS.onSurfaceVariant }}>
                                     {artworkFile ? artworkFile.name : "Drop album artwork here or click to browse"}
                                 </p>
                                 <input
@@ -1726,7 +1779,7 @@ const AlbumsLive = () => {
                                 />
                             </label>
 
-                            <div className="flex gap-4 pt-4">
+                            <div className="flex gap-3 sm:gap-4 pt-2 sm:pt-4">
                                 <button
                                     onClick={() => setModalOpen(false)}
                                     className="flex-1 py-3 rounded-xl font-bold transition-colors"
