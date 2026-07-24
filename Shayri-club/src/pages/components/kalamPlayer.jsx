@@ -185,8 +185,6 @@
 
 //--------------------------------------------------------------------------------------------------------------------------------->
 
-
-
 import { useEffect, useRef, useState } from "react";
 import "./kalamPlayer.css";
 
@@ -218,17 +216,40 @@ export function KalamPlayer({ tracks = [], initialIndex = 0, onClose }) {
     if (!v) return;
     if (!current?.waveformVideoUrl) return;
 
-    v.load();
+    const shouldResume = isPlaying;
 
-    if (isPlaying) {
-      v.play().catch(() => setIsPlaying(false));
-    } else {
-      v.pause();
-    }
+    // IMPORTANT: pause before load(). Calling load() on a video that's
+    // actively playing gets silently ignored/delayed on many mobile
+    // browsers, so the old track just keeps playing (looks like next/prev
+    // "does nothing"). Pausing first guarantees the source swap actually
+    // takes effect every time.
+    v.pause();
+    v.load();
 
     setAudioProgress(0);
     setCurText("00:00");
     setTotalText("00:00");
+
+    if (!shouldResume) return;
+
+    // Don't call play() immediately after load() — the new source may not
+    // be ready yet (especially over mobile networks), and play() can fail
+    // silently in that state. Wait for canplay, with a safety timeout in
+    // case the event never fires for some reason.
+    let settled = false;
+    const tryPlay = () => {
+      if (settled) return;
+      settled = true;
+      v.play().catch(() => setIsPlaying(false));
+    };
+
+    v.addEventListener("canplay", tryPlay, { once: true });
+    const fallback = setTimeout(tryPlay, 800);
+
+    return () => {
+      v.removeEventListener("canplay", tryPlay);
+      clearTimeout(fallback);
+    };
   }, [musicIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pad2       = (n) => (n < 10 ? `0${n}` : `${n}`);

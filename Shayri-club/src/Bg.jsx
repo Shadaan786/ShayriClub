@@ -89,14 +89,46 @@ const Carousel = ({ children }) => {
   );
 };
 
-const Footer = () => (
-  <footer className="mt-32 pb-8 border-t border-white/10">
+export const Footer = () => (
+  <footer className="mt-32 pb-8 border-t bg-gradient-to-r from-black via-[#12061c] to-black backdrop-blur-lg border-b border-amber-500/20">
     <div className="max-w-7xl mx-auto px-4 pt-12">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
         <div>
-          <h3 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-            Shayri Club
-          </h3>
+          <h1
+  className="relative inline-block text-3xl sm:text-5xl leading-none font-black tracking-wide cursor-default group"
+>
+  {/* soft glow layer behind the text */}
+  <span
+    aria-hidden="true"
+    className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-amber-400 via-rose-400 to-orange-400 bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-70"
+    style={{ fontFamily: "Playfair Display" }}
+  >
+    Alfaz
+  </span>
+
+  {/* main text, floating */}
+  <span className="relative inline-block">
+    <span
+      className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
+      style={{ fontFamily: "'Dancing Script', cursive" }}
+    >
+      A
+    </span>
+    <bdi
+      className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
+      style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+    >
+      لف
+    </bdi>
+    <span
+      className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
+      style={{ fontFamily: "'Dancing Script', cursive" }}
+    >
+      az
+    </span>
+  </span>
+</h1>
+
           <p className="text-gray-400 text-sm">
             A platform for poets and writers to share their art with the world.
           </p>
@@ -745,16 +777,21 @@ useEffect(() => {
           
           </div>
         </section> */}
-
 <MyVerticallyCenteredModal isOpen={notificationOpened} onClose={() => setNotificationOpened(false)}>
-  <div className="bg-[#0d1117] rounded-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden border border-gray-800">
+  <div className="bg-gradient-to-b from-black via-[#1a0828] to-black rounded-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden border border-amber-500/40 shadow-2xl shadow-amber-500/20">
     
     {/* Header */}
-    <div className="px-5 py-4 border-b border-gray-800 flex items-center justify-between">
-      <h2 className="text-white text-lg font-semibold">Notifications</h2>
+    <div className="px-5 py-4 border-b border-amber-500/40 bg-gradient-to-r from-black via-[#1a0828] to-black backdrop-blur-lg flex items-center justify-between relative">
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 opacity-60" />
+      <div className="flex items-center gap-2">
+        <span className="text-amber-400 text-lg">🔔</span>
+        <h2 className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 text-lg font-bold tracking-wide">
+          Notifications
+        </h2>
+      </div>
       <button
         onClick={() => setNotificationOpened(false)}
-        className="text-gray-400 hover:text-white transition-colors"
+        className="w-8 h-8 flex items-center justify-center rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:text-amber-300 transition-all duration-200"
         aria-label="Close notifications"
       >
         ✕
@@ -762,19 +799,19 @@ useEffect(() => {
     </div>
 
     {/* List */}
-    <div className="overflow-y-auto flex-1 p-3 space-y-2">
+    <div className="overflow-y-auto flex-1 p-3 space-y-2.5 scrollbar-thin scrollbar-thumb-amber-500/30 scrollbar-track-transparent">
       {notifications.length > 0 ? (
         notifications.map((item, i) => (
           <button
             key={item.id ?? i}
             onClick={() => Navigate(item.toNavigate)}
-            className="w-full text-left bg-[#161b22] hover:bg-[#1c232c] rounded-lg px-4 py-3 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full text-left bg-gradient-to-r from-amber-500/10 via-[#1a0828]/80 to-[#1a0828]/60 hover:from-amber-500/20 hover:via-[#2a0f3d] hover:to-[#2a0f3d] border border-amber-500/25 hover:border-amber-400/60 rounded-lg px-4 py-3 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400/60 group"
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-2 min-w-0">
-                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+              <div className="flex items-start gap-2.5 min-w-0">
+                <span className="mt-1.5 w-2 h-2 rounded-full bg-gradient-to-r from-amber-400 to-orange-400 shrink-0 shadow-md shadow-amber-400/60 group-hover:shadow-amber-400/90 transition-shadow" />
                 <div className="min-w-0">
-                  <p className="text-white font-semibold text-sm truncate">
+                  <p className="text-transparent bg-clip-text bg-gradient-to-r from-amber-100 to-amber-300 font-semibold text-sm truncate">
                     {item.notificationTitle}
                   </p>
                   <p className="text-gray-400 text-sm truncate">
@@ -782,7 +819,7 @@ useEffect(() => {
                   </p>
                 </div>
               </div>
-              <span className="text-gray-500 text-xs whitespace-nowrap shrink-0">
+              <span className="text-amber-400/70 text-xs whitespace-nowrap shrink-0 font-medium">
                 {item.timeAgo ?? "Just now"}
               </span>
             </div>
@@ -790,7 +827,10 @@ useEffect(() => {
         ))
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-gray-400 text-lg">Your notifications will appear here</p>
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400/20 via-orange-400/15 to-yellow-500/20 border border-amber-500/40 flex items-center justify-center mb-3 shadow-lg shadow-amber-500/20">
+            <span className="text-amber-400 text-2xl">🔔</span>
+          </div>
+          <p className="text-amber-100/70 text-sm">Your notifications will appear here</p>
         </div>
       )}
     </div>
