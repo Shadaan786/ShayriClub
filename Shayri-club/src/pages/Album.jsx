@@ -2556,6 +2556,7 @@ export const Album = () => {
                     <Plus className="w-3.5 h-3.5" /> Add Kalam
                   </button>
                 </div>
+                
               </div>
 
               <KalamCard
@@ -2609,6 +2610,79 @@ export const Album = () => {
             <div className="sticky top-24">{VisibilityPanelContent}</div>
           </aside>
         </main>
+        <footer className="mt-32 pb-8 border-t bg-[#120e06] backdrop-blur-lg border-b border-amber-400/20">
+  <div className="max-w-7xl mx-auto px-4 pt-12">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <div>
+         <h1
+          className="relative inline-block text-3xl sm:text-5xl leading-none font-black tracking-wide cursor-default group"
+        >
+          {/* soft glow layer behind the text */}
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-amber-400 via-rose-400 to-orange-400 bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-70"
+            style={{ fontFamily: "Playfair Display" }}
+          >
+            Alfaz
+          </span>
+
+          {/* main text, floating */}
+          <span className="relative inline-block">
+            <span
+              className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
+              style={{ fontFamily: "'Dancing Script', cursive" }}
+            >
+              A
+            </span>
+            <bdi
+              className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
+              style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+            >
+              لف
+            </bdi>
+            <span
+              className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
+              style={{ fontFamily: "'Dancing Script', cursive" }}
+            >
+              az
+            </span>
+          </span>
+        </h1>
+
+        <p className="text-gray-400 text-sm">
+          A sanctuary for mystic poets to share their kalam with seekers everywhere.
+        </p>
+      </div>
+      <div>
+        <h4 className="text-white font-semibold mb-4">Explore</h4>
+        <ul className="space-y-2 text-gray-400 text-sm">
+          <li className="hover:text-amber-300 cursor-pointer transition">Kalam</li>
+          <li className="hover:text-amber-300 cursor-pointer transition">Albums</li>
+          <li className="hover:text-amber-300 cursor-pointer transition">Browse</li>
+        </ul>
+      </div>
+      <div>
+        <h4 className="text-white font-semibold mb-4">Resources</h4>
+        <ul className="space-y-2 text-gray-400 text-sm">
+          <li className="hover:text-amber-300 cursor-pointer transition">About Us</li>
+          <li className="hover:text-amber-300 cursor-pointer transition">Guidelines</li>
+          <li className="hover:text-amber-300 cursor-pointer transition">Help Center</li>
+        </ul>
+      </div>
+      <div>
+        <h4 className="text-white font-semibold mb-4">Legal</h4>
+        <ul className="space-y-2 text-gray-400 text-sm">
+          <li className="hover:text-amber-300 cursor-pointer transition">Privacy Policy</li>
+          <li className="hover:text-amber-300 cursor-pointer transition">Terms of Service</li>
+          <li className="hover:text-amber-300 cursor-pointer transition">Contact</li>
+        </ul>
+      </div>
+    </div>
+    <div className="text-center text-gray-500 text-sm pt-8 border-t border-white/5">
+      © 2025 Alfaz. All rights reserved.
+    </div>
+  </div>
+</footer>
       </div>
 
       {/* ── Floating Action Button ── */}
@@ -2633,6 +2707,11 @@ export const Album = () => {
               isPlayerOpen && <Player tracks={[data[9].kalam]} currentUserId={data.createdBy}/>
             }
 
+
+
+            
+
     </div>
+    
   );
 };

@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import axiosInstance from "@/Apis/axiosInstance";
 import { Link } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 /**
  * Color tokens pulled from the Auralis Nocturne / Library Material-3 dark
@@ -21,6 +23,8 @@ const COLORS = {
     borderSubtle: "rgba(255,255,255,0.10)",
 };
 
+const LIMIT = 10;
+
 const SORT_OPTIONS = [
     { value: "followers", label: "Sort by: Most Followers" },
     { value: "active", label: "Sort by: Recently Active" },
@@ -28,86 +32,143 @@ const SORT_OPTIONS = [
     { value: "newest", label: "Sort by: Newest" },
 ];
 
-const INITIAL_CURATORS = [
-    {
-        id: "elena-vance",
-        name: "Elena Vance",
-        followers: "12.4K Followers",
-        following: false,
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC8w7JydXCNCeek6DQ3KlfPtlOkxVIXLUx3VNY-NhbDh2w_1sSYpMDb2MmWJPJi5A94sdEPHueyxJN1d64Shsujl8l9xCsTXX353A3HawqP2iptydJB-WL4M7lgsVuuqBJhg7HwIhcFyN9wsANEQ6L-wXbVdRcqOFTs4-peLcFH6qL-PuGRLFV_CFEkp2CgNIlotyD5dVr9mnhWC3PwbA5oSwFRoRq4Ye6_cxslv7u5nQqtzN7kYcJV",
-    },
-    {
-        id: "marcus-thorne",
-        name: "Marcus Thorne",
-        followers: "8.2K Followers",
-        following: true,
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuD94UZexa0rjJE7xfknfHzciszVjPAviCJ322Vc1AJwsax_4t70EIMGsnKwO3BzDWyuoIXtqn4LsXBJ_gJA1FBfn3DvWyhBSgRxTjuqraUxNWKDdf09fW94mocibzylqhPInbkTkNSXm9Ppp-VZ_LGu0XnASE2OAoOowWKcMRxx-C4tggNu31XiIATmJo_Ur8JuPthRNv9sfHWgnSCOMA0FTqZvTtFl-vCrKGemjOtTr7mbELa14Oyk",
-    },
-    {
-        id: "sia-chen",
-        name: "Sia Chen",
-        followers: "25.1K Followers",
-        following: false,
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDtHbXaH3mn0kHQoJT_psGeJ7DWSnzAYHkI6zWLooiI3VlqdhUqctHD1mUdkW0-40BE9CM18sdzoQVwQ1o5Qk8oji3cZH-tmDoFqKUhha3ebX3-pEftBcB2M6e18FOSutt-V3TOGa73KsYrkyA9LkSKDO6eFM1r1yRc9k_UxabHN79nnhhBVnHLR2Bsjj51drjD9VLlJwimeloti91g3t65nyvw6ly2So9laG0etay6QZhLdDOC3Evi",
-    },
-    {
-        id: "arthur-bloom",
-        name: "Arthur Bloom",
-        followers: "3.4K Followers",
-        following: false,
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC0j0cuB8zFaBxDKAfT6q4stJPsoik_87L4p0r8ZxxpqprdoXMyTDe2zlUSwBPEFKNcMo55fZy4BgkTTjYyDOq_3zc4F8j_azT_gJgepNHo1wayNwk8Dz7mrqGXOzSuoVa2KVyqFPHDLJIVi2394YdxXBa6CScUsQ3P-umACxnmtWUI8aA3uI-usF30D4jdGTdjmy1rHygxwX-WIyMaffd_-J-JTiEwaxhGmOQUf5tJUmy4RzDQ7qT4",
-    },
-    {
-        id: "luna-ray",
-        name: "Luna Ray",
-        followers: "15.9K Followers",
-        following: false,
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuA3TZq03asZeSXqDEGUtIo6D4Bxj3uTBKAfcX4QohomDotoZtE6_YGpHhX7cOLNql-vG3Iana-hn1jWPjW2qGsw7OcC8DGPyf_1RgNVVOrKHaBbqYT4t-737dZPzLIJtDDOWiVbY-NnpVSpgAGF3pMWEJidr1EHWsS7SfVQd-mnOCowskLaIzD_dcBCUkfMRQs1aVtRb3Mj-P5vI8_ezVGxiP0J2c19xj8rEvugCurkh2U2Hb_054N-",
-    },
-    {
-        id: "felix-grey",
-        name: "Felix Grey",
-        followers: "7.1K Followers",
-        following: false,
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC3shGgHIYlmyWvTslO6WmqxmHTDBJBmBRgcYPm7Koks_6B-UXVWJZu-iXcKjR0k4vR_S1UlZs3njwrQQYD5lByugkqLWwvJSNL-RCYYJRS_0sb80_rzAFqs0kYzfJ2dslXus-Wwm2M1y0U6cTrTsX7QlEbFIffV2YtiW7w6O2vPD0qBhbJcEUaIRNS9uge1ltws-EqOEJEAcyMnsQmA3k43cWJyXk057tSZ-26B_ULMchQjPcs9gCf",
-    },
-    {
-        id: "jasmine-vo",
-        name: "Jasmine Vo",
-        followers: "42.2K Followers",
-        following: false,
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBYw0eUFvVj3_--_993abecorIALw90tyv3zn-eywQc4Rsswc-cydsXDmv8WHtLoLSuyOI6kQGFL2GYxDF6e4RoiRKR6HpQ833ZmXgI8TqaohLG0GvnmbFYL6TgDHX7AJWMLLKlavyu32A8wCGZS5AVgegY6729L8tGnSwRGaFkdw1s2wngrDIQGC6lHB4InP4IO8rM42u-RmbL6r8cAOXXvGEAJAdvG2rmSvQZ1llT2n_Yrzf5nuht",
-    },
-    {
-        id: "tariq-khan",
-        name: "Tariq Khan",
-        followers: "11.0K Followers",
-        following: false,
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCsgGVIFHrl59QtqWujoU5czWnc6IHcQxkiJiHRlVcX7YM6ABd8UlKQSQlIwwdpTrTW6lnyKGfg5pku-y0RgLNPb-fqrenvnmGr6wr564UHMsLo1wE-OJz4npOp0QsowcseP3HlFdI4cFtVjQl1Ff-1GCxQasD94fuAkdNR_Hcp6hTHyrXDjEHnTQpjrrR3yrkkLRS1TshnuOxp_XietR0n865D_RdOPxu-Jjj52jDP5tkPPkN7IzJm",
-    },
-    {
-        id: "maya-sol",
-        name: "Maya Sol",
-        followers: "9.8K Followers",
-        following: false,
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAbJN_qJ_RYiFPgrrjrh_vJJUYmfvNzdm39HtqGQ0UssgMrdq8b57aF1pbyaf2OxlRmhQqnUCkxjdQctqVyOD99ANZPgWvFJvBJbdKkYl6j7DTAJ9sPB87DdYrTRmABJvHM7ll5BNyKXLdyovNdd8c1I_5LgN7DhbtVnvUfgKXPUBKOAGPD7vF09L3gW32mxCP74rjyjGA-xnPpPT3hxBU298UgWgXUkoxjhHIVF7f5vjO-SMWptftY",
-    },
-    {
-        id: "dante-cross",
-        name: "Dante Cross",
-        followers: "6.5K Followers",
-        following: false,
-        img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCVt0_tR30FbkQQVPb5iKuSQ1lFVjhmb3bOsctPG3RjIVPJJ2akupJT1CUd0vVgfsDrWn5JlExMAZPMRXI9CmKmDyEJioJkckZy_Rf0jvWrbdvHu7TdiFL81O0IFUfGFQdYfQxVTkD9ndGDSybKMdIw6ZfAygSCla0M_fKVT0A-7Dkf_rF5uOiZ7-15r7qxbZsYZm4C7Npf6CimQmSRGhzohMcmQsTMKLVWDg6dWaVMNeVueDUoWcyu",
-    },
-];
+const formatFollowers = (curator) => {
+    if (typeof curator.followers === "string") return curator.followers;
+    const count = curator.followers ?? curator.followerCount ?? curator.followersCount ?? 0;
+    const formatted =
+        count >= 1000 ? `${(count / 1000).toFixed(count % 1000 === 0 ? 0 : 1)}K` : `${count}`;
+    return `${formatted} Followers`;
+};
 
 const Authors = () => {
-    const [curators, setCurators] = useState(INITIAL_CURATORS);
+    const [curators, setCurators] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [sortBy, setSortBy] = useState("followers");
+    const [searchValue, setSearchValue] = useState("");
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+    // Same refs-driven pattern used for albums: page/query live outside
+    // React state so InfiniteScroll's callbacks always read the latest
+    // request params without worrying about stale closures.
+    const page = useRef(1);
+    const query = useRef("all");
+    const isFetchingMore = useRef(false);
+
+    const handleFetch = () => {
+        if (query.current.trim() === "") {
+            query.current = "all";
+        }
+
+        page.current = 1;
+
+        axiosInstance
+            .get(`/api/featuredCurators?page=${page.current}&limit=${LIMIT}&query=${query.current}`)
+            .then((response) => {
+                const data = response.data;
+                // API may return a plain array, or an object with { curators, total }
+                const list = Array.isArray(data) ? data : data.curators ?? data.authors ?? [];
+                const totalCount = Array.isArray(data) ? undefined : data.total;
+
+                setCurators(list);
+                setTotal(typeof totalCount === "number" ? totalCount : list.length);
+                setHasMore(list.length === LIMIT);
+
+                page.current = page.current + 1;
+                setInitialLoading(false);
+            })
+            .catch((error) => {
+                console.error("error while fetching featured curators", error);
+                setInitialLoading(false);
+            });
+    };
+
+    useEffect(() => {
+        handleFetch();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // This page scrolls with the window (no internal scroll container), so
+    // on tall desktop screens a single page of LIMIT curators may not
+    // produce a scrollbar at all — meaning the user can never "scroll" to
+    // trigger InfiniteScroll's next(). After every render, check whether
+    // the document is actually scrollable yet; if not (and there's more to
+    // load), fetch the next page automatically until it is.
+    useEffect(() => {
+        if (initialLoading || !hasMore || isFetchingMore.current) return;
+
+        if (document.documentElement.scrollHeight <= window.innerHeight) {
+            fetchMore();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [curators, initialLoading, hasMore]);
+
+    const fetchMore = () => {
+        if (initialLoading) return;
+        // Prevent overlapping requests: without this guard, two calls
+        // firing back-to-back (e.g. from the auto-fill effect above and
+        // InfiniteScroll's own scroll listener) would both request the
+        // same page.current.
+        if (isFetchingMore.current) return;
+        isFetchingMore.current = true;
+
+        axiosInstance
+            .get(`/api/featuredCurators?page=${page.current}&limit=${LIMIT}&query=${query.current}`)
+            .then((response) => {
+                const data = response.data;
+                const list = Array.isArray(data) ? data : data.curators ?? data.authors ?? [];
+
+                if (list.length === 0) {
+                    setHasMore(false);
+                    return;
+                }
+
+                let addedCount = 0;
+                setCurators((prevItems) => {
+                    const existingIds = new Set(prevItems.map((c) => c._id || c.id));
+                    const uniqueNew = list.filter((c) => !existingIds.has(c._id || c.id));
+                    addedCount = uniqueNew.length;
+
+                    if (uniqueNew.length === 0) {
+                        // The API returned a page's worth of data, but every
+                        // item is already loaded — the backend is very
+                        // likely not advancing on `page`. Treat this as
+                        // "no more data" instead of looping forever.
+                        console.warn(
+                            `[Authors] page=${page.current} returned ${list.length} item(s) that were all already loaded — check that the API is honoring the "page" query param.`
+                        );
+                        return prevItems;
+                    }
+
+                    return [...prevItems, ...uniqueNew];
+                });
+
+                if (addedCount === 0) {
+                    setHasMore(false);
+                    return;
+                }
+
+                setTotal((prevTotal) => prevTotal + addedCount);
+                page.current = page.current + 1;
+                setHasMore(list.length === LIMIT);
+            })
+            .catch((error) => {
+                console.error("error while fetching featured curators", error);
+            })
+            .finally(() => {
+                isFetchingMore.current = false;
+            });
+    };
+
+    const handleSearch = () => {
+        query.current = searchValue;
+        handleFetch();
+    };
 
     const toggleFollow = (id) => {
         setCurators((prev) =>
-            prev.map((c) => (c.id === id ? { ...c, following: !c.following } : c))
+            prev.map((c) => ((c._id || c.id) === id ? { ...c, following: !c.following } : c))
         );
     };
 
@@ -151,6 +212,30 @@ const Authors = () => {
                 .cur-follow-btn:hover {
                     background: ${COLORS.primary};
                     color: ${COLORS.onPrimary};
+                }
+                @keyframes cur-spin { to { transform: rotate(360deg); } }
+                .cur-mobile-search-bar { display: none; }
+
+                @media (max-width: 767px) {
+                    .cur-header { height: calc(56px + env(safe-area-inset-top)) !important; }
+                    .cur-header-inner { padding-top: env(safe-area-inset-top) !important; }
+                    .cur-main { padding-top: calc(56px + env(safe-area-inset-top) + 12px) !important; }
+                    .cur-grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 12px !important;
+                    }
+                    .cur-card { padding: 16px !important; border-radius: 20px !important; }
+                    .cur-card-avatar { width: 72px !important; height: 72px !important; margin-bottom: 12px !important; }
+                    .cur-card-name { font-size: 13px !important; }
+                    .cur-card-followers { font-size: 10px !important; margin-bottom: 14px !important; }
+                    .cur-follow-btn, .cur-sunset-gradient.cur-follow-cta { padding-top: 8px !important; padding-bottom: 8px !important; font-size: 10px !important; }
+                    .cur-mobile-search-bar { display: flex !important; }
+                    .cur-icon-btn { width: 40px !important; height: 40px !important; }
+                    .cur-footer-player { padding-top: 10px !important; padding-bottom: calc(10px + env(safe-area-inset-bottom)) !important; }
+                }
+                @media (max-width: 380px) {
+                    .cur-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
+                    .cur-card-avatar { width: 64px !important; height: 64px !important; }
                 }
             `}</style>
 
@@ -209,72 +294,107 @@ const Authors = () => {
 
             {/* ── Top Nav ── */}
             <header
-                className="fixed top-0 right-0 left-0 md:left-64 z-50 flex justify-between items-center px-4 md:px-12 h-16"
+                className="cur-header fixed top-0 right-0 left-0 md:left-64 z-50 flex flex-col justify-center h-16"
                 style={{ background: "rgba(5,20,36,0.6)", backdropFilter: "blur(32px)", borderBottom: `1px solid ${COLORS.borderSubtle}` }}
             >
-                <div className="flex items-center gap-8">
-                    <span className="md:hidden text-2xl font-extrabold tracking-tighter" style={{ color: COLORS.primary }}>Library</span>
-                    <div className="hidden lg:flex items-center gap-6">
-                        <Link to="/artists" className="cur-nav-link text-base">Artists</Link>
-                        <Link to="/albums" className="cur-nav-link text-base">Albums</Link>
-                        <Link to="/playlists" className="cur-nav-link text-base">Playlists</Link>
-                        <Link to="/genres" className="cur-nav-link text-base">Genres</Link>
+                <div className="cur-header-inner flex justify-between items-center px-4 md:px-12 h-full">
+                    <div className="flex items-center gap-8">
+                        <span className="md:hidden text-2xl font-extrabold tracking-tighter" style={{ color: COLORS.primary }}>Library</span>
+                        <div className="hidden lg:flex items-center gap-6">
+                            <Link to="/artists" className="cur-nav-link text-base">Artists</Link>
+                            <Link to="/albums" className="cur-nav-link text-base">Albums</Link>
+                            <Link to="/playlists" className="cur-nav-link text-base">Playlists</Link>
+                            <Link to="/genres" className="cur-nav-link text-base">Genres</Link>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 md:gap-4">
+                        <div
+                            className="hidden sm:flex items-center rounded-full px-4 py-2 transition-all"
+                            style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
+                        >
+                            <span className="material-symbols-outlined text-[20px]" style={{ color: COLORS.onSurfaceVariant }}>search</span>
+                            <input
+                                type="text"
+                                value={searchValue}
+                                onChange={(e) => setSearchValue(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                                placeholder="Search curated library..."
+                                className="bg-transparent border-none focus:ring-0 text-base w-48 outline-none"
+                                style={{ color: COLORS.onSurface }}
+                            />
+                        </div>
+                        <button
+                            onClick={() => setMobileSearchOpen((prev) => !prev)}
+                            className="cur-icon-btn sm:hidden w-9 h-9 flex items-center justify-center rounded-full"
+                            style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
+                            aria-label="Toggle search"
+                        >
+                            <span className="material-symbols-outlined text-[20px]" style={{ color: COLORS.onSurfaceVariant }}>search</span>
+                        </button>
+                        <button
+                            className="material-symbols-outlined p-2 transition-colors"
+                            style={{ color: COLORS.onSurfaceVariant }}
+                        >
+                            settings
+                        </button>
+                        <div
+                            className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0"
+                            style={{ background: COLORS.surfaceContainer, border: `1px solid ${COLORS.borderSubtle}` }}
+                        >
+                            <img
+                                className="w-full h-full object-cover"
+                                alt="Profile"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJvDit6hr4INv-0DUByHGbbIDeAlcpaVNuh-_p2AmLkX38PlNGnvOx3L9z0wmlAAQg4HnAJjlkvkB5VwNkswPgUqRx7lhEp6LM-TH-yFAxJh79kvcRiEhKEANKwkWGkXhJShVmNtAgLnJrZukYYyUJvaUsWz1bd4xBkRyJLJW7sY2kF4ALcCEPTK0XrhmHpP8wNC5KFTDG64GjKAnLE1wQfFKB5jz5KjW7b1kPU7ZY_GdsIemqe_Nz"
+                            />
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <div
-                        className="hidden sm:flex items-center rounded-full px-4 py-2 transition-all"
-                        style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
-                    >
-                        <span className="material-symbols-outlined text-[20px]" style={{ color: COLORS.onSurfaceVariant }}>search</span>
+                {/* Mobile search row — toggled by the search icon above */}
+                {mobileSearchOpen && (
+                    <div className="cur-mobile-search-bar items-center relative px-4 pb-3 sm:hidden">
+                        <span
+                            className="material-symbols-outlined absolute left-7 top-1/2 -translate-y-1/2"
+                            style={{ color: COLORS.onSurfaceVariant }}
+                        >
+                            search
+                        </span>
                         <input
+                            autoFocus
                             type="text"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                             placeholder="Search curated library..."
-                            className="bg-transparent border-none focus:ring-0 text-base w-48 outline-none"
-                            style={{ color: COLORS.onSurface }}
+                            className="rounded-full py-2 pl-10 pr-4 text-sm w-full outline-none transition-all"
+                            style={{ background: "rgba(39,54,71,0.4)", border: "none", color: COLORS.onSurface }}
                         />
                     </div>
-                    <button
-                        className="material-symbols-outlined p-2 transition-colors"
-                        style={{ color: COLORS.onSurfaceVariant }}
-                    >
-                        settings
-                    </button>
-                    <div
-                        className="w-8 h-8 rounded-full overflow-hidden"
-                        style={{ background: COLORS.surfaceContainer, border: `1px solid ${COLORS.borderSubtle}` }}
-                    >
-                        <img
-                            className="w-full h-full object-cover"
-                            alt="Profile"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJvDit6hr4INv-0DUByHGbbIDeAlcpaVNuh-_p2AmLkX38PlNGnvOx3L9z0wmlAAQg4HnAJjlkvkB5VwNkswPgUqRx7lhEp6LM-TH-yFAxJh79kvcRiEhKEANKwkWGkXhJShVmNtAgLnJrZukYYyUJvaUsWz1bd4xBkRyJLJW7sY2kF4ALcCEPTK0XrhmHpP8wNC5KFTDG64GjKAnLE1wQfFKB5jz5KjW7b1kPU7ZY_GdsIemqe_Nz"
-                        />
-                    </div>
-                </div>
+                )}
             </header>
 
             {/* ── Main Content ── */}
-            <main className="relative z-10 pt-24 pb-32 px-4 md:px-12 md:ml-64 md:w-[calc(100%-16rem)] min-h-screen">
+            <main className="cur-main relative z-10 pt-24 pb-32 px-4 md:px-12 md:ml-64 md:w-[calc(100%-16rem)] min-h-screen">
                 {/* Header Section */}
-                <section className="mb-12">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <section className="mb-8 md:mb-12">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
                         <div>
-                            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tighter leading-none mb-2" style={{ color: COLORS.onSurface }}>
+                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tighter leading-none mb-2" style={{ color: COLORS.onSurface }}>
                                 Featured Curators
                             </h2>
                             <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: COLORS.primary }}>
-                                {curators.length} Curators
+                                {total} Curators
                             </p>
                         </div>
 
                         {/* Search & Filters */}
-                        <div className="flex flex-wrap items-center gap-4">
+                        <div className="flex flex-wrap items-center gap-3 md:gap-4">
                             <div className="relative">
                                 <select
                                     value={sortBy}
                                     onChange={(e) => setSortBy(e.target.value)}
-                                    className="appearance-none rounded-full pl-6 pr-10 py-3 text-xs font-semibold tracking-widest uppercase cursor-pointer outline-none transition-all"
+                                    className="appearance-none rounded-full pl-5 pr-9 py-2.5 md:pl-6 md:pr-10 md:py-3 text-xs font-semibold tracking-widest uppercase cursor-pointer outline-none transition-all"
                                     style={{ background: COLORS.surfaceContainerHigh, border: `1px solid ${COLORS.borderSubtle}`, color: COLORS.onSurface }}
                                 >
                                     {SORT_OPTIONS.map((opt) => (
@@ -284,78 +404,106 @@ const Authors = () => {
                                     ))}
                                 </select>
                                 <span
-                                    className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                                    className="material-symbols-outlined absolute right-3 md:right-4 top-1/2 -translate-y-1/2 pointer-events-none"
                                     style={{ color: COLORS.onSurfaceVariant }}
                                 >
                                     expand_more
                                 </span>
                             </div>
-                            <button className="cur-glass p-3 rounded-full flex items-center justify-center transition-all">
+                            <button className="cur-glass p-2.5 md:p-3 rounded-full flex items-center justify-center transition-all">
                                 <span className="material-symbols-outlined text-[20px]">filter_list</span>
                             </button>
                         </div>
                     </div>
                 </section>
 
-                {/* Curator Grid */}
-                <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                    {curators.map((curator) => (
-                        <div key={curator.id} className="cur-glass p-6 rounded-3xl flex flex-col items-center text-center group">
-                            <div className="relative w-24 h-24 md:w-32 md:h-32 mb-6 transition-transform duration-500 group-hover:scale-105">
-                                <img
-                                    className="w-full h-full rounded-full object-cover shadow-xl"
-                                    style={{ border: `4px solid ${COLORS.surfaceContainerHighest}` }}
-                                    alt={curator.name}
-                                    src={curator.img}
-                                />
-                            </div>
-                            <h3 className="text-base font-bold mb-1" style={{ color: COLORS.onSurface }}>{curator.name}</h3>
-                            <p className="text-xs mb-6 uppercase tracking-wider" style={{ color: COLORS.onSurfaceVariant }}>
-                                {curator.followers}
-                            </p>
-                            {curator.following ? (
-                                <button
-                                    onClick={() => toggleFollow(curator.id)}
-                                    className="cur-sunset-gradient w-full py-2.5 rounded-full text-xs font-semibold tracking-widest uppercase shadow-lg hover:brightness-110 active:scale-95 transition-all"
-                                    style={{ color: COLORS.onPrimary }}
-                                >
-                                    Following
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={() => toggleFollow(curator.id)}
-                                    className="cur-follow-btn w-full py-2.5 rounded-full text-xs font-semibold tracking-widest uppercase active:scale-95"
-                                >
-                                    Follow
-                                </button>
-                            )}
+                {/* Curator Grid — driven by InfiniteScroll (window-scrolled, same pagination pattern as Albums) */}
+                <InfiniteScroll
+                    dataLength={curators.length}
+                    next={fetchMore}
+                    hasMore={hasMore}
+                    loader={
+                        <div className="flex justify-center py-8">
+                            <div
+                                className="w-5 h-5 rounded-full border-2"
+                                style={{
+                                    borderColor: "rgba(207,188,255,0.25)",
+                                    borderTopColor: COLORS.primary,
+                                    animation: "cur-spin 0.8s linear infinite",
+                                }}
+                            />
                         </div>
-                    ))}
-                </section>
+                    }
+                    endMessage={
+                        curators.length > 0 && (
+                            <p
+                                className="text-center py-8 text-xs tracking-widest uppercase font-mono"
+                                style={{ color: "rgba(203,196,210,0.35)" }}
+                            >
+                                ✦ You've seen it all ✦
+                            </p>
+                        )
+                    }
+                >
+                    <section className="cur-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                        {curators.map((curator) => {
+                            const id = curator._id || curator.id;
+                            const img = curator.profilePic || curator.avatar || curator.profileImage;
+                            return (
+                                <div key={id} className="cur-card cur-glass p-6 rounded-3xl flex flex-col items-center text-center group">
+                                    <div className="cur-card-avatar relative w-24 h-24 md:w-32 md:h-32 mb-6 transition-transform duration-500 group-hover:scale-105">
+                                        <img
+                                            className="w-full h-full rounded-full object-cover shadow-xl"
+                                            style={{ border: `4px solid ${COLORS.surfaceContainerHighest}` }}
+                                            alt={curator.name}
+                                            src={img}
+                                        />
+                                    </div>
+                                    <h3 className="cur-card-name text-base font-bold mb-1" style={{ color: COLORS.onSurface }}>{curator.name}</h3>
+                                    <p className="cur-card-followers text-xs mb-6 uppercase tracking-wider" style={{ color: COLORS.onSurfaceVariant }}>
+                                        {formatFollowers(curator)}
+                                    </p>
+                                    {curator.following ? (
+                                        <button
+                                            onClick={() => toggleFollow(id)}
+                                            className="cur-sunset-gradient cur-follow-cta w-full py-2.5 rounded-full text-xs font-semibold tracking-widest uppercase shadow-lg hover:brightness-110 active:scale-95 transition-all"
+                                            style={{ color: COLORS.onPrimary }}
+                                        >
+                                            Following
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => toggleFollow(id)}
+                                            className="cur-follow-btn w-full py-2.5 rounded-full text-xs font-semibold tracking-widest uppercase active:scale-95"
+                                        >
+                                            Follow
+                                        </button>
+                                    )}
+                                </div>
+                            );
+                        })}
 
-                {/* Pagination / Load More */}
-                <div className="flex justify-center mt-16">
-                    <button
-                        className="flex items-center gap-2 px-8 py-4 rounded-full text-xs font-semibold tracking-widest uppercase transition-all"
-                        style={{ border: `1px solid ${COLORS.borderSubtle}`, color: COLORS.onSurfaceVariant }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = "rgba(207,188,255,0.5)";
-                            e.currentTarget.style.color = COLORS.primary;
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = COLORS.borderSubtle;
-                            e.currentTarget.style.color = COLORS.onSurfaceVariant;
-                        }}
-                    >
-                        Load More Curators
-                        <span className="material-symbols-outlined">keyboard_arrow_down</span>
-                    </button>
-                </div>
+                        {curators.length === 0 && !initialLoading && (
+                            <p className="text-sm col-span-full" style={{ color: COLORS.onSurfaceVariant }}>
+                                No curators found — try a different search.
+                            </p>
+                        )}
+
+                        {initialLoading &&
+                            Array.from({ length: 10 }).map((_, i) => (
+                                <div key={i} className="cur-card p-6 rounded-3xl flex flex-col items-center animate-pulse">
+                                    <div className="cur-card-avatar w-24 h-24 md:w-32 md:h-32 mb-6 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }} />
+                                    <div className="h-4 w-2/3 mb-2 rounded" style={{ background: "rgba(255,255,255,0.05)" }} />
+                                    <div className="h-3 w-1/2 rounded" style={{ background: "rgba(255,255,255,0.05)" }} />
+                                </div>
+                            ))}
+                    </section>
+                </InfiniteScroll>
             </main>
 
             {/* ── Bottom Player / Mobile Nav ── */}
             <footer
-                className="fixed bottom-0 w-full z-50 flex items-center justify-between px-4 md:px-12 py-4"
+                className="cur-footer-player fixed bottom-0 w-full z-50 flex items-center justify-between px-4 md:px-12 py-4"
                 style={{ background: "rgba(39,54,71,0.6)", backdropFilter: "blur(32px)", borderTop: `1px solid ${COLORS.borderSubtle}`, boxShadow: "0 -8px 24px rgba(0,0,0,0.3)" }}
             >
                 {/* Player Info */}

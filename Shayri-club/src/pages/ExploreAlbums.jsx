@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
 import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Color tokens pulled from the Library page's Material-3 dark theme mock,
@@ -44,6 +45,8 @@ const ExploreAlbums = () => {
     const [sortBy, setSortBy] = useState("recent");
     const [activeGenre, setActiveGenre] = useState(null);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+    
+    const Navigate = useNavigate();
 
     // Same pattern as AlbumsLive: refs drive the request params so we don't
     // need to worry about stale closures inside the InfiniteScroll callbacks.
@@ -457,15 +460,17 @@ const ExploreAlbums = () => {
                                     <div
                                         className="ea-glass-card relative aspect-square mb-4 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.02] group-hover:-translate-y-1"
                                     >
+                                        
                                         <div
                                             className="w-full h-full bg-cover bg-center"
                                             style={{ backgroundImage: `url('${item.albumCover}')` }}
                                         />
+                                        
                                         <div
                                             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                                             style={{ background: "rgba(0,0,0,0.4)" }}
                                         >
-                                            <button
+                                            <button onClick={()=>Navigate(`/album?albumId=${item._id}`)}
                                                 className="ea-sunset-gradient w-12 h-12 rounded-full flex items-center justify-center shadow-xl translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
                                                 style={{ color: COLORS.onPrimary }}
                                             >

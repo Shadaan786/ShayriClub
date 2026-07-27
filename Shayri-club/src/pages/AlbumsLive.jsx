@@ -867,6 +867,7 @@
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 /**
  * Color tokens pulled from the Library page's Material-3 dark theme mock,
@@ -898,6 +899,7 @@ const AlbumsLive = () => {
     const [newCurator, setNewCurator] = useState("");
     const [newCategory, setNewCategory] = useState("");
     const [isPlayerOpen, setIsPlayerOpen] = useState(false);
+    const [featuredCurators, setFeaturedCurators] = useState([]);
 
     const searchQuery = useRef("");
     const limit = 20;
@@ -917,14 +919,14 @@ const AlbumsLive = () => {
         { value: "deep-focus", label: "Deep Focus" },
     ];
 
-    const featuredCurators = [
-        { name: "Luna Echo", followers: "12.4k Followers", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" },
-        { name: "Solaris", followers: "8.2k Followers", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" },
-        { name: "Vibe Master", followers: "25k Followers", img: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80" },
-        { name: "Nova", followers: "5.1k Followers", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80" },
-        { name: "Deep Blue", followers: "19.3k Followers", img: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=150&q=80" },
-        { name: "Aura", followers: "3.4k Followers", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" },
-    ];
+    // const featuredCurators = [
+    //     { name: "Luna Echo", followers: "12.4k Followers", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" },
+    //     { name: "Solaris", followers: "8.2k Followers", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" },
+    //     { name: "Vibe Master", followers: "25k Followers", img: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80" },
+    //     { name: "Nova", followers: "5.1k Followers", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80" },
+    //     { name: "Deep Blue", followers: "19.3k Followers", img: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=150&q=80" },
+    //     { name: "Aura", followers: "3.4k Followers", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" },
+    // ];
 
     const trendingItems = [
         {
@@ -984,8 +986,19 @@ const AlbumsLive = () => {
 
     useEffect(() => {
         fetchAlbums();
+        getAuthors()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const getAuthors=()=>{
+        axiosInstance
+        .get('/api/featuredCurators')
+        .then((response)=>{
+            setFeaturedCurators(response.data)
+
+        })
+
+    }
 
     const fetchAlbums = () => {
         axiosInstance
@@ -1179,35 +1192,40 @@ const AlbumsLive = () => {
                 </aside>
 
                 {/* ── Main Content ── */}
-                <main className="flex-1 min-h-screen px-4 md:px-12 py-6 md:py-12 lg:ml-64 lg:w-[calc(100%-16rem)]">
-                    {/* Hero */}
-                    <section className="mb-10 md:mb-16">
-                        <div className="relative w-full h-64 sm:h-72 md:h-80 rounded-2xl sm:rounded-[32px] overflow-hidden shadow-2xl flex items-end p-5 sm:p-6 md:p-8">
-                            <div className="lib-sunset-gradient absolute inset-0 z-0" />
-                            <div className="relative z-10">
-                                <div className="flex items-center gap-2 mb-3 md:mb-4 w-fit px-3 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(8px)" }}>
-                                    <span className="material-symbols-outlined text-sm">star</span>
-                                    <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-semibold">Featured Curator</span>
-                                </div>
-                                <h1 className="font-extrabold text-2xl sm:text-3xl md:text-5xl text-white mb-3 md:mb-4">Sunset Sessions</h1>
-                                <p className="text-white/90 max-w-xl mb-4 md:mb-6 text-sm sm:text-base line-clamp-2 sm:line-clamp-none">
-                                    Explore the warmest vibrations of the golden hour. A curated selection for deep listening and cinematic horizons.
-                                </p>
-                                <div className="flex flex-wrap gap-3 sm:gap-4">
-                                    <button className="bg-white text-orange-500 font-bold px-5 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform shadow-lg">
-                                        <span className="material-symbols-outlined">play_arrow</span>
-                                        Listen Now
-                                    </button>
-                                    <button
-                                        className="text-white font-bold px-5 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-full transition-all"
-                                        style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.2)" }}
-                                    >
-                                        Follow
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+                <main className="flex-1 min-w-0 min-h-screen px-4 md:px-12 pt-6 md:pt-12 lg:ml-64 lg:w-[calc(100%-16rem)]">
+                   {/* Hero */}
+<section className="mb-8 md:mb-16">
+    <div className="relative w-full h-56 sm:h-72 md:h-80 rounded-2xl sm:rounded-[32px] overflow-hidden shadow-2xl flex items-end p-4 sm:p-6 md:p-8">
+        <div className="lib-sunset-gradient absolute inset-0 z-0" />
+        <div className="relative z-10 w-full sm:w-auto">
+            <div className="flex items-center gap-2 mb-2.5 sm:mb-4 w-fit px-2.5 sm:px-3 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(8px)" }}>
+                <span className="material-symbols-outlined text-xs sm:text-sm">star</span>
+                <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.15em] sm:tracking-[0.2em] font-semibold">Featured Curator</span>
+            </div>
+
+            <h1 className="font-extrabold text-xl sm:text-3xl md:text-5xl text-white mb-2 sm:mb-4 leading-tight sm:leading-normal">
+                Sunset Sessions
+            </h1>
+
+            <p className="text-white/90 max-w-xl mb-3.5 sm:mb-6 text-xs sm:text-base line-clamp-2 sm:line-clamp-none">
+                Explore the warmest vibrations of the golden hour. A curated selection for deep listening and cinematic horizons.
+            </p>
+
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2.5 sm:gap-4">
+                <button className="bg-white text-orange-500 font-bold px-5 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-full flex items-center justify-center sm:justify-start gap-2 hover:scale-105 active:scale-95 transition-transform shadow-lg w-full sm:w-auto">
+                    <span className="material-symbols-outlined">play_arrow</span>
+                    Listen Now
+                </button>
+                <button
+                    className="text-white font-bold px-5 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-full transition-all w-full sm:w-auto"
+                    style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.2)" }}
+                >
+                    Follow
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
 
                     {/* Trending Now */}
                     <section className="mb-10 md:mb-16">
@@ -1221,7 +1239,7 @@ const AlbumsLive = () => {
                         <div className="relative group">
                             <div
                                 ref={trendingRef}
-                                className="flex gap-3 sm:gap-6 overflow-x-auto pb-6 md:pb-8"
+                                className="flex gap-3 sm:gap-6 overflow-x-auto pb-6 md:pb-8 min-w-0"
                                 style={{ scrollbarWidth: "none", scrollSnapType: "x mandatory" }}
                             >
                                 {trendingItems.map((item) => (
@@ -1280,7 +1298,7 @@ const AlbumsLive = () => {
 
                     {/* Recently Added */}
                     <section className="mb-10 md:mb-16">
-                        <div className="flex justify-between items-center gap-2 mb-4 md:mb-8">
+                        <div className="flex justify-between items-center gap-2 mb-4 md:mb-8 min-w-0">
                             <div className="min-w-0">
                                 <h2 className="text-lg sm:text-2xl font-bold mb-0.5 sm:mb-2">Recently Added</h2>
                                 <p className="text-xs sm:text-base truncate" style={{ color: COLORS.onSurfaceVariant }}>Fresh tracks from your favorite genres.</p>
@@ -1322,7 +1340,7 @@ const AlbumsLive = () => {
 
                     {/* Featured Curators */}
                     <section className="mb-10 md:mb-16 py-4 md:py-8">
-                        <div className="flex justify-between items-center gap-2 mb-4 md:mb-8">
+                        <div className="flex justify-between items-center gap-2 mb-4 md:mb-8 min-w-0">
                             <div className="min-w-0">
                                 <h2 className="text-lg sm:text-2xl font-bold mb-0.5 sm:mb-2">Featured Curators</h2>
                                 <p className="text-xs sm:text-base truncate" style={{ color: COLORS.onSurfaceVariant }}>The visionaries behind your favorite sounds.</p>
@@ -1334,20 +1352,23 @@ const AlbumsLive = () => {
 
                         <div className="flex gap-4 sm:gap-8 overflow-x-auto pb-4" style={{ scrollbarWidth: "none" }}>
                             {featuredCurators.map((curator) => (
-                                <div key={curator.name} className="flex flex-col items-center gap-3 sm:gap-4 group cursor-pointer flex-shrink-0" style={{ minWidth: 96 }}>
+                                <div key={curator._id} className="flex flex-col items-center gap-3 sm:gap-4 group cursor-pointer flex-shrink-0" style={{ minWidth: 96 }}>
                                     <div
                                         className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full overflow-hidden transition-all duration-300"
                                         style={{ border: "2px solid transparent" }}
                                         onMouseEnter={(e) => (e.currentTarget.style.borderColor = COLORS.primary)}
                                         onMouseLeave={(e) => (e.currentTarget.style.borderColor = "transparent")}
                                     >
-                                        <img src={curator.img} alt={curator.name} className="w-full h-full object-cover" />
+                                        <img src={curator.profilePic} alt={curator.name} className="w-full h-full object-cover" />
                                     </div>
                                     <div className="text-center">
                                         <h3 className="font-bold text-xs sm:text-sm mb-1">{curator.name}</h3>
-                                        <p className="text-[9px] sm:text-[10px] uppercase tracking-wider" style={{ color: "rgba(203,196,210,0.6)" }}>
-                                            {curator.followers}
+                                        <p className="text-[9px] flex sm:text-[10px] gap-2 uppercase tracking-wider" style={{ color: "rgba(203,196,210,0.6)" }}>
+                                            {curator.followers.length}
+                                            <span className="flex">followers</span>
+                                            
                                         </p>
+                                        
                                     </div>
                                     <button className="text-[11px] sm:text-xs font-bold hover:underline" style={{ color: COLORS.primary }}>Follow</button>
                                 </div>
@@ -1357,7 +1378,7 @@ const AlbumsLive = () => {
 
                     {/* All Time Favorites */}
                     <section className="mb-10 md:mb-16">
-                        <div className="flex justify-between items-end mb-4 md:mb-8">
+                        <div className="flex justify-between items-end mb-4 md:mb-8 min-w-0">
                             <div className="min-w-0">
                                 <h2 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2">All Time Favorites</h2>
                                 <p className="text-xs sm:text-base truncate" style={{ color: COLORS.onSurfaceVariant }}>The timeless masterpieces of our collection.</p>
@@ -1469,7 +1490,7 @@ const AlbumsLive = () => {
 
                     {/* ── Footer (themed to match Library's navy/amber palette) ── */}
                     <footer
-                        className="mt-10 md:mt-16 pb-8 rounded-2xl sm:rounded-[32px] overflow-hidden"
+                        className="mt-10 md:mt-16 -mx-4 md:-mx-12 pb-8 rounded-t-2xl sm:rounded-t-[32px] overflow-hidden"
                         style={{
                             background: `linear-gradient(90deg, ${COLORS.surfaceContainerLowest ?? "#010f1f"} 0%, ${COLORS.surfaceContainer} 55%, #010f1f 100%)`,
                             borderTop: `1px solid ${COLORS.borderSubtle}`,
@@ -1490,32 +1511,32 @@ const AlbumsLive = () => {
                                     </p>
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-4 w-full">
-                                    <div>
-                                        <h4 className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Explore</h4>
-                                        <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
-                                            <li className="lib-nav-link cursor-pointer transition">Kalam</li>
-                                            <li className="lib-nav-link cursor-pointer transition">Community</li>
-                                            <li className="lib-nav-link cursor-pointer transition">Browse</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Resources</h4>
-                                        <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
-                                            <li className="lib-nav-link cursor-pointer transition">About Us</li>
-                                            <li className="lib-nav-link cursor-pointer transition">Guidelines</li>
-                                            <li className="lib-nav-link cursor-pointer transition">Help Center</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Legal</h4>
-                                        <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
-                                            <li className="lib-nav-link cursor-pointer transition">Privacy</li>
-                                            <li className="lib-nav-link cursor-pointer transition">Terms</li>
-                                            <li className="lib-nav-link cursor-pointer transition">Contact</li>
-                                        </ul>
-                                    </div>
-                                </div>
+                                <div className="grid grid-cols-1 gap-6 w-full">
+                            <div>
+                                <h4 className="font-extrabold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Explore</h4>
+                                <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
+                                    <li className="lib-nav-link cursor-pointer transition">Kalam</li>
+                                    <li className="lib-nav-link cursor-pointer transition">Community</li>
+                                    <li className="lib-nav-link cursor-pointer transition">Browse</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-extrabold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Resources</h4>
+                                <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
+                                    <li className="lib-nav-link cursor-pointer transition">About Us</li>
+                                    <li className="lib-nav-link cursor-pointer transition">Guidelines</li>
+                                    <li className="lib-nav-link cursor-pointer transition">Help Center</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-extrabold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Legal</h4>
+                                <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
+                                    <li className="lib-nav-link cursor-pointer transition">Privacy</li>
+                                    <li className="lib-nav-link cursor-pointer transition">Terms</li>
+                                    <li className="lib-nav-link cursor-pointer transition">Contact</li>
+                                </ul>
+                            </div>
+                        </div>
                             </div>
 
                             <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8">
