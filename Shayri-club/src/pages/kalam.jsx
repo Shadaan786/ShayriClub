@@ -731,6 +731,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { MyContext } from "../ContextProvider";
+import { Footer } from "@/Bg";
 
 const PRESET_COLORS = [
   { hex: "#26215C", label: "Midnight Indigo" },
@@ -1550,7 +1551,7 @@ const Kalam = () => {
           overflow-y: auto;
           overflow-x: hidden;
           height: calc(100vh - 52px);
-          padding: 1.5rem 0 4rem 1.5rem;
+          padding: 1.5rem 0 6rem 1.5rem;
           min-width: 0;
           word-break: break-word;
           overflow-wrap: break-word;
@@ -2402,6 +2403,7 @@ const Kalam = () => {
           </div>
 
         </div>
+        <Footer/>
       </div>
 
       {/* ── Success popup ── */}

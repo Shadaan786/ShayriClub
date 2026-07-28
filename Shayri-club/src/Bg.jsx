@@ -174,6 +174,7 @@ export default function ShayriClub() {
   const [profilePic, setProfilePic] = useState(null)
   // const [token, setToken] = useState("");
   const[notificationsAvailable, setNotificationsAvailable] = useState(false);
+  const [notificationSeen, setNotificationSeen] = useState(false)
 
 const[notificationOpened, setNotificationOpened] = useState(false);
 
@@ -323,17 +324,28 @@ useEffect(() => {
     console.log("check", userId._id)
 
       axiosInstance
-      .get(`/api/offlineNotifications?userId=${userId}`)
+      .get(`/api/offlineNotifications`)
       .then((response)=>{
-        console.log("offline_notifications", response.data.offlineNotifications.notifications)
+        console.log("offline_notifications", response.data.offlineNotifications)
         // console.log(response.data.notifications.length)
-        setNotifications(response.data.offlineNotifications.notifications)
+        setNotifications(response.data.offlineNotifications)
       })
     }
 
     fetchingNotifications()
 
   }, [])
+
+  const handleNotificationSeen=(notificationId)=>{
+
+    axiosInstance
+    .post('/api/notificationStatus',{
+      notificationId: notificationId
+    },{
+      withCredentials: true
+    })
+
+  }
     
 
   return (
@@ -778,61 +790,92 @@ useEffect(() => {
           </div>
         </section> */}
 <MyVerticallyCenteredModal isOpen={notificationOpened} onClose={() => setNotificationOpened(false)}>
-  <div className="bg-gradient-to-b from-black via-[#1a0828] to-black rounded-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden border border-amber-500/40 shadow-2xl shadow-amber-500/20">
-    
+  <div
+    className="rounded-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden border border-[#f59e0b]/15 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+    style={{ background: "rgba(29,13,33,0.45)", backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)" }}
+  >
+
     {/* Header */}
-    <div className="px-5 py-4 border-b border-amber-500/40 bg-gradient-to-r from-black via-[#1a0828] to-black backdrop-blur-lg flex items-center justify-between relative">
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 opacity-60" />
-      <div className="flex items-center gap-2">
-        <span className="text-amber-400 text-lg">🔔</span>
-        <h2 className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 text-lg font-bold tracking-wide">
+    <div className="px-6 py-5 border-b border-[#f59e0b]/15 relative">
+      <div className="flex justify-between items-center mb-1">
+        <h2 className="flex items-center gap-3 text-[#f4daf7] text-xl font-semibold tracking-wide">
           Notifications
+          {/* {notifications.length > 0 && (
+            <span className="bg-[#f59e0b]/10 text-[#ffc174] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#f59e0b]/20">
+              {notifications.length} NEW
+            </span>
+          )} */}
         </h2>
+        <button
+          onClick={() => setNotificationOpened(false)}
+          className="w-8 h-8 flex items-center justify-center rounded-full text-[#d8c3ad] hover:text-[#ffc174] transition-colors active:scale-90"
+          aria-label="Close notifications"
+        >
+          ✕
+        </button>
       </div>
-      <button
-        onClick={() => setNotificationOpened(false)}
-        className="w-8 h-8 flex items-center justify-center rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:text-amber-300 transition-all duration-200"
-        aria-label="Close notifications"
-      >
-        ✕
-      </button>
+      <div className="w-12 h-1 bg-[#ffc174] rounded-full mt-2" />
     </div>
+    
 
     {/* List */}
-    <div className="overflow-y-auto flex-1 p-3 space-y-2.5 scrollbar-thin scrollbar-thumb-amber-500/30 scrollbar-track-transparent">
+    <div className="flex-1 overflow-y-auto p-2 space-y-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#f59e0b]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
       {notifications.length > 0 ? (
         notifications.map((item, i) => (
+          
           <button
             key={item.id ?? i}
-            onClick={() => Navigate(item.toNavigate)}
-            className="w-full text-left bg-gradient-to-r from-amber-500/10 via-[#1a0828]/80 to-[#1a0828]/60 hover:from-amber-500/20 hover:via-[#2a0f3d] hover:to-[#2a0f3d] border border-amber-500/25 hover:border-amber-400/60 rounded-lg px-4 py-3 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400/60 group"
+            onClick={() => {Navigate(item.toNavigate); handleNotificationSeen(item._id)}}
+            className="w-full text-left flex gap-4 p-4 rounded-lg border border-transparent transition-all duration-300 hover:bg-[#f59e0b]/5 hover:border-[#f59e0b]/40 hover:-translate-y-0.5"
           >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-2.5 min-w-0">
-                <span className="mt-1.5 w-2 h-2 rounded-full bg-gradient-to-r from-amber-400 to-orange-400 shrink-0 shadow-md shadow-amber-400/60 group-hover:shadow-amber-400/90 transition-shadow" />
-                <div className="min-w-0">
-                  <p className="text-transparent bg-clip-text bg-gradient-to-r from-amber-100 to-amber-300 font-semibold text-sm truncate">
-                    {item.notificationTitle}
-                  </p>
-                  <p className="text-gray-400 text-sm truncate">
-                    {item.notificationBody}
-                  </p>
-                </div>
+                  {console.log("see status", item.isSeen)}
+
+            {/* Status dot*/}
+           {!item.isSeen && <div className="relative flex-shrink-0 mt-1">
+              <span
+                className="block w-2.5 h-2.5 rounded-full"
+                style={{
+                  background: item.read ? "transparent" : "#f59e0b",
+                  boxShadow: item.read ? "none" : "0 0 8px #f59e0b",
+                }}
+              />
+            </div>}
+            <div className="flex-1 min-w-0">
+              <div className="flex justify-between items-start mb-1 gap-2">
+                <h3 className={`truncate text-sm ${item.read ? "font-medium text-[#f4daf7]/70" : "font-bold text-[#f4daf7]"}`}>
+                  {item.notificationTitle}
+                </h3>
+                <span className="text-[10px] tracking-wider text-[#d8c3ad] opacity-60 whitespace-nowrap font-mono">
+                  {item.createdAt ?? "Just now"}
+                </span>
               </div>
-              <span className="text-amber-400/70 text-xs whitespace-nowrap shrink-0 font-medium">
-                {item.timeAgo ?? "Just now"}
-              </span>
+              <p className="text-sm text-[#d8c3ad] leading-relaxed truncate">
+                {item.notificationBody}
+              </p>
             </div>
           </button>
         ))
       ) : (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400/20 via-orange-400/15 to-yellow-500/20 border border-amber-500/40 flex items-center justify-center mb-3 shadow-lg shadow-amber-500/20">
-            <span className="text-amber-400 text-2xl">🔔</span>
+        <div className="flex flex-col items-center justify-center py-16 text-center px-8">
+          <div className="w-20 h-20 rounded-full bg-[#f59e0b]/5 border border-[#f59e0b]/10 flex items-center justify-center mb-6">
+            <span className="text-[#f59e0b] text-3xl opacity-40">🔔</span>
           </div>
-          <p className="text-amber-100/70 text-sm">Your notifications will appear here</p>
+          <h3 className="text-[#f4daf7] font-semibold text-lg mb-2">Your notifications will appear here</h3>
+          <p className="text-[#d8c3ad] max-w-xs mx-auto text-sm">
+            We'll let you know when something important happens in your elite ecosystem.
+          </p>
         </div>
       )}
+    </div>
+
+    {/* Footer */}
+    <div className="px-6 py-4 border-t border-[#f59e0b]/15 flex justify-between items-center" style={{ background: "rgba(23,8,28,0.5)" }}>
+      {/* <button className="text-[#d8c3ad] hover:text-[#ffc174] transition-colors text-[10px] font-medium tracking-[0.15em] font-mono">
+        MARK ALL AS READ
+      </button> */}
+      <button onClick={()=>setNotificationOpened(false)} className="text-[#d8c3ad] text-right hover:text-[#ffc174] transition-colors text-[10px] font-medium tracking-[0.15em] font-mono flex items-center gap-1">
+        close <span className="text-sm">›</span>
+      </button>
     </div>
   </div>
 </MyVerticallyCenteredModal>

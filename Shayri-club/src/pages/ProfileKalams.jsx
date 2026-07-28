@@ -3,6 +3,7 @@ import axiosInstance from "@/Apis/axiosInstance";
 import NewKalam from "./components/NewKalam";
 import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
 import { useSearchParams } from "react-router-dom";
+import { Footer } from "@/Bg";
 
 const ProfileKalams = () => {
   const [kalams, setKalams] = useState([]);
@@ -254,6 +255,7 @@ if (!isFinished) {
         }
         
       </MyVerticallyCenteredModal>
+      <Footer/>
     </div>
   );
 };
