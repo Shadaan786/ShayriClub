@@ -1,9 +1,9 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "../Apis/axiosInstance";
 import { useContext } from "react";
 import { MyContext } from "../ContextProvider"
-import { ProfileCard } from "./components/ProfileCard";
-import { useSearchParams } from "react-router-dom";
+import { PoetProfileDashboard } from "./components/ProfileCard";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 
 
@@ -31,7 +31,17 @@ const UserProfile = () =>{
     const[profilePic, setProfilePic] = useState("");
     const[followerCount, setFollowerCount] = useState(0)
 
+    // --- Follow / own-profile state ---
+    // PoetProfileDashboard is presentational: it no longer fetches this
+    // itself (ProfileCard used to), so we own it here instead.
+    const[loggedInUserId, setLoggedInUserId] = useState("");
+    const[isOwnProfile, setIsOwnProfile] = useState(true);
+    const[isFollowing, setIsFollowing] = useState(false);
+    const[followersList, setFollowersList] = useState([]);
+    const [featuredVerse, setFeaturedVerse] = useState("");
+
     const[SearchParams] = useSearchParams();
+    const navigate = useNavigate();
 
     const userId = SearchParams.get("userId");
      
@@ -74,6 +84,11 @@ const UserProfile = () =>{
 
 
              setProfilePic(profilePic)
+
+             const featuredVerse = response.data.userDb?.[0].featuredVerse || response.data.data.featuredVerse;
+             console.log("see it",response.data.userDb?.[0].featuredVerse || response.data.featuredVerse)
+
+             setFeaturedVerse(featuredVerse);
 
 
 
@@ -282,6 +297,82 @@ const UserProfile = () =>{
         profile();
     }, []);
 
+    // --- Own-profile check + follow state ---
+    // This used to live inside ProfileCard itself. Since the dashboard is
+    // now a presentational component, we fetch it here and pass it down.
+    useEffect(()=>{
+      axiosInstance
+      .get(`/api/userId`, { withCredentials: true })
+      .then((response)=>{
+        const loggedInId = response.data._id;
+        setLoggedInUserId(loggedInId);
+        setIsOwnProfile(loggedInId === userId);
+      })
+      .catch((error)=>{
+        console.error("error fetching logged-in userId", error);
+      });
+    }, [userId]);
+
+    const fetchFollowers = () => {
+      axiosInstance
+      .get(`/api/getFollowers?user=${userId}`, { withCredentials: true })
+      .then((response)=>{
+        console.log("follower_data", response.data)
+        if(response.data.found){
+          setIsFollowing(true);
+          setFollowersList(response.data.follower.followers || []);
+        }else{
+          setIsFollowing(false);
+        }
+      })
+      .catch((error)=>{
+        console.error("error fetching follower", error)
+      });
+    };
+
+    useEffect(()=>{
+      if(!isOwnProfile){
+        fetchFollowers();
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOwnProfile, userId]);
+
+    const triggerFollow = () => {
+      axiosInstance
+      .post('/api/follow', { userId }, { withCredentials: true })
+      .then((response)=>{
+        if(response.data.success){
+          setIsFollowing(true);
+        }
+      });
+    };
+
+    const triggerUnfollow = () => {
+      axiosInstance
+      .post(`/api/unfollow?userId=${userId}`, { withCredentials: true })
+      .then((response)=>{
+        console.log(response.data)
+        if(response.data.success){
+          setIsFollowing(false);
+        }
+      });
+    };
+
+    const handleSearchUser = (query) => {
+      return axiosInstance
+        .post('/api/searchUser', { query })
+        .then((response)=> response.data);
+    };
+
+    const handleSelectSearchResult = (item) => {
+      navigate(`/profile?userId=${item._id}`);
+      navigate(0);
+    };
+
+    const handleWriteStanza = () => {
+      navigate('/write');
+    };
+
 
   
 
@@ -322,6 +413,8 @@ const UserProfile = () =>{
    
     }
 
+    
+
 
    
 
@@ -346,8 +439,8 @@ const UserProfile = () =>{
         <h1>{currentValue}</h1> */}
         {/* <button onClick={HandleCount}>Handle</button>  */}
         
-        <ProfileCard
-        
+        <PoetProfileDashboard
+
         userName={userName}
         totalKalams={netKalam}
         joiningDate={joining}
@@ -357,6 +450,20 @@ const UserProfile = () =>{
         totalNazm={nazmLength}
         profileLink={profilePic}
         totalFollowers={followerCount}
+        userId={userId}
+        spotlightVerse={featuredVerse}
+        
+
+        isOwnProfile={isOwnProfile}
+        isFollowing={true}
+        onFollow={triggerFollow}
+        onUnfollow={triggerUnfollow}
+        followersList={followersList}
+        onFollowersOpen={fetchFollowers}
+
+        onSearchUser={handleSearchUser}
+        onSelectSearchResult={handleSelectSearchResult}
+        onWriteStanza={handleWriteStanza}
 
          badges={[
     { name: "First Ghazal", icon: "🌙", desc: "Published your very first Ghazal.", earned: true },
@@ -369,7 +476,7 @@ const UserProfile = () =>{
         
         />
 
-        <input  type ="file"  onChange={(e)=> 
+        {/* <input  type ="file"  onChange={(e)=> 
         
         
         {
@@ -384,12 +491,12 @@ const UserProfile = () =>{
         
         
         
-        />
+        /> */}
 {
         console.log("image Data", data)
 }
 
-<button onClick={handleUpload}>upload</button>
+{/* <button onClick={handleUpload}>upload</button> */}
 
 
         </>

@@ -3443,948 +3443,1008 @@
 // };
 
 //------------------------------------------------------------------------------------------------------------------------------>
-
+import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
-import { useEffect, useRef, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { MyVerticallyCenteredModal } from "./Modals/MyModal";
 
-const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+/* ------------------------------------------------------------------ */
+/*  Fonts + Material Symbols — injected once, so this file can be     */
+/*  dropped in without editing index.html.                            */
+/* ------------------------------------------------------------------ */
+const FONT_LINKS = [
+  {
+    id: "poet-profile-fonts",
+    href:
+      "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap",
+  },
+  {
+    id: "poet-profile-symbols",
+    href:
+      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+  },
+];
 
-  .pp-wrap {
-    width: 100%; min-height: 100vh;
-    background: #0a0510;
-    font-family: 'DM Sans', sans-serif;
-    display: flex; justify-content: center; align-items: flex-start;
-    padding: 48px 20px;
-    box-sizing: border-box;
-  }
-  .pp-card {
-    width: 100%; max-width: 640px;
-    background: radial-gradient(120% 100% at 50% -10%, #1b0f2e 0%, #12081d 45%, #0a0510 100%);
-    display: flex; flex-direction: column;
-    position: relative; overflow: hidden;
-    border-radius: 28px;
-    border: 1px solid rgba(212,175,55,0.16);
-    box-shadow: 0 40px 90px -30px rgba(124,58,237,0.45), 0 0 0 1px rgba(212,175,55,0.06);
-  }
-  @media (max-width: 640px) {
-    .pp-wrap { padding: 0; }
-    .pp-card { border-radius: 0; border: none; box-shadow: none; min-height: 100vh; }
-  }
-  .pp-noise {
-    position: absolute; inset: 0; pointer-events: none; z-index: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
-    background-size: 180px; opacity: 0.35;
-  }
-  .pp-glow-tl {
-    position: absolute; width: 520px; height: 520px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(168,85,247,0.16) 0%, transparent 70%);
-    top: -200px; left: -180px; pointer-events: none; z-index: 0;
-  }
-  .pp-glow-br {
-    position: absolute; width: 420px; height: 420px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(212,175,55,0.10) 0%, transparent 70%);
-    bottom: -120px; right: -100px; pointer-events: none; z-index: 0;
-  }
-  .pp-content { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; }
-
-  /* ── TOPBAR ── */
-  .pp-topbar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 24px 28px 0;
-  }
-  .pp-topbar-title {
-    font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 600;
-    letter-spacing: 0.2em; text-transform: uppercase; color: rgba(212,175,55,0.45);
-  }
-  .pp-search-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(212,175,55,0.25);
-    border-radius: 40px; padding: 9px 18px;
-    cursor: pointer; font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 500;
-    color: rgba(201,164,251,0.85); letter-spacing: 0.03em;
-    backdrop-filter: blur(8px); transition: all 0.2s;
-  }
-  .pp-search-btn:hover {
-    background: rgba(168,85,247,0.15);
-    border-color: rgba(212,175,55,0.5);
-    color: #f0c85a;
-  }
-  @media (max-width: 480px) {
-    .pp-search-btn span { display: none; }
-    .pp-search-btn { padding: 10px; }
-  }
-
-  /* ── HERO ── */
-  .pp-hero {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 32px 40px 32px; gap: 0;
-  }
-  @media (max-width: 480px) {
-    .pp-hero { padding: 28px 20px 24px; }
-    .pp-avatar-ring { width: 96px !important; height: 96px !important; }
-    .pp-name { font-size: 28px !important; }
-  }
-
-  .pp-identity {
-    display: flex; flex-direction: column; align-items: center;
-  }
-
-  /* Avatar */
-  .pp-avatar-ring {
-    width: 116px; height: 116px; border-radius: 50%; padding: 3px;
-    background: linear-gradient(135deg, #f0c85a, #a855f7, #7c3aed, #f0c85a);
-    box-shadow: 0 0 24px rgba(168,85,247,0.35), 0 0 12px rgba(240,200,90,0.15);
-    margin-bottom: 20px;
-  }
-  .pp-avatar-inner {
-    width: 100%; height: 100%; border-radius: 50%;
-    background: #150c24; padding: 3px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .pp-avatar-inner img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-
-  /* Name block — sits directly under avatar */
-  .pp-name-block {
-    display: flex; flex-direction: column; align-items: center; gap: 9px;
-    margin-bottom: 18px;
-  }
-  .pp-name {
-    font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 700;
-    background: linear-gradient(135deg, #f6e3a1 0%, #f0c85a 45%, #d9a441 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    letter-spacing: -0.01em; margin: 0; text-align: center;
-    line-height: 1.1;
-  }
-  .pp-tag {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.35);
-    border-radius: 20px; padding: 4px 14px;
-    font-size: 11px; font-weight: 500; color: #c9a4fb;
-    letter-spacing: 0.1em; text-transform: uppercase;
-  }
-  .pp-dot { width: 6px; height: 6px; border-radius: 50%; background: #d4af37; }
-
-  /* Follow row — followers pill + button sit on one line, centered */
-  .pp-social-row {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    margin-bottom: 24px;
-  }
-
-  /* Followers pill */
-  .pp-followers-pill {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(212,175,55,0.18);
-    border-radius: 40px; padding: 8px 18px;
-    font-size: 13px; font-weight: 500; color: #b9a8cf;
-    letter-spacing: 0.01em;
-  }
-  .pp-followers-pill-icon {
-    display: flex; align-items: center; justify-content: center;
-    width: 22px; height: 22px; border-radius: 50%;
-    background: rgba(168,85,247,0.2);
-  }
-  .pp-followers-pill-count {
-    font-family: 'Playfair Display', serif;
-    font-size: 16px; font-weight: 700; color: #f0c85a;
-    line-height: 1;
-  }
-  .pp-followers-pill-label {
-    font-size: 11px; color: rgba(201,164,251,0.55);
-    letter-spacing: 0.1em; text-transform: uppercase;
-  }
-
-  /* Follow button */
-  .pp-btn-follow {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 55%, #d4af37 130%);
-    border: none; border-radius: 40px;
-    padding: 10px 22px; cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 600; color: #fff;
-    letter-spacing: 0.04em;
-    box-shadow: 0 0 18px rgba(168,85,247,0.45), 0 2px 8px rgba(0,0,0,0.45);
-    transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
-    position: relative; overflow: hidden;
-  }
-  .pp-btn-follow::before {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.14), transparent);
-    border-radius: inherit;
-  }
-  .pp-btn-follow:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 28px rgba(168,85,247,0.65), 0 4px 16px rgba(0,0,0,0.55);
-    filter: brightness(1.08);
-  }
-  .pp-btn-follow:active { transform: translateY(0); }
-
-  /* Unfollow button */
-  .pp-btn-unfollow {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(212,175,55,0.35);
-    border-radius: 40px; padding: 10px 22px; cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 500; color: #f0c85a;
-    letter-spacing: 0.04em;
-    transition: background 0.18s, border-color 0.18s, transform 0.18s, color 0.18s;
-  }
-  .pp-btn-unfollow:hover {
-    background: rgba(212,175,55,0.08);
-    border-color: rgba(168,85,247,0.45);
-    color: #d9a4fb;
-    transform: translateY(-1px);
-  }
-  .pp-btn-unfollow:active { transform: translateY(0); }
-
-  /* Stats grid */
-  .pp-stats-grid {
-    display: grid; grid-template-columns: 1fr 1px 1fr;
-    width: 100%; max-width: 360px;
-    background: rgba(168,85,247,0.05); border: 1px solid rgba(212,175,55,0.16);
-    border-radius: 16px; overflow: hidden;
-    margin-bottom: 20px;
-  }
-  .pp-stat-cell {
-    display: flex; flex-direction: column; align-items: center; padding: 22px 16px; gap: 4px;
-    transition: background 0.2s;
-  }
-  .pp-stat-cell:hover { background: rgba(212,175,55,0.05); }
-  .pp-stat-btn {
-    background: none; border: none; width: 100%; cursor: pointer;
-    font: inherit; -webkit-tap-highlight-color: transparent;
-  }
-  .pp-stat-divider { background: linear-gradient(180deg, transparent, rgba(212,175,55,0.25), transparent); }
-  .pp-stat-num {
-    font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 700;
-    color: #f6e3a1; line-height: 1;
-  }
-  .pp-stat-label { font-size: 11px; color: rgba(201,164,251,0.6); letter-spacing: 0.12em; text-transform: uppercase; }
-
-  /* Meta row — joined + streak sit together */
-  .pp-meta-row {
-    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
-  }
-
-  /* ── BADGES SECTION ── */
-  .pp-badges-section {
-    padding: 28px 28px 0;
-    flex: 1;
-    display: flex; flex-direction: column; gap: 0;
-  }
-  .pp-section-header {
-    display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
-  }
-  .pp-section-title {
-    font-size: 11px; font-weight: 500; color: rgba(212,175,55,0.55);
-    letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap;
-  }
-  .pp-section-line {
-    flex: 1; height: 1px;
-    background: linear-gradient(90deg, rgba(212,175,55,0.22), transparent);
-  }
-
-  .pp-badges-scroll {
-    overflow-x: auto; overflow-y: visible;
-    padding-bottom: 20px;
-    scrollbar-width: none;
-  }
-  .pp-badges-scroll::-webkit-scrollbar { display: none; }
-
-  .pp-badges-row {
-    display: flex; gap: 20px;
-    padding: 8px 4px 4px;
-    width: max-content;
-  }
-
-  .pp-hex-wrap {
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    width: 76px; cursor: default; flex-shrink: 0;
-    transition: transform 0.2s;
-  }
-  .pp-hex-wrap:hover { transform: translateY(-4px); }
-
-  .pp-hex-outer {
-    width: 72px; height: 80px;
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .pp-hex-outer.earned {
-    background: linear-gradient(160deg, #f6e3a1, #d4af37, #7c3aed);
-    filter: drop-shadow(0 0 8px rgba(212,175,55,0.55)) drop-shadow(0 0 18px rgba(168,85,247,0.3));
-  }
-  .pp-hex-outer.locked {
-    background: rgba(255,255,255,0.05);
-    filter: none;
-  }
-  .pp-hex-inner {
-    width: 64px; height: 72px;
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; line-height: 1;
-  }
-  .pp-hex-inner.earned { background: #1b0f2e; }
-  .pp-hex-inner.locked { background: #100a19; filter: grayscale(1); opacity: 0.28; }
-
-  .pp-hex-name {
-    font-size: 10px; font-weight: 500; color: #d8c8ee;
-    text-align: center; line-height: 1.3; max-width: 76px;
-  }
-  .pp-hex-name.locked { color: rgba(201,164,251,0.22); }
-
-  /* ── TICKER ── */
-  .pp-ticker-wrap {
-    overflow: hidden; cursor: default; user-select: none;
-    height: 76px; border-top: 1px solid rgba(212,175,55,0.14);
-    margin-top: auto;
-  }
-  .pp-ticker-track { display: flex; height: 100%; }
-  .pp-ticker-item {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-width: 175px; height: 100%; padding: 0 20px; flex-shrink: 0;
-    border-right: 1px solid rgba(212,175,55,0.08); gap: 3px;
-    transition: background 0.2s;
-  }
-  .pp-ticker-item:hover { background: rgba(168,85,247,0.05); }
-  .pp-ticker-num {
-    font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700;
-    color: #f0c85a; line-height: 1;
-  }
-  .pp-ticker-label {
-    font-size: 10px; color: rgba(201,164,251,0.45);
-    letter-spacing: 0.12em; text-transform: uppercase; text-align: center;
-  }
-
-  /* Search Modal - Professional Styling */
-
-.search-modal-body {
-  padding: 20px 24px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  overflow: hidden;
-  max-height: 100%;
+function useInjectFonts() {
+  useEffect(() => {
+    FONT_LINKS.forEach(({ id, href }) => {
+      if (!document.getElementById(id)) {
+        const link = document.createElement("link");
+        link.id = id;
+        link.rel = "stylesheet";
+        link.href = href;
+        document.head.appendChild(link);
+      }
+    });
+  }, []);
 }
 
-.search-input-wrapper {
-  position: relative;
-  margin-bottom: 16px;
+/* ------------------------------------------------------------------ */
+/*  Small presentational helpers                                      */
+/* ------------------------------------------------------------------ */
+
+const Icon = ({ name, className = "", filled = false }) => (
+  <span
+    className={`material-symbols-outlined ${className}`}
+    style={filled ? { fontVariationSettings: "'FILL' 1" } : undefined}
+  >
+    {name}
+  </span>
+);
+
+function initialsFromName(name = "") {
+  return (
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase())
+      .join("") || "?"
+  );
 }
 
-.search-input-wrapper::before {
-  content: "";
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8' stroke='%23a855f7' stroke-width='2'/%3E%3Cpath d='M21 21l-4.35-4.35' stroke='%23a855f7' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-size: contain;
-  pointer-events: none;
-  opacity: 0.7;
+function yearsSince(dateString) {
+  if (!dateString) return null;
+  const then = new Date(dateString);
+  if (Number.isNaN(then.getTime())) return null;
+  const years = (Date.now() - then.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+  return Math.max(0, Math.floor(years));
 }
 
-.search-input {
-  width: 100%;
-  height: 42px;
-  padding: 0 14px 0 40px;
-  font-size: 14px;
-  color: #f1e9d8 !important;
-  background: #1b0f2e !important;
-  border: 1px solid rgba(212,175,55,0.3) !important;
-  border-radius: 10px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-  box-sizing: border-box;
+function formatJoinDate(dateString) {
+  if (!dateString) return null;
+  const d = new Date(dateString);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
 }
 
-.search-input:focus {
-  border-color: #d4af37 !important;
-  background: #1b0f2e;
-  box-shadow: 0 0 0 3px rgba(168,85,247,0.25) !important;
-}
+/* ------------------------------------------------------------------ */
+/*  Header search — wraps onSearchUser / onSelectSearchResult         */
+/* ------------------------------------------------------------------ */
 
-.search-input::placeholder {
-  color: rgba(201,164,251,0.4);
-  font-size: 14px;
-}
-
-/* Results List */
-
-.search-results-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  max-height: 240px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 2px;
-}
-
-.search-results-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.search-results-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.search-results-list::-webkit-scrollbar-thumb {
-  background: rgba(212,175,55,0.4);
-  border-radius: 4px;
-}
-
-/* Each Result Row */
-
-.search-result-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background 0.15s, border-color 0.15s;
-  background: transparent;
-  width: 100%;
-  text-align: left;
-}
-
-.search-result-item:hover {
-  background: rgba(168,85,247,0.18) !important;
-  border-color: rgba(212,175,55,0.35) !important;
-}
-
-.search-result-item:active {
-  background: rgba(168,85,247,0.28) !important;
-}
-
-/* Avatar Circle */
-
-.search-result-avatar {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #a855f7, #d4af37);
-  color: #150c24;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  overflow: hidden;
-}
-
-/* Name Text */
-
-.search-result-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #f1e9d8 !important;
-  margin: 0;
-  line-height: 1.4;
-}
-
-.search-result-sub {
-  font-size: 12px;
-  color: rgba(241, 233, 216, 0.55) !important;
-  margin: 0;
-  line-height: 1.3;
-}
-
-/* Empty State */
-
-.search-empty-state {
-  text-align: center;
-  padding: 32px 16px;
-  color: rgba(201,164,251,0.5);
-  font-size: 14px;
-}
-
-.search-empty-state svg {
-  margin-bottom: 10px;
-  opacity: 0.35;
-}
-
-/* Followers Modal */
-
-.pp-followers-modal {
-  padding: 20px 24px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.pp-followers-modal-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: #f0c85a;
-  margin: 0;
-}
-
-.pp-followers-modal-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.pp-followers-modal-row {
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(212,175,55,0.12);
-  background: rgba(168,85,247,0.04);
-  color: #f1e9d8;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.pp-followers-modal-row:hover {
-  background: rgba(168,85,247,0.1);
-  border-color: rgba(212,175,55,0.3);
-}
-
-.pp-followers-modal-empty {
-  text-align: center;
-  padding: 24px 0;
-  color: rgba(201,164,251,0.5);
-  font-size: 14px;
-}
-`;
-
-export const ProfileCard = ({
-  userName, totalKalams, joiningDate, Streak,
-  totalSher, totalGhazal, totalNazm,
-  profileLink, totalFollowers,
-  badges = []
-}) => {
-  const scrollRef = useRef(null);
-  const animRef = useRef(null);
-  const speed = 0.5;
-
-  const categories = [
-    { label: "Contributions in Shayri", value: totalSher },
-    { label: "Contributions in Ghazal", value: totalGhazal },
-    { label: "Contributions in Nazm", value: totalNazm },
-    { label: "Contributions in Matla", value: totalGhazal },
-    { label: "Contributions in Maqta", value: totalNazm },
-  ];
-
-  const earnedBadges = badges.filter(b => b.earned);
-  const lockedBadges = badges.filter(b => !b.earned);
-  const sortedBadges = [...earnedBadges, ...lockedBadges];
-  const [searchParams, setSearchParams] = useSearchParams();
-  // const [userId, setUserId] = useState("")
-  const[isVisible, setIsVisible] = useState(false);
-  const userId = useRef("");
-  const [following, setFollowing] = useState(false)
-  const[status, setStatus] = useState("")
-  const[isOpen, setIsOpen] = useState(false);
-  const [followers, setFollowers] = useState([]);
-  // const [value, setValue] = useState("");
-  const[searchOpen, setSearchOpen] = useState(false)
-  const [searchResult, setSearchResult] = useState([]);
-  const Navigate = useNavigate();
-
-  const value = useRef(null);
-
-  const user = searchParams.get("userId")
-  let timeoutId;
+function HeaderSearch({ onSearchUser, onSelectSearchResult }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const boxRef = useRef(null);
 
   useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    let pos = 0;
-    const step = () => {
-      pos += speed;
-      if (pos >= el.scrollWidth / 2) pos = 0;
-      el.scrollLeft = pos;
-      animRef.current = requestAnimationFrame(step);
+    if (!open) return;
+    function handleClickOutside(e) {
+      if (boxRef.current && !boxRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  useEffect(() => {
+    if (!query.trim() || !onSearchUser) {
+      setResults([]);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    const timer = setTimeout(() => {
+      Promise.resolve(onSearchUser(query))
+        .then((data) => {
+          if (!cancelled) setResults(Array.isArray(data) ? data : data?.users || []);
+        })
+        .catch(() => {
+          if (!cancelled) setResults([]);
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    }, 300);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
     };
-    animRef.current = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animRef.current);
-    
-  }, []);
-
-  const pause = () => cancelAnimationFrame(animRef.current);
-  const resume = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-    let pos = el.scrollLeft;
-    const step = () => {
-      pos += speed;
-      if (pos >= el.scrollWidth / 2) pos = 0;
-      el.scrollLeft = pos;
-      animRef.current = requestAnimationFrame(step);
-    };
-    animRef.current = requestAnimationFrame(step);
-  };
-
-  useEffect(()=>{
-       axiosInstance
-    .get(`/api/userId`,{
-      withCredentials: true
-    }).then((response)=>{
-      // setUserId(response.data._id)
-      userId.current = response.data._id;
-      console.log("checking_fetched_UserId", response.data._id)
-
-      if(userId.current === user){
-        setIsVisible(false);
-      }else{
-        setIsVisible(true);
-      }
-
-    })
-  }, [])
-
-  useEffect(()=>{
-
-    if(userId.current !== user){
-
-    
-    axiosInstance
-    .get(`/api/getFollowers?user=${user}`,{
-
-      withCredentials: true
-    }).then((response)=>{
-      console.log("follower_data", response.data)
-      if(response.data.found){
-        setFollowing(true);
-        setStatus("Following");
-        setFollowers(response.data.follower.followers)
-        console.log("all_followers", response.data.follower.followers)
-      }else{
-        setFollowing(false)
-      }
-    }).catch((error)=>{
-      console.error("error fetching follower", error)
-    })
-  }else{
-    ;
-  }
-  }, [])
-
-  const triggerFollow=()=>{
-    axiosInstance
-    .post('/api/follow',{
-      userId: user
-    },{
-      withCredentials: true
-    }).then((response)=>{
-      if(response.data.success){
-        setStatus("Following");
-        setFollowing(true)
-      }else{
-        ;
-      }
-    })
-  }
-
-  const triggerUnfollow=()=>{
-    
-    axiosInstance
-    .post(`/api/unfollow?userId=${user}`, {
-      withCredentials: true
-    }).then((response)=>{
-      console.log(response.data)
-      if(response.data.success){
-        setFollowing("")
-      }
-    })
-  }
+  }, [query, onSearchUser]);
 
   return (
-    <>
-      <style>{css}</style>
-      <div className="pp-wrap">
-        <div className="pp-card">
-       
+    <div className="relative" ref={boxRef}>
+      <Icon
+        name="search"
+        className="!text-[20px] text-[#d0c5b0] hover:text-[#ffe6ac] cursor-pointer transition-colors"
+      />
+      <button
+        aria-label="Search poets"
+        onClick={() => setOpen((v) => !v)}
+        className="absolute inset-0 opacity-0"
+      />
+      {open && (
+        <div className="absolute right-0 top-10 w-64 sm:w-72 max-w-[88vw] rounded-2xl overflow-hidden bg-[rgba(18,8,29,0.95)] backdrop-blur-xl border border-[rgba(240,200,90,0.2)] shadow-2xl z-50">
+          <div className="p-3 border-b border-[rgba(240,200,90,0.1)]">
+            <input
+              autoFocus
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search poets…"
+              className="w-full bg-[#17111d] text-[#ebdef1] placeholder-[#99907d] text-sm rounded-lg px-3 py-2 outline-none border border-[rgba(240,200,90,0.15)] focus:border-[#ffe6ac]/50"
+            />
+          </div>
+          <div className="max-h-64 overflow-y-auto custom-scrollbar">
+            {loading && (
+              <p className="px-4 py-3 text-xs text-[#99907d]">Searching…</p>
+            )}
+            {!loading && query.trim() && results.length === 0 && (
+              <p className="px-4 py-3 text-xs text-[#99907d]">No poets found.</p>
+            )}
+            {results.map((item) => (
+              <button
+                key={item._id || item.id || item.name}
+                onClick={() => {
+                  onSelectSearchResult?.(item);
+                  setOpen(false);
+                  setQuery("");
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[rgba(240,200,90,0.08)] transition-colors text-left"
+              >
+                <div className="w-7 h-7 rounded-full overflow-hidden bg-[#2e2735] flex items-center justify-center text-[10px] text-[#ffe6ac] shrink-0">
+                  {item.profilePic ? (
+                    <img src={item.profilePic} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    initialsFromName(item.name)
+                  )}
+                </div>
+                <span className="text-sm text-[#ebdef1] truncate">{item.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
-          <div className="pp-noise" />
+/* ------------------------------------------------------------------ */
+/*  Followers modal                                                    */
+/* ------------------------------------------------------------------ */
 
-          {/* ── TOPBAR — title + search trigger, in normal document flow ── */}
-          <div className="pp-topbar">
-            <span className="pp-topbar-title">Profile</span>
-            <button type="button" className="pp-search-btn" onClick={()=>setSearchOpen(true)}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
-                <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-              <span>Search users</span>
+function FollowersModal({ open, onClose, followersList }) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-sm max-h-[70vh] flex flex-col rounded-2xl glass-panel overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(240,200,90,0.1)]">
+          <h3 className="font-display text-[#ffe6ac] text-lg">Followers</h3>
+          <button onClick={onClose} className="text-[#d0c5b0] hover:text-[#ffe6ac]">
+            <Icon name="close" />
+          </button>
+        </div>
+        <div className="overflow-y-auto custom-scrollbar p-2">
+          {(!followersList || followersList.length === 0) && (
+            <p className="px-4 py-6 text-center text-sm text-[#99907d]">No followers yet.</p>
+          )}
+          {followersList?.map((f, i) => (
+            <div
+              key={f._id || f.id || i}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[rgba(240,200,90,0.06)] transition-colors"
+            >
+              <div className="w-9 h-9 rounded-full overflow-hidden bg-[#2e2735] flex items-center justify-center text-[11px] text-[#ffe6ac] shrink-0">
+                {f.profilePic ? (
+                  <img src={f.profilePic} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  initialsFromName(f.name)
+                )}
+              </div>
+              <span className="text-sm text-[#ebdef1] truncate">{f.name || "Fellow poet"}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Albums grid — fetches live albums, handles like/unlike            */
+/* ------------------------------------------------------------------ */
+
+function AlbumsGrid({ userId }) {
+  const [albums, setAlbums] = useState([]);
+
+  useEffect(() => {
+    axiosInstance
+      .get(`/api/albumsLive?query=most_liked&userId=${userId}&page=1&limit=3`)
+      .then((res) => {
+        const data = res.data;
+        const list = Array.isArray(data) ? data : data.albums || [];
+        setAlbums(list);
+      })
+      .catch(() => setAlbums([]));
+  }, [userId]);
+
+  const handleLike = async (albumId) => {
+    // Optimistic update
+    setAlbums((prev) =>
+      prev.map((album) =>
+        album._id === albumId
+          ? {
+              ...album,
+              isLiked: !album.isLiked,
+              likesCount: (album.likesCount || 0) + (album.isLiked ? -1 : 1),
+            }
+          : album
+      )
+    );
+
+    // TEMP DEBUG: API call disabled to confirm the UI/glow works on its own.
+    // Once confirmed, uncomment this block and fix the endpoint/payload to match your backend.
+    /*
+    try {
+      await axiosInstance.post(`/api/albums/${albumId}/like`);
+    } catch (err) {
+      // Roll back on failure
+      setAlbums((prev) =>
+        prev.map((album) =>
+          album._id === albumId
+            ? {
+                ...album,
+                isLiked: !album.isLiked,
+                likesCount: (album.likesCount || 0) + (album.isLiked ? -1 : 1),
+              }
+            : album
+        )
+      );
+    }
+    */
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {albums.map((album) => (
+        <div
+          key={album._id}
+          className="glass-panel rounded-2xl p-6 group cursor-pointer hover:border-[#ffe6ac]/40 transition-all"
+        >
+          <div className="h-56 mb-6 rounded-xl overflow-hidden relative flex items-center justify-center bg-gradient-to-br from-[#3a2a55] to-[#1a1030] transition-transform duration-700 group-hover:scale-105">
+            {album.albumCover ? (
+              <img
+                src={album.albumCover}
+                alt={album.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Icon name="auto_stories" className="!text-[64px] text-[#ffe6ac]/50" />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#120c18]/60 to-transparent" />
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLike(album._id);
+              }}
+              aria-label={album.isLiked ? "Unlike album" : "Like album"}
+              className="absolute top-3 right-3 w-9 h-9 rounded-full bg-[#120c18]/70 backdrop-blur-sm border border-[#ffe6ac]/20 flex items-center justify-center hover:bg-[#120c18]/90 transition-all duration-300 active:scale-90"
+            >
+              <Icon
+                name="favorite"
+                filled={album.isLiked}
+                className={`!text-[18px] transition-all duration-300 ${
+                  album.isLiked
+                    ? "text-[#ff4b4b] scale-110 drop-shadow-[0_0_6px_rgba(255,75,75,0.9)]"
+                    : "text-[#d0c5b0]"
+                }`}
+              />
             </button>
           </div>
 
-          <MyVerticallyCenteredModal isOpen={searchOpen} onClose={()=>setSearchOpen(false)} width={"1/2"} height={"1/2"}>
+          <h4 className="font-display text-[24px] mb-3">{album.name}</h4>
+          <p className="text-[15px] leading-relaxed mb-6 opacity-80 capitalize">
+            {album.category}
+          </p>
 
-  <div style={{height: '100%', maxHeight: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
-    <div className="search-modal-body">
-
-      <div className="search-input-wrapper">
-        <input
-          className="search-input"
-          type="text"
-          placeholder="Search users..."
-
-          onChange={(e)=>{
-            value.current = e.target.value
-            if (timeoutId){
-              if(!value) return
-              clearTimeout(timeoutId);
-               timeoutId = setTimeout(()=>{
-                axiosInstance
-                .post('/api/searchUser',{
-                  query: value.current
-                }).then((response)=>{
-                    (response.data.length === 0)? <h1>Sorry no users found</h1>:
-                  console.log("deBounce_response", response.data);
-                  setSearchResult(response.data);
-                })
-              }, 500)
-            }else{
-              // setValue(e.target.value)
-
-             value.current = e.target.value
-
-              timeoutId = setTimeout(()=>{
-                axiosInstance
-                .post('/api/searchUser',{
-                  query: value.current
-                }).then((response)=>{
-                    (response.data.length === 0)? <h1>Sorry no users found</h1>:
-                  console.log("deBounce_response", response.data);
-                  setSearchResult(response.data)
-                })
-              }, 500)
-
-            }
-          }}
-        />
-      </div>
-
-      <div className="search-results-list">
-        {
-          searchResult.length === 0 ? (
-            <div className="search-empty-state">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.6"/>
-                <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-              </svg>
-              <p style={{margin: 0}}>Start typing to find a user</p>
-            </div>
-          ) : (
-            searchResult.map((item, i)=>(
-              <button type="button" className="search-result-item" key={i} onClick={()=>{Navigate(`/profile?userId=${item._id}`);setSearchOpen(false); Navigate(0)}}>
-                <div className="search-result-avatar">
-                  {item.profilePic
-                    ? <img src={item.profilePic} alt={item.name} style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} />
-                    : item.name?.charAt(0)
-                  }
-                </div>
-                <div>
-                  <p className="search-result-name">{item.name}</p>
-                </div>
-              </button>
-            ))
-          )
-        }
-      </div>
-
+          <div className="flex items-center justify-between">
+            <span className="bg-[#ffe6ac]/10 text-[#ffe6ac] text-[10px] px-4 py-1.5 rounded-full border border-[#ffe6ac]/20">
+              {album.kalamCollection?.length || 0} Kalams
+            </span>
+            <span className="flex items-center gap-1 text-[#d0c5b0] text-[11px] tracking-widest uppercase">
+              <Icon name="favorite" className="!text-[13px]" />
+              {album.likesCount || 0}
+            </span>
+          </div>
+        </div>
+      ))}
     </div>
-  </div>
+  );
+}
 
-</MyVerticallyCenteredModal>
+/* ------------------------------------------------------------------ */
+/*  Main component                                                     */
+/* ------------------------------------------------------------------ */
 
-          <div className="pp-glow-tl" />
-          <div className="pp-glow-br" />
+export function PoetProfileDashboard({
+  userName,
+  totalKalams,
+  joiningDate,
+  Streak,
+  totalSher,
+  totalGhazal,
+  totalNazm,
+  profileLink,
+  totalFollowers,
+  userId,
 
-          <div className="pp-content">
+  isOwnProfile = true,
+  isFollowing,
+  onFollow,
+  onUnfollow,
+  followersList = [],
+  onFollowersOpen,
 
-            {/* ── HERO ── */}
-            <header className="pp-hero">
+  onSearchUser,
+  onSelectSearchResult,
+  onWriteStanza,
 
-              {/* 1. Identity block — avatar, name, role tag */}
-              <div className="pp-identity">
-                <div className="pp-avatar-ring">
-                  <div className="pp-avatar-inner">
-                    <img src={profileLink} alt={userName ? `${userName}'s avatar` : "Profile avatar"} />
+  badges = [],
+
+  // Optional — restore the original mockup's hero banner / pinned-verse /
+  // top-kalam sections when this data is available. Each degrades to a
+  // sensible empty state (own profile) or simply hides (other profiles)
+  // when not provided, rather than showing invented content.
+  coverImage,
+  tagline,
+  spotlightVerse, // { text, translation }
+  topKalam, // { text, translation, likes, comments, onLike, onComment, onShare, onBookmark }
+}) {
+  useInjectFonts();
+  const [followersOpen, setFollowersOpen] = useState(false);
+
+  const loading = !userName;
+  const memberSince = formatJoinDate(joiningDate);
+  const years = yearsSince(joiningDate);
+
+  const handleFollowersClick = () => {
+    onFollowersOpen?.();
+    setFollowersOpen(true);
+  };
+
+  /* ---------------- Spotlight verse: edit / save / delete ---------------- */
+  const [currentVerse, setCurrentVerse] = useState(spotlightVerse || null);
+  const [isEditingVerse, setIsEditingVerse] = useState(false);
+  const [verseDraft, setVerseDraft] = useState("");
+  const [savingVerse, setSavingVerse] = useState(false);
+
+  useEffect(() => {
+    setCurrentVerse(spotlightVerse || null);
+  }, [spotlightVerse]);
+
+  const startEditVerse = () => {
+    setVerseDraft(currentVerse?.text || "");
+    setIsEditingVerse(true);
+  };
+
+  const cancelEditVerse = () => {
+    setIsEditingVerse(false);
+    setVerseDraft("");
+  };
+
+  const saveVerse = async () => {
+    const verse = verseDraft.trim();
+    if (!verse) return;
+    setSavingVerse(true);
+    try {
+      const res = await axiosInstance.post(`/api/addVerse`, {
+        verse: verse,
+      },{
+        withCredentials: true
+      });
+      const saved = res.data?.spotlightVerse || { text };
+      setCurrentVerse(saved);
+      setIsEditingVerse(false);
+      setVerseDraft("");
+    } catch (err) {
+      console.error("Failed to save spotlight verse", err);
+    } finally {
+      setSavingVerse(false);
+    }
+  };
+
+  const deleteVerse = async () => {
+    try {
+      await axiosInstance.delete(`/api/spotlightVerse`, { data: { userId } });
+      setCurrentVerse(null);
+    } catch (err) {
+      console.error("Failed to delete spotlight verse", err);
+    }
+  };
+
+  /* ---------------- Mobile-only profile picture upload ---------------- */
+  const fileInputRef = useRef(null);
+  const [localProfilePic, setLocalProfilePic] = useState(null);
+  const [uploadingPic, setUploadingPic] = useState(false);
+  const displayedProfilePic = localProfilePic || profileLink;
+
+  const triggerProfilePicUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleProfilePicChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Instant local preview while the upload is in flight
+    const previewUrl = URL.createObjectURL(file);
+    setLocalProfilePic(previewUrl);
+    setUploadingPic(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("profilePic", file);
+      formData.append("userId", userId);
+
+      const res = await axiosInstance.post(`/api/uploadProfilePic`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+
+      if (res.data?.profileLink) {
+        setLocalProfilePic(res.data.profileLink);
+      }
+    } catch (err) {
+      console.error("Failed to upload profile picture", err);
+      setLocalProfilePic(null);
+    } finally {
+      setUploadingPic(false);
+      e.target.value = "";
+    }
+  };
+
+  return (
+    <div className="poet-profile-dashboard min-h-screen w-full bg-[#0a0510] text-[#ebdef1]">
+      <style>{`
+        .poet-profile-dashboard { font-family: 'DM Sans', sans-serif; }
+        .poet-profile-dashboard .font-display { font-family: 'Playfair Display', serif; }
+        .poet-profile-dashboard {
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+          background-repeat: repeat;
+          background-size: 200px;
+        }
+        .poet-profile-dashboard .glass-panel {
+          background: rgba(18, 8, 29, 0.8);
+          backdrop-filter: blur(24px);
+          border: 1px solid rgba(240, 200, 90, 0.15);
+        }
+        .poet-profile-dashboard .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .poet-profile-dashboard .custom-scrollbar::-webkit-scrollbar-track { background: rgba(23, 17, 29, 0.5); }
+        .poet-profile-dashboard .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(240, 200, 90, 0.3);
+          border-radius: 10px;
+        }
+      `}</style>
+
+      {/* ---------------- Header ---------------- */}
+      <header className="fixed top-0 w-full z-50 flex justify-between items-center px-5 md:px-16 h-16 bg-[#17111d]/80 backdrop-blur-xl border-b border-[#ffe6ac]/20 shadow-sm">
+        <div className="flex items-center gap-10">
+          <span className="font-display text-[28px] md:text-[32px] text-[#ffe6ac] tracking-tighter">
+            Shayar
+          </span>
+          <nav className="hidden md:flex gap-8">
+            <a className="text-[12px] uppercase tracking-widest text-[#d0c5b0] hover:text-[#ffe6ac] transition-colors" href="#">
+              Library
+            </a>
+            <a className="text-[12px] uppercase tracking-widest text-[#ffe6ac] font-bold transition-colors" href="#">
+              Compositions
+            </a>
+            <a className="text-[12px] uppercase tracking-widest text-[#d0c5b0] hover:text-[#ffe6ac] transition-colors" href="#">
+              Aspirations
+            </a>
+          </nav>
+        </div>
+        <div className="flex items-center gap-4 md:gap-6">
+          <button
+            onClick={() => onWriteStanza?.()}
+            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#ffe6ac]/10 border border-[#ffe6ac]/20 rounded-full text-[#ffe6ac] text-[12px] hover:bg-[#ffe6ac]/20 transition-all"
+          >
+            <Icon name="add_notes" className="!text-[18px]" />
+            Write New Stanza
+          </button>
+          <div className="h-8 w-[1px] bg-[#ffe6ac]/10 hidden sm:block" />
+          <div className="flex items-center gap-4">
+            <HeaderSearch onSearchUser={onSearchUser} onSelectSearchResult={onSelectSearchResult} />
+            <Icon name="settings" className="!text-[20px] text-[#d0c5b0] hover:text-[#ffe6ac] cursor-pointer transition-colors" />
+            <div className="w-8 h-8 rounded-full border border-[#ffe6ac]/40 overflow-hidden cursor-pointer bg-[#2e2735] flex items-center justify-center text-[10px] text-[#ffe6ac]">
+              {profileLink ? (
+                <img alt="Profile" className="w-full h-full object-cover" src={profileLink} />
+              ) : (
+                initialsFromName(userName)
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="pt-16 min-h-screen w-full bg-[#120c18] pb-16 md:pb-0">
+        {/* ---------------- Hero ---------------- */}
+        <section className="relative w-full overflow-hidden">
+          <div className="h-[300px] sm:h-[360px] md:h-[420px] relative bg-gradient-to-br from-[#241d2a] to-[#120c18]">
+            {coverImage && (
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url('${coverImage}')` }}
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#120c18] via-[#120c18]/60 to-transparent" />
+            <div className="absolute inset-0 flex items-end justify-center">
+              <div className="max-w-[1120px] w-full px-5 md:px-16 pb-8 sm:pb-12">
+                <div className="flex flex-col md:flex-row items-center md:items-end gap-4 sm:gap-6 md:gap-10">
+                  <div className="relative group">
+                    <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 rounded-full border-4 border-[#ffe6ac]/20 shadow-[0_0_40px_rgba(240,200,90,0.2)] overflow-hidden bg-[#201926] flex items-center justify-center text-[#ffe6ac] text-4xl font-display transition-transform duration-500 group-hover:scale-105">
+                      {(isOwnProfile ? displayedProfilePic : profileLink) ? (
+                        <img
+                          alt={userName || "Poet"}
+                          className="w-full h-full object-cover"
+                          src={isOwnProfile ? displayedProfilePic : profileLink}
+                        />
+                      ) : (
+                        initialsFromName(userName)
+                      )}
+                    </div>
+
+                    {/* Mobile-only profile picture upload trigger — desktop view is untouched */}
+                    {isOwnProfile && (
+                      <div className="md:hidden">
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleProfilePicChange}
+                          className="hidden"
+                        />
+                        <button
+                          onClick={triggerProfilePicUpload}
+                          disabled={uploadingPic}
+                          aria-label={displayedProfilePic ? "Change profile picture" : "Upload profile picture"}
+                          className="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-[#ffe6ac] text-[#3d2e00] flex items-center justify-center border-2 border-[#0a0510] shadow-md active:scale-90 transition-transform disabled:opacity-60"
+                        >
+                          {uploadingPic ? (
+                            <span className="w-3.5 h-3.5 rounded-full border-2 border-[#3d2e00]/40 border-t-[#3d2e00] animate-spin" />
+                          ) : (
+                            <Icon name="photo_camera" className="!text-[16px]" filled />
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                    <h1 className="font-display text-[#ffe6ac] text-[32px] sm:text-[40px] md:text-[64px] leading-tight mb-2">
+                      {loading ? "Loading…" : userName}
+                    </h1>
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 sm:gap-4 text-[#d0c5b0]">
+                      <span className="text-[#ffe6ac] italic text-[18px] md:text-[20px]">Poet on Shayar</span>
+                      {(memberSince || Streak) && (
+                        <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#ffe6ac]/30" />
+                      )}
+                      {memberSince && (
+                        <div className="flex items-center gap-2 opacity-80">
+                          <Icon name="history_edu" className="!text-[18px]" />
+                          Member since {memberSince}
+                          {years !== null && years > 0 ? ` · ${years} yr${years === 1 ? "" : "s"}` : ""}
+                        </div>
+                      )}
+                      {Streak !== undefined && Streak !== "" && (
+                        <div className="flex items-center gap-2 opacity-80">
+                          <Icon name="local_fire_department" className="!text-[18px]" />
+                          {Streak}-day streak
+                        </div>
+                      )}
+                    </div>
+                    {tagline && (
+                      <p className="mt-6 text-[#ebdef1]/80 max-w-2xl leading-relaxed italic border-l-2 border-[#ffe6ac]/40 pl-6 hidden md:block">
+                        {tagline}
+                      </p>
+                    )}
                   </div>
                 </div>
-
-                <div className="pp-name-block">
-                  <h1 className="pp-name">{userName}</h1>
-                  <span className="pp-tag"><span className="pp-dot" />Shayar</span>
-                </div>
               </div>
+            </div>
+          </div>
+        </section>
 
-              {/* 2. Follow / unfollow — social action row */}
-              <div className="pp-social-row">
-                {isVisible && !following && (
-                  <button type="button" className="pp-btn-follow" onClick={triggerFollow}>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M7 1v12M1 7h12" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                    Follow
-                  </button>
-                )}
-
-                {following && (
-                  <button type="button" className="pp-btn-unfollow" onClick={triggerUnfollow}>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2 7l4 4 6-6" stroke="#f0c85a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    Following
-                  </button>
-                )}
+        {/* ---------------- Actions / stats bar ---------------- */}
+        <div className="border-b border-[#ffe6ac]/10 bg-[#0a0510]/50 backdrop-blur-sm sticky top-16 z-30">
+          <div className="max-w-[1120px] mx-auto px-5 md:px-16 min-h-[80px] py-3 md:py-0 flex flex-wrap items-center justify-between gap-y-3">
+            <div className="flex items-center gap-4 sm:gap-8 md:gap-12">
+              <button
+                onClick={handleFollowersClick}
+                className="flex flex-col items-start"
+              >
+                <span className="text-[11px] text-[#d0c5b0]/60 uppercase tracking-widest mb-1">
+                  Followers
+                </span>
+                <span className="font-display text-[24px] text-[#ffe6ac]">
+                  {totalFollowers ?? 0}
+                </span>
+              </button>
+              <div className="w-[1px] h-8 bg-[#ffe6ac]/10" />
+              <div className="flex flex-col">
+                <span className="text-[11px] text-[#d0c5b0]/60 uppercase tracking-widest mb-1">
+                  Kalams
+                </span>
+                <span className="font-display text-[24px] text-[#ffe6ac]">
+                  {totalKalams || 0}
+                </span>
               </div>
-
-              {/* 3. Stats grid */}
-              <div className="pp-stats-grid">
-                <button type="button" className="pp-stat-cell pp-stat-btn" onClick={()=>setIsOpen(true)} aria-label="View followers">
-                  <span className="pp-stat-num">{totalFollowers}</span>
-                  <span className="pp-stat-label">Followers</span>
-                </button>
-                <div className="pp-stat-divider" />
-                <button onClick={()=>Navigate('/userKalams')}>
-                <div className="pp-stat-cell">
-                  <span className="pp-stat-num">{totalKalams}</span>
-                  <span className="pp-stat-label">Total Kalams</span>
-                </div>
-                </button>
-              </div>
-              {
-                console.log("see isVisible", isVisible)
-              }
-
-              {/* 5. Meta — joined date + streak */}
-              {(joiningDate || Streak) && (
-                <div className="pp-meta-row">
-                  {joiningDate && (
-                    <span style={{ background: "rgba(168,85,247,0.06)", border: "1px solid rgba(212,175,55,0.2)", borderRadius: 20, padding: "4px 14px", fontSize: 12, color: "rgba(201,164,251,0.75)" }}>
-                      Joined {joiningDate}
-                    </span>
-                  )}
-                  {Streak && (
-                    <div style={{
-                      display: "flex", alignItems: "center", gap: 10,
-                      background: "rgba(212,175,55,0.08)",
-                      border: "1px solid rgba(212,175,55,0.25)",
-                      borderRadius: 14, padding: "10px 18px",
-                    }}>
-                      <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.5 1C10.5 1 11 5.5 8.5 8C6 10.5 3 10 3 10C3 10 3.5 13 6 14.5C5 15.5 4 17 4 19C4 19 6 17.5 8 17.5C10 17.5 11.5 19 11.5 21C11.5 21 14 19 14 16C14 14 12.5 12.5 12.5 12.5C12.5 12.5 16 11 16 7C16 4 13.5 2 10.5 1Z" fill="url(#flameGrad)" />
-                        <path d="M8.5 13C8.5 13 9 14.5 9 16C9 17.5 8 18.5 8 18.5C8 18.5 10.5 18 10.5 15.5C10.5 14 9.5 13 8.5 13Z" fill="rgba(240,232,200,0.65)" />
-                        <defs>
-                          <linearGradient id="flameGrad" x1="9" y1="1" x2="9" y2="21" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stopColor="#f6e3a1" />
-                            <stop offset="50%" stopColor="#d4af37" />
-                            <stop offset="100%" stopColor="#a855f7" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                        <span style={{ fontSize: 16, fontWeight: 600, color: "#f6e3a1", lineHeight: 1, fontFamily: "'Playfair Display', serif" }}>
-                          {Streak}
-                        </span>
-                        <span style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(212,175,55,0.6)" }}>
-                          day streak
-                        </span>
+              {followersList?.length > 0 && (
+                <div className="hidden md:flex items-center gap-4 ml-4">
+                  <div className="w-[1px] h-8 bg-[#ffe6ac]/10 mr-4" />
+                  <button onClick={handleFollowersClick} className="flex -space-x-2">
+                    {followersList.slice(0, 2).map((f, i) => (
+                      <div
+                        key={f._id || f.id || i}
+                        className="w-8 h-8 rounded-full border border-[#ffe6ac]/20 bg-[#2e2735] flex items-center justify-center text-[10px] text-[#ffe6ac] overflow-hidden"
+                      >
+                        {f.profilePic ? (
+                          <img src={f.profilePic} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          initialsFromName(f.name)
+                        )}
                       </div>
-                    </div>
-                  )}
+                    ))}
+                    {followersList.length > 2 && (
+                      <div className="w-8 h-8 rounded-full border border-[#ffe6ac]/20 bg-[#201926] flex items-center justify-center text-[10px] font-bold text-[#ffe6ac]">
+                        +{followersList.length - 2}
+                      </div>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-4 ml-auto">
+              {!isOwnProfile && (
+                <button
+                  onClick={() => (isFollowing ? onUnfollow?.() : onFollow?.())}
+                  className={
+                    isFollowing
+                      ? "px-6 py-2.5 rounded-full text-[12px] uppercase tracking-widest border border-[#ffe6ac]/40 text-[#ffe6ac] hover:bg-[#ffe6ac]/10 transition-colors flex items-center gap-2"
+                      : "bg-[#ffe6ac] text-[#3d2e00] px-6 py-2.5 rounded-full text-[12px] uppercase tracking-widest hover:bg-[#f0c85a] transition-colors flex items-center gap-2"
+                  }
+                >
+                  <Icon name={isFollowing ? "how_to_reg" : "person_add"} className="!text-[18px]" />
+                  {isFollowing ? "Following" : "Follow Poet"}
+                </button>
+              )}
+              <button className="w-10 h-10 rounded-full border border-[#ffe6ac]/20 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] transition-colors bg-[#17111d]/40 backdrop-blur-sm">
+                <Icon name="share" className="!text-[20px]" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-[1120px] mx-auto px-5 md:px-16 space-y-16 md:space-y-24 py-16 md:py-24">
+          {/* ---------------- Repertoire ---------------- */}
+          <section>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-6">
+              <div>
+                <h3 className="text-[11px] text-[#ffe6ac] mb-1 uppercase tracking-widest">
+                  Archive
+                </h3>
+                <h2 className="font-display text-[28px] sm:text-[32px] md:text-[40px]">The Repertoire</h2>
+              </div>
+              <a
+                className="text-[12px] text-[#d0c5b0] hover:text-[#ffe6ac] underline underline-offset-8 decoration-[#ffe6ac]/30 transition-colors"
+                href="#"
+              >
+                Explore Full Library
+              </a>
+            </div>
+
+            <AlbumsGrid userId={userId} />
+          </section>
+
+          {/* ---------------- Verse in Focus (was "Featured Couplet") ---------------- */}
+          {(currentVerse || isOwnProfile) && (
+            <section className="relative py-14 sm:py-20 md:py-28 px-5 sm:px-8 rounded-3xl overflow-hidden text-center border border-[#ffe6ac]/20">
+              <div className="absolute inset-0 bg-[#1a1224] opacity-50" />
+
+              {isOwnProfile && currentVerse && !isEditingVerse && (
+                <div className="absolute top-4 right-4 z-20 flex gap-2">
+                  <button
+                    onClick={startEditVerse}
+                    aria-label="Edit verse"
+                    className="w-9 h-9 rounded-full bg-[#120c18]/70 backdrop-blur-sm border border-[#ffe6ac]/20 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] hover:bg-[#120c18]/90 transition-colors"
+                  >
+                    <Icon name="edit" className="!text-[16px]" />
+                  </button>
+                  <button
+                    onClick={deleteVerse}
+                    aria-label="Delete verse"
+                    className="w-9 h-9 rounded-full bg-[#120c18]/70 backdrop-blur-sm border border-[#ffe6ac]/20 flex items-center justify-center text-[#d0c5b0] hover:text-[#ff4b4b] hover:bg-[#120c18]/90 transition-colors"
+                  >
+                    <Icon name="delete" className="!text-[16px]" />
+                  </button>
                 </div>
               )}
 
-            </header>
+              <div className="relative z-10 max-w-4xl mx-auto">
+                <Icon name="format_quote" className="!text-[40px] sm:!text-[56px] text-[#ffe6ac] opacity-40 mb-6" />
 
-            {/* ── BADGES — horizontal scroll row ── */}
-            {sortedBadges.length > 0 && (
-              <section className="pp-badges-section" aria-label="Badges">
-                <div className="pp-section-header">
-                  <span className="pp-section-title">
-                    Badges &nbsp;·&nbsp; {earnedBadges.length} of {badges.length} earned
-                  </span>
-                  <div className="pp-section-line" />
-                </div>
-
-                <div className="pp-badges-scroll">
-                  <div className="pp-badges-row">
-                    {sortedBadges.map((badge, i) => (
-                      <div key={i} className="pp-hex-wrap">
-                        <div className={`pp-hex-outer ${badge.earned ? "earned" : "locked"}`}>
-                          <div className={`pp-hex-inner ${badge.earned ? "earned" : "locked"}`}>
-                            {badge.icon}
-                          </div>
-                        </div>
-                        <span className={`pp-hex-name ${badge.earned ? "" : "locked"}`}>
-                          {badge.name}
-                        </span>
-                      </div>
-                    ))}
+                {isEditingVerse ? (
+                  <div className="w-full">
+                    <textarea
+                      autoFocus
+                      value={verseDraft}
+                      onChange={(e) => setVerseDraft(e.target.value)}
+                      placeholder="Write your favourite lines here…"
+                      rows={4}
+                      className="w-full bg-[#120c18]/60 text-[#ffe6ac] font-display text-[20px] md:text-[28px] text-center leading-relaxed placeholder-[#99907d] rounded-xl p-4 outline-none border border-[#ffe6ac]/20 focus:border-[#ffe6ac]/50 resize-none"
+                    />
+                    <div className="flex items-center justify-center gap-4 mt-6">
+                      <button
+                        onClick={cancelEditVerse}
+                        disabled={savingVerse}
+                        className="px-6 py-2.5 rounded-full text-[12px] uppercase tracking-widest border border-[#ffe6ac]/20 text-[#d0c5b0] hover:text-[#ffe6ac] hover:border-[#ffe6ac]/40 transition-colors disabled:opacity-50"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={saveVerse}
+                        disabled={savingVerse || !verseDraft.trim()}
+                        className="px-6 py-2.5 rounded-full text-[12px] uppercase tracking-widest bg-[#ffe6ac] text-[#3d2e00] hover:bg-[#f0c85a] transition-colors disabled:opacity-50"
+                      >
+                        {savingVerse ? "Saving…" : "Done"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </section>
-            )}
+                ) : currentVerse ? (
+                  <>
+                    <blockquote className="font-display text-[22px] sm:text-[26px] md:text-[42px] text-[#ffe6ac] leading-[1.3] mb-8 whitespace-pre-line">
+                      {currentVerse}
+                    </blockquote>
+                    {currentVerse.translation && (
+                      <>
+                        <div className="flex items-center justify-center gap-6 mb-6">
+                          <div className="h-[1px] w-16 bg-gradient-to-r from-transparent to-[#ffe6ac]/40" />
+                          <span className="text-[#d0c5b0] uppercase tracking-[0.4em] text-[12px]">
+                            Translation
+                          </span>
+                          <div className="h-[1px] w-16 bg-gradient-to-l from-transparent to-[#ffe6ac]/40" />
+                        </div>
+                        <p className="text-[#d0c5b0]/90 italic text-[16px] md:text-[18px] max-w-2xl mx-auto leading-relaxed">
+                          {currentVerse.translation}
+                        </p>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p className="font-display text-[22px] md:text-[28px] text-[#ffe6ac] mb-4">
+                      No verse pinned yet
+                    </p>
+                    <p className="text-[#d0c5b0] text-[14px] md:text-[15px] max-w-md mx-auto leading-relaxed mb-8">
+                      Pin your favourite kalam here so it's the first thing visitors read.
+                    </p>
+                    <button
+                      onClick={startEditVerse}
+                      className="px-6 py-2.5 rounded-full text-[12px] uppercase tracking-widest border border-[#ffe6ac]/40 text-[#ffe6ac] hover:bg-[#ffe6ac]/10 transition-colors"
+                    >
+                      Write a Stanza
+                    </button>
+                  </>
+                )}
+              </div>
+              <div className="absolute top-0 left-0 w-12 h-12 sm:w-20 sm:h-20 border-t-2 border-l-2 border-[#ffe6ac]/20 rounded-tl-3xl" />
+              <div className="absolute bottom-0 right-0 w-12 h-12 sm:w-20 sm:h-20 border-b-2 border-r-2 border-[#ffe6ac]/20 rounded-br-3xl" />
+            </section>
+          )}
 
-            {/* ── TICKER ── */}
-            <footer
-              className="pp-ticker-wrap"
-              ref={scrollRef}
-              onMouseEnter={pause}
-              onMouseLeave={resume}
-            >
-              <div className="pp-ticker-track">
-                {[0, 1].map((d) => (
-                  <div key={d} style={{ display: "flex", flexShrink: 0 }}>
-                    {categories.map((cat, i) => (
-                      <div key={i} className="pp-ticker-item">
-                        <span className="pp-ticker-num">{cat.value}</span>
-                        <span className="pp-ticker-label">{cat.label}</span>
-                      </div>
-                    ))}
+          {/* ---------------- Most Liked Kalam ---------------- */}
+          {(topKalam || isOwnProfile) && (
+            <section className="max-w-3xl mx-auto w-full">
+              <div className="mb-8">
+                <div className="flex items-end justify-between mb-6">
+                  <h2 className="font-display text-[#ffe6ac] text-[28px] sm:text-[32px] md:text-[40px]">
+                    Most Liked Kalam
+                  </h2>
+                </div>
+                {topKalam && (
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-[#2e2735] flex items-center justify-center text-[#ffe6ac] font-display shrink-0">
+                      {profileLink ? (
+                        <img src={profileLink} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        initialsFromName(userName)
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-display text-[18px]">{userName}</p>
+                      {topKalam.date && (
+                        <p className="text-[11px] text-[#d0c5b0]/60 uppercase tracking-widest">
+                          {topKalam.date}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {topKalam ? (
+                <div className="relative flex flex-col md:flex-row gap-6">
+                  <div className="flex-1 glass-panel rounded-3xl p-6 sm:p-8 md:p-10 relative overflow-hidden min-h-[220px] md:min-h-[320px] flex flex-col justify-center">
+                    <blockquote className="font-display text-[18px] sm:text-[22px] md:text-[28px] text-[#ffe6ac] leading-relaxed mb-6 text-center whitespace-pre-line">
+                      {topKalam.text}
+                    </blockquote>
+                    {topKalam.translation && (
+                      <>
+                        <div className="h-[1px] w-24 bg-[#ffe6ac]/20 mx-auto mb-6" />
+                        <p className="text-[#d0c5b0]/80 italic text-center leading-relaxed">
+                          {topKalam.translation}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex flex-row md:flex-col gap-4 justify-center">
+                    <button
+                      onClick={() => topKalam.onLike?.()}
+                      className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#ff4b4b] hover:bg-[#ffe6ac]/10 transition-all shadow-sm"
+                      aria-label="Like"
+                    >
+                      <Icon name="favorite" filled />
+                    </button>
+                    <button
+                      onClick={() => topKalam.onComment?.()}
+                      className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] transition-all shadow-sm"
+                      aria-label="Comment"
+                    >
+                      <Icon name="chat_bubble" />
+                    </button>
+                    <button
+                      onClick={() => topKalam.onShare?.()}
+                      className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] transition-all shadow-sm"
+                      aria-label="Share"
+                    >
+                      <Icon name="share" />
+                    </button>
+                    <button
+                      onClick={() => topKalam.onBookmark?.()}
+                      className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#ffe6ac] hover:bg-[#ffe6ac]/10 transition-all shadow-sm"
+                      aria-label="Bookmark"
+                    >
+                      <Icon name="bookmark" filled />
+                    </button>
+                  </div>
+                  {(topKalam.likes !== undefined || topKalam.comments !== undefined) && (
+                    <div className="static mt-1 md:absolute md:mt-0 md:-bottom-8 md:left-0 flex gap-4 text-[12px] text-[#d0c5b0]/60">
+                      {topKalam.likes !== undefined && <span>{topKalam.likes} likes</span>}
+                      {topKalam.comments !== undefined && <span>{topKalam.comments} comments</span>}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="glass-panel rounded-3xl p-10 text-center">
+                  <p className="text-[#d0c5b0] text-[14px] md:text-[15px] max-w-md mx-auto leading-relaxed">
+                    Once readers start liking your kalams, your most-loved piece will be
+                    spotlighted here.
+                  </p>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* ---------------- Badges ---------------- */}
+          {/* {badges?.length > 0 && (
+            <section>
+              <div className="mb-6">
+                <h3 className="text-[11px] text-[#ffe6ac] mb-1 uppercase tracking-widest">
+                  Recognition
+                </h3>
+                <h2 className="font-display text-[28px] sm:text-[32px] md:text-[40px]">Badges</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {badges.map((badge) => (
+                  <div
+                    key={badge.name}
+                    className={`glass-panel rounded-2xl p-6 text-center transition-all ${
+                      badge.earned ? "hover:border-[#ffe6ac]/40" : "opacity-40 grayscale"
+                    }`}
+                  >
+                    <div className="text-[36px] mb-3">{badge.icon}</div>
+                    <h4 className="font-display text-[18px] mb-2">{badge.name}</h4>
+                    <p className="text-[13px] text-[#d0c5b0] leading-relaxed">{badge.desc}</p>
                   </div>
                 ))}
               </div>
-            </footer>
-
-          </div>
+            </section>
+          )} */}
         </div>
-        {
-          <MyVerticallyCenteredModal isOpen={isOpen} onClose={()=>setIsOpen(false)}>
-            <div className="pp-followers-modal">
-              <h2 className="pp-followers-modal-title">Followers</h2>
-              <div className="pp-followers-modal-list">
-                {
-                  followers.length === 0 ? (
-                    <p className="pp-followers-modal-empty">No followers yet</p>
-                  ) : (
-                    followers.map((item, i)=>(
-                      <div key={i} className="pp-followers-modal-row">
-                        {item.follower}
-                      </div>
-                    ))
-                  )
-                }
+
+        {/* ---------------- Footer ---------------- */}
+        <footer className="mt-16 md:mt-24 py-12 md:py-16 border-t border-[#ffe6ac]/10 bg-[#241d2a]/30">
+          <div className="max-w-[1120px] mx-auto px-5 md:px-16">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10 md:gap-12 md:mb-16">
+              <div className="col-span-1 md:col-span-2">
+                <span className="font-display text-[24px] text-[#ffe6ac] block mb-6">
+                  Shayar Digital
+                </span>
+                <p className="text-[#d0c5b0] max-w-sm leading-relaxed">
+                  A home for Urdu and Persian-inspired verse — write, publish, and grow your
+                  audience of readers.
+                </p>
+              </div>
+              <div>
+                <h4 className="text-[12px] text-[#ffe6ac] uppercase tracking-widest mb-6">
+                  Quick Links
+                </h4>
+                <ul className="space-y-3 text-[#d0c5b0]/80">
+                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Library Archive</a></li>
+                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Master Collections</a></li>
+                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Community Guidelines</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-[12px] text-[#ffe6ac] uppercase tracking-widest mb-6">
+                  Support
+                </h4>
+                <ul className="space-y-3 text-[#d0c5b0]/80">
+                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Get Assistance</a></li>
+                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Settings</a></li>
+                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Terms of Verse</a></li>
+                </ul>
               </div>
             </div>
-          </MyVerticallyCenteredModal>
-        }
-      </div>
-    </>
+            <div className="flex flex-col md:flex-row justify-between items-center pt-10 border-t border-[#ffe6ac]/5">
+              <p className="text-[11px] text-[#d0c5b0]/40 tracking-[0.4em] uppercase mb-4 md:mb-0">
+                Shayar Digital © {new Date().getFullYear()}
+              </p>
+              <div className="flex gap-6">
+                <Icon name="language" className="text-[#d0c5b0]/40 hover:text-[#ffe6ac] cursor-pointer" />
+                <Icon name="mail" className="text-[#d0c5b0]/40 hover:text-[#ffe6ac] cursor-pointer" />
+                <Icon name="share" className="text-[#d0c5b0]/40 hover:text-[#ffe6ac] cursor-pointer" />
+              </div>
+            </div>
+          </div>
+        </footer>
+      </main>
+
+      {/* ---------------- Mobile nav ---------------- */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 w-full h-16 z-50 bg-[#120c18] border-t border-[#ffe6ac]/20 flex items-center justify-around px-4">
+        <Icon name="menu_book" className="!text-[24px] text-[#ffe6ac]" />
+        <Icon name="category" className="!text-[24px] text-[#d0c5b0]" />
+        <Icon name="military_tech" className="!text-[24px] text-[#d0c5b0]" />
+        <Icon name="person" className="!text-[24px] text-[#d0c5b0]" />
+      </nav>
+      {
+        console.log("See vers", spotlightVerse)
+      }
+
+      <FollowersModal
+        open={followersOpen}
+        onClose={() => setFollowersOpen(false)}
+        followersList={followersList}
+      />
+    </div>
+    
   );
-};
+}
+
+export default PoetProfileDashboard;

@@ -27,7 +27,7 @@ import { Social } from './pages/Social';
 import { Card } from './pages/components/Card';
 import LightRays from './pages/Bg2';
 import { KalamComment } from './pages/KalamComment';
-import { ProfileCard } from './pages/components/ProfileCard';
+import { PoetProfileDashboard } from './pages/components/ProfileCard';
 import {CreatingAlbums } from './pages/CreatingAlbums';
 import {DispAlbums} from './pages/DispAlbums'
 import { AlbumCard } from './pages/components/AlbumsCard';
@@ -49,6 +49,10 @@ import ProfileKalams from './pages/ProfileKalams';
 import ExploreAlbums from './pages/ExploreAlbums';
 import Authors from './pages/Authors';
 import Player from './pages/Player';
+import PrivacyPolicy from './legal/PrivacyPolicy';
+import TermsOfServices from './legal/TermsOfServices';
+import CookiePolicy from './legal/CookiePolicy';
+import CommunityGuidelines from './legal/CommunityGuidelines';
 
 
 function App() {
@@ -118,7 +122,7 @@ onMessage(messaging, (data) => {
       <Route path='/Card' element= {<Card/>}/>
       <Route path='/Bg2' element= {<LightRays/>}/>
       <Route path='/Comment' element= {<KalamComment/>}/>
-      <Route path='/ProfileCard' element= {<ProfileCard/>}/>
+      <Route path='/ProfileCard' element= {<PoetProfileDashboard/>}/>
       <Route path='/CreatingAlbums' element= {<CreatingAlbums/>}/>
       <Route path='/DispAlbums' element= {<DispAlbums/>}/>
       <Route path='/AlbumCard' element= {<AlbumCard/>}/>
@@ -135,6 +139,10 @@ onMessage(messaging, (data) => {
       <Route path='/albums' element= {<ExploreAlbums/>}/>
       <Route path='/authors' element= {<Authors/>}/>
       <Route path='/play' element= {<Player/>}/>
+      <Route path='/PrivacyPolicy' element= {<PrivacyPolicy/>}/>
+      <Route path='/termsofservices' element= {<TermsOfServices/>}/>
+      <Route path='/cookiepolicy' element= {<CookiePolicy/>}/>
+      <Route path='/communityguidelines' element= {<CommunityGuidelines/>}/>
 
       {/* <ContextProvider>
         <Kalam/>
