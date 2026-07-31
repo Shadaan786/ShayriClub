@@ -85,8 +85,8 @@ const UserProfile = () =>{
 
              setProfilePic(profilePic)
 
-             const featuredVerse = response.data.userDb?.[0].featuredVerse || response.data.data.featuredVerse;
-             console.log("see it",response.data.userDb?.[0].featuredVerse || response.data.featuredVerse)
+             const featuredVerse = response.data.userDb?.[0].featuredVerse || JSON.parse(response.data.userInfo).featuredVerse;
+             console.log("see it",response.data.userDb?.[0].featuredVerse || JSON.parse(response.data.userInfo).featuredVerse)
 
              setFeaturedVerse(featuredVerse);
 
