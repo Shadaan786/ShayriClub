@@ -3445,6 +3445,8 @@
 //------------------------------------------------------------------------------------------------------------------------------>
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
+import { useNavigate } from "react-router-dom";
+import { AlbumsPanel } from "../new"; // adjust path to wherever profileAlbums.jsx lives
 
 /* ------------------------------------------------------------------ */
 /*  Fonts + Material Symbols — injected once, so this file can be     */
@@ -3667,10 +3669,12 @@ function FollowersModal({ open, onClose, followersList }) {
 
 /* ------------------------------------------------------------------ */
 /*  Albums grid — fetches live albums, handles like/unlike            */
+/*  (used inside the "Home" tab as a preview of the repertoire)       */
 /* ------------------------------------------------------------------ */
 
 function AlbumsGrid({ userId }) {
   const [albums, setAlbums] = useState([]);
+  const Navigate = useNavigate();
 
   useEffect(() => {
     axiosInstance
@@ -3726,6 +3730,7 @@ function AlbumsGrid({ userId }) {
           key={album._id}
           className="glass-panel rounded-2xl p-6 group cursor-pointer hover:border-[#ffe6ac]/40 transition-all"
         >
+          <button onClick={()=>Navigate(`/album?albumId=${album._id}`)}>
           <div className="h-56 mb-6 rounded-xl overflow-hidden relative flex items-center justify-center bg-gradient-to-br from-[#3a2a55] to-[#1a1030] transition-transform duration-700 group-hover:scale-105">
             {album.albumCover ? (
               <img
@@ -3757,6 +3762,7 @@ function AlbumsGrid({ userId }) {
               />
             </button>
           </div>
+          </button>
 
           <h4 className="font-display text-[24px] mb-3">{album.name}</h4>
           <p className="text-[15px] leading-relaxed mb-6 opacity-80 capitalize">
@@ -3818,6 +3824,7 @@ export function PoetProfileDashboard({
 }) {
   useInjectFonts();
   const [followersOpen, setFollowersOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("home"); // "home" | "kalams" | "albums"
   console.log("see usernameee", userName)
 
   const loading = !userName;
@@ -3950,15 +3957,9 @@ export function PoetProfileDashboard({
             Shayar
           </span>
           <nav className="hidden md:flex gap-8">
-            <a className="text-[12px] uppercase tracking-widest text-[#d0c5b0] hover:text-[#ffe6ac] transition-colors" href="#">
-              Library
-            </a>
-            <a className="text-[12px] uppercase tracking-widest text-[#ffe6ac] font-bold transition-colors" href="#">
-              Compositions
-            </a>
-            <a className="text-[12px] uppercase tracking-widest text-[#d0c5b0] hover:text-[#ffe6ac] transition-colors" href="#">
-              Aspirations
-            </a>
+            <a href="#" className="text-[12px] uppercase tracking-widest text-[#d0c5b0] hover:text-[#ffe6ac] transition-colors">Library</a>
+            <a href="#" className="text-[12px] uppercase tracking-widest text-[#ffe6ac] font-bold transition-colors">Compositions</a>
+            <a href="#" className="text-[12px] uppercase tracking-widest text-[#d0c5b0] hover:text-[#ffe6ac] transition-colors">Aspirations</a>
           </nav>
         </div>
         <div className="flex items-center gap-4 md:gap-6">
@@ -4059,6 +4060,31 @@ export function PoetProfileDashboard({
                         </div>
                       )}
                     </div>
+
+                    {/* Followers / Kalams — moved out of the sticky stats strip */}
+                    <div className="flex items-center justify-center md:justify-start gap-6 mt-4">
+                      <button
+                        onClick={handleFollowersClick}
+                        className="flex items-baseline gap-2 hover:text-[#ffe6ac] transition-colors"
+                      >
+                        <span className="font-display text-[20px] text-[#ffe6ac]">
+                          {totalFollowers ?? 0}
+                        </span>
+                        <span className="text-[11px] text-[#d0c5b0]/70 uppercase tracking-widest">
+                          Followers
+                        </span>
+                      </button>
+                      <span className="w-1 h-1 rounded-full bg-[#ffe6ac]/30" />
+                      <div className="flex items-baseline gap-2">
+                        <span className="font-display text-[20px] text-[#ffe6ac]">
+                          {totalKalams || 0}
+                        </span>
+                        <span className="text-[11px] text-[#d0c5b0]/70 uppercase tracking-widest">
+                          Kalams
+                        </span>
+                      </div>
+                    </div>
+
                     {tagline && (
                       <p className="mt-6 text-[#ebdef1]/80 max-w-2xl leading-relaxed italic border-l-2 border-[#ffe6ac]/40 pl-6 hidden md:block">
                         {tagline}
@@ -4071,54 +4097,31 @@ export function PoetProfileDashboard({
           </div>
         </section>
 
-        {/* ---------------- Actions / stats bar ---------------- */}
+        {/* ---------------- Home / Kalams / Albums tab strip ---------------- */}
         <div className="border-b border-[#ffe6ac]/10 bg-[#0a0510]/50 backdrop-blur-sm sticky top-16 z-30">
           <div className="max-w-[1120px] mx-auto px-5 md:px-16 min-h-[80px] py-3 md:py-0 flex flex-wrap items-center justify-between gap-y-3">
-            <div className="flex items-center gap-4 sm:gap-8 md:gap-12">
-              <button
-                onClick={handleFollowersClick}
-                className="flex flex-col items-start"
-              >
-                <span className="text-[11px] text-[#d0c5b0]/60 uppercase tracking-widest mb-1">
-                  Followers
-                </span>
-                <span className="font-display text-[24px] text-[#ffe6ac]">
-                  {totalFollowers ?? 0}
-                </span>
-              </button>
-              <div className="w-[1px] h-8 bg-[#ffe6ac]/10" />
-              <div className="flex flex-col">
-                <span className="text-[11px] text-[#d0c5b0]/60 uppercase tracking-widest mb-1">
-                  Kalams
-                </span>
-                <span className="font-display text-[24px] text-[#ffe6ac]">
-                  {totalKalams || 0}
-                </span>
-              </div>
-              {followersList?.length > 0 && (
-                <div className="hidden md:flex items-center gap-4 ml-4">
-                  <div className="w-[1px] h-8 bg-[#ffe6ac]/10 mr-4" />
-                  <button onClick={handleFollowersClick} className="flex -space-x-2">
-                    {followersList.slice(0, 2).map((f, i) => (
-                      <div
-                        key={f._id || f.id || i}
-                        className="w-8 h-8 rounded-full border border-[#ffe6ac]/20 bg-[#2e2735] flex items-center justify-center text-[10px] text-[#ffe6ac] overflow-hidden"
-                      >
-                        {f.profilePic ? (
-                          <img src={f.profilePic} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          initialsFromName(f.name)
-                        )}
-                      </div>
-                    ))}
-                    {followersList.length > 2 && (
-                      <div className="w-8 h-8 rounded-full border border-[#ffe6ac]/20 bg-[#201926] flex items-center justify-center text-[10px] font-bold text-[#ffe6ac]">
-                        +{followersList.length - 2}
-                      </div>
-                    )}
+            <div className="flex items-center gap-2 bg-[#17111d]/60 border border-[#ffe6ac]/10 rounded-full p-1">
+              {[
+                { key: "home", label: "Home", icon: "home" },
+                { key: "kalams", label: "Kalams", icon: "menu_book" },
+                { key: "albums", label: "Albums", icon: "album" },
+              ].map((tab) => {
+                const isActive = activeTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[12px] uppercase tracking-widest transition-colors ${
+                      isActive
+                        ? "bg-[#ffe6ac] text-[#3d2e00]"
+                        : "text-[#d0c5b0] hover:text-[#ffe6ac]"
+                    }`}
+                  >
+                    <Icon name={tab.icon} className="!text-[18px]" filled={isActive} />
+                    <span className="hidden sm:inline">{tab.label}</span>
                   </button>
-                </div>
-              )}
+                );
+              })}
             </div>
 
             <div className="flex items-center gap-4 ml-auto">
@@ -4142,241 +4145,252 @@ export function PoetProfileDashboard({
           </div>
         </div>
 
-        <div className="max-w-[1120px] mx-auto px-5 md:px-16 space-y-16 md:space-y-24 py-16 md:py-24">
-          {/* ---------------- Repertoire ---------------- */}
-          <section>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-6">
-              <div>
-                <h3 className="text-[11px] text-[#ffe6ac] mb-1 uppercase tracking-widest">
-                  Archive
-                </h3>
-                <h2 className="font-display text-[28px] sm:text-[32px] md:text-[40px]">The Repertoire</h2>
-              </div>
-              <a
-                className="text-[12px] text-[#d0c5b0] hover:text-[#ffe6ac] underline underline-offset-8 decoration-[#ffe6ac]/30 transition-colors"
-                href="#"
-              >
-                Explore Full Library
-              </a>
-            </div>
+        <div className="max-w-[1120px] mx-auto px-5 md:px-16 py-16 md:py-24">
+          {activeTab === "albums" ? (
+            /* Only the albums browser — no ProfileAlbums header, no sidebar */
+            <AlbumsPanel />
+          ) : (
+            <div className="space-y-16 md:space-y-24">
+              {/* ---------------- Repertoire (Home only) ---------------- */}
+              {activeTab === "home" && (
+                <section>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-6">
+                    <div>
+                      <h3 className="text-[11px] text-[#ffe6ac] mb-1 uppercase tracking-widest">
+                        Archive
+                      </h3>
+                      <h2 className="font-display text-[28px] sm:text-[32px] md:text-[40px]">The Repertoire</h2>
+                    </div>
+                    
+                      <a href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("albums");
+                      }}
+                      className="text-[12px] text-[#d0c5b0] hover:text-[#ffe6ac] underline underline-offset-8 decoration-[#ffe6ac]/30 transition-colors"
+                    >Explore Full Library</a>
+                  </div>
 
-            <AlbumsGrid userId={userId} />
-          </section>
-
-          {/* ---------------- Verse in Focus (was "Featured Couplet") ---------------- */}
-          {(currentVerse || isOwnProfile) && (
-            <section className="relative py-14 sm:py-20 md:py-28 px-5 sm:px-8 rounded-3xl overflow-hidden text-center border border-[#ffe6ac]/20">
-              <div className="absolute inset-0 bg-[#1a1224] opacity-50" />
-
-              {isOwnProfile && currentVerse && !isEditingVerse && (
-                <div className="absolute top-4 right-4 z-20 flex gap-2">
-                  <button
-                    onClick={startEditVerse}
-                    aria-label="Edit verse"
-                    className="w-9 h-9 rounded-full bg-[#120c18]/70 backdrop-blur-sm border border-[#ffe6ac]/20 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] hover:bg-[#120c18]/90 transition-colors"
-                  >
-                    <Icon name="edit" className="!text-[16px]" />
-                  </button>
-                  <button
-                    onClick={deleteVerse}
-                    aria-label="Delete verse"
-                    className="w-9 h-9 rounded-full bg-[#120c18]/70 backdrop-blur-sm border border-[#ffe6ac]/20 flex items-center justify-center text-[#d0c5b0] hover:text-[#ff4b4b] hover:bg-[#120c18]/90 transition-colors"
-                  >
-                    <Icon name="delete" className="!text-[16px]" />
-                  </button>
-                </div>
+                  <AlbumsGrid userId={userId} />
+                </section>
               )}
 
-              <div className="relative z-10 max-w-4xl mx-auto">
-                <Icon name="format_quote" className="!text-[40px] sm:!text-[56px] text-[#ffe6ac] opacity-40 mb-6" />
+              {/* ---------------- Verse in Focus (Home + Kalams) ---------------- */}
+              {(currentVerse || isOwnProfile) && (
+                <section className="relative py-14 sm:py-20 md:py-28 px-5 sm:px-8 rounded-3xl overflow-hidden text-center border border-[#ffe6ac]/20">
+                  <div className="absolute inset-0 bg-[#1a1224] opacity-50" />
 
-                {isEditingVerse ? (
-                  <div className="w-full">
-                    <textarea
-                      autoFocus
-                      value={verseDraft}
-                      onChange={(e) => setVerseDraft(e.target.value)}
-                      placeholder="Write your favourite lines here…"
-                      rows={4}
-                      className="w-full bg-[#120c18]/60 text-[#ffe6ac] font-display text-[20px] md:text-[28px] text-center leading-relaxed placeholder-[#99907d] rounded-xl p-4 outline-none border border-[#ffe6ac]/20 focus:border-[#ffe6ac]/50 resize-none"
-                    />
-                    <div className="flex items-center justify-center gap-4 mt-6">
+                  {isOwnProfile && currentVerse && !isEditingVerse && (
+                    <div className="absolute top-4 right-4 z-20 flex gap-2">
                       <button
-                        onClick={cancelEditVerse}
-                        disabled={savingVerse}
-                        className="px-6 py-2.5 rounded-full text-[12px] uppercase tracking-widest border border-[#ffe6ac]/20 text-[#d0c5b0] hover:text-[#ffe6ac] hover:border-[#ffe6ac]/40 transition-colors disabled:opacity-50"
+                        onClick={startEditVerse}
+                        aria-label="Edit verse"
+                        className="w-9 h-9 rounded-full bg-[#120c18]/70 backdrop-blur-sm border border-[#ffe6ac]/20 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] hover:bg-[#120c18]/90 transition-colors"
                       >
-                        Cancel
+                        <Icon name="edit" className="!text-[16px]" />
                       </button>
                       <button
-                        onClick={saveVerse}
-                        disabled={savingVerse || !verseDraft.trim()}
-                        className="px-6 py-2.5 rounded-full text-[12px] uppercase tracking-widest bg-[#ffe6ac] text-[#3d2e00] hover:bg-[#f0c85a] transition-colors disabled:opacity-50"
+                        onClick={deleteVerse}
+                        aria-label="Delete verse"
+                        className="w-9 h-9 rounded-full bg-[#120c18]/70 backdrop-blur-sm border border-[#ffe6ac]/20 flex items-center justify-center text-[#d0c5b0] hover:text-[#ff4b4b] hover:bg-[#120c18]/90 transition-colors"
                       >
-                        {savingVerse ? "Saving…" : "Done"}
+                        <Icon name="delete" className="!text-[16px]" />
                       </button>
-                    </div>
-                  </div>
-                ) : currentVerse ? (
-                  <>
-                    <blockquote className="font-display text-[22px] sm:text-[26px] md:text-[42px] text-[#ffe6ac] leading-[1.3] mb-8 whitespace-pre-line">
-                      {currentVerse}
-                    </blockquote>
-                    {currentVerse.translation && (
-                      <>
-                        <div className="flex items-center justify-center gap-6 mb-6">
-                          <div className="h-[1px] w-16 bg-gradient-to-r from-transparent to-[#ffe6ac]/40" />
-                          <span className="text-[#d0c5b0] uppercase tracking-[0.4em] text-[12px]">
-                            Translation
-                          </span>
-                          <div className="h-[1px] w-16 bg-gradient-to-l from-transparent to-[#ffe6ac]/40" />
-                        </div>
-                        <p className="text-[#d0c5b0]/90 italic text-[16px] md:text-[18px] max-w-2xl mx-auto leading-relaxed">
-                          {currentVerse.translation}
-                        </p>
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <p className="font-display text-[22px] md:text-[28px] text-[#ffe6ac] mb-4">
-                      No verse pinned yet
-                    </p>
-                    <p className="text-[#d0c5b0] text-[14px] md:text-[15px] max-w-md mx-auto leading-relaxed mb-8">
-                      Pin your favourite kalam here so it's the first thing visitors read.
-                    </p>
-                    <button
-                      onClick={startEditVerse}
-                      className="px-6 py-2.5 rounded-full text-[12px] uppercase tracking-widest border border-[#ffe6ac]/40 text-[#ffe6ac] hover:bg-[#ffe6ac]/10 transition-colors"
-                    >
-                      Write a Stanza
-                    </button>
-                  </>
-                )}
-              </div>
-              <div className="absolute top-0 left-0 w-12 h-12 sm:w-20 sm:h-20 border-t-2 border-l-2 border-[#ffe6ac]/20 rounded-tl-3xl" />
-              <div className="absolute bottom-0 right-0 w-12 h-12 sm:w-20 sm:h-20 border-b-2 border-r-2 border-[#ffe6ac]/20 rounded-br-3xl" />
-            </section>
-          )}
-
-          {/* ---------------- Most Liked Kalam ---------------- */}
-          {(topKalam || isOwnProfile) && (
-            <section className="max-w-3xl mx-auto w-full">
-              <div className="mb-8">
-                <div className="flex items-end justify-between mb-6">
-                  <h2 className="font-display text-[#ffe6ac] text-[28px] sm:text-[32px] md:text-[40px]">
-                    Most Liked Kalam
-                  </h2>
-                </div>
-                {topKalam && (
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-[#2e2735] flex items-center justify-center text-[#ffe6ac] font-display shrink-0">
-                      {profileLink ? (
-                        <img src={profileLink} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        initialsFromName(userName)
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-display text-[18px]">{userName}</p>
-                      {topKalam.date && (
-                        <p className="text-[11px] text-[#d0c5b0]/60 uppercase tracking-widest">
-                          {topKalam.date}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {topKalam ? (
-                <div className="relative flex flex-col md:flex-row gap-6">
-                  <div className="flex-1 glass-panel rounded-3xl p-6 sm:p-8 md:p-10 relative overflow-hidden min-h-[220px] md:min-h-[320px] flex flex-col justify-center">
-                    <blockquote className="font-display text-[18px] sm:text-[22px] md:text-[28px] text-[#ffe6ac] leading-relaxed mb-6 text-center whitespace-pre-line">
-                      {topKalam.text}
-                    </blockquote>
-                    {topKalam.translation && (
-                      <>
-                        <div className="h-[1px] w-24 bg-[#ffe6ac]/20 mx-auto mb-6" />
-                        <p className="text-[#d0c5b0]/80 italic text-center leading-relaxed">
-                          {topKalam.translation}
-                        </p>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex flex-row md:flex-col gap-4 justify-center">
-                    <button
-                      onClick={() => topKalam.onLike?.()}
-                      className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#ff4b4b] hover:bg-[#ffe6ac]/10 transition-all shadow-sm"
-                      aria-label="Like"
-                    >
-                      <Icon name="favorite" filled />
-                    </button>
-                    <button
-                      onClick={() => topKalam.onComment?.()}
-                      className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] transition-all shadow-sm"
-                      aria-label="Comment"
-                    >
-                      <Icon name="chat_bubble" />
-                    </button>
-                    <button
-                      onClick={() => topKalam.onShare?.()}
-                      className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] transition-all shadow-sm"
-                      aria-label="Share"
-                    >
-                      <Icon name="share" />
-                    </button>
-                    <button
-                      onClick={() => topKalam.onBookmark?.()}
-                      className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#ffe6ac] hover:bg-[#ffe6ac]/10 transition-all shadow-sm"
-                      aria-label="Bookmark"
-                    >
-                      <Icon name="bookmark" filled />
-                    </button>
-                  </div>
-                  {(topKalam.likes !== undefined || topKalam.comments !== undefined) && (
-                    <div className="static mt-1 md:absolute md:mt-0 md:-bottom-8 md:left-0 flex gap-4 text-[12px] text-[#d0c5b0]/60">
-                      {topKalam.likes !== undefined && <span>{topKalam.likes} likes</span>}
-                      {topKalam.comments !== undefined && <span>{topKalam.comments} comments</span>}
                     </div>
                   )}
-                </div>
-              ) : (
-                <div className="glass-panel rounded-3xl p-10 text-center">
-                  <p className="text-[#d0c5b0] text-[14px] md:text-[15px] max-w-md mx-auto leading-relaxed">
-                    Once readers start liking your kalams, your most-loved piece will be
-                    spotlighted here.
-                  </p>
-                </div>
-              )}
-            </section>
-          )}
 
-          {/* ---------------- Badges ---------------- */}
-          {/* {badges?.length > 0 && (
-            <section>
-              <div className="mb-6">
-                <h3 className="text-[11px] text-[#ffe6ac] mb-1 uppercase tracking-widest">
-                  Recognition
-                </h3>
-                <h2 className="font-display text-[28px] sm:text-[32px] md:text-[40px]">Badges</h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {badges.map((badge) => (
-                  <div
-                    key={badge.name}
-                    className={`glass-panel rounded-2xl p-6 text-center transition-all ${
-                      badge.earned ? "hover:border-[#ffe6ac]/40" : "opacity-40 grayscale"
-                    }`}
-                  >
-                    <div className="text-[36px] mb-3">{badge.icon}</div>
-                    <h4 className="font-display text-[18px] mb-2">{badge.name}</h4>
-                    <p className="text-[13px] text-[#d0c5b0] leading-relaxed">{badge.desc}</p>
+                  <div className="relative z-10 max-w-4xl mx-auto">
+                    <Icon name="format_quote" className="!text-[40px] sm:!text-[56px] text-[#ffe6ac] opacity-40 mb-6" />
+
+                    {isEditingVerse ? (
+                      <div className="w-full">
+                        <textarea
+                          autoFocus
+                          value={verseDraft}
+                          onChange={(e) => setVerseDraft(e.target.value)}
+                          placeholder="Write your favourite lines here…"
+                          rows={4}
+                          className="w-full bg-[#120c18]/60 text-[#ffe6ac] font-display text-[20px] md:text-[28px] text-center leading-relaxed placeholder-[#99907d] rounded-xl p-4 outline-none border border-[#ffe6ac]/20 focus:border-[#ffe6ac]/50 resize-none"
+                        />
+                        <div className="flex items-center justify-center gap-4 mt-6">
+                          <button
+                            onClick={cancelEditVerse}
+                            disabled={savingVerse}
+                            className="px-6 py-2.5 rounded-full text-[12px] uppercase tracking-widest border border-[#ffe6ac]/20 text-[#d0c5b0] hover:text-[#ffe6ac] hover:border-[#ffe6ac]/40 transition-colors disabled:opacity-50"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={saveVerse}
+                            disabled={savingVerse || !verseDraft.trim()}
+                            className="px-6 py-2.5 rounded-full text-[12px] uppercase tracking-widest bg-[#ffe6ac] text-[#3d2e00] hover:bg-[#f0c85a] transition-colors disabled:opacity-50"
+                          >
+                            {savingVerse ? "Saving…" : "Done"}
+                          </button>
+                        </div>
+                      </div>
+                    ) : currentVerse ? (
+                      <>
+                        <blockquote className="font-display text-[22px] sm:text-[26px] md:text-[42px] text-[#ffe6ac] leading-[1.3] mb-8 whitespace-pre-line">
+                          {currentVerse}
+                        </blockquote>
+                        {currentVerse.translation && (
+                          <>
+                            <div className="flex items-center justify-center gap-6 mb-6">
+                              <div className="h-[1px] w-16 bg-gradient-to-r from-transparent to-[#ffe6ac]/40" />
+                              <span className="text-[#d0c5b0] uppercase tracking-[0.4em] text-[12px]">
+                                Translation
+                              </span>
+                              <div className="h-[1px] w-16 bg-gradient-to-l from-transparent to-[#ffe6ac]/40" />
+                            </div>
+                            <p className="text-[#d0c5b0]/90 italic text-[16px] md:text-[18px] max-w-2xl mx-auto leading-relaxed">
+                              {currentVerse.translation}
+                            </p>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <p className="font-display text-[22px] md:text-[28px] text-[#ffe6ac] mb-4">
+                          No verse pinned yet
+                        </p>
+                        <p className="text-[#d0c5b0] text-[14px] md:text-[15px] max-w-md mx-auto leading-relaxed mb-8">
+                          Pin your favourite kalam here so it's the first thing visitors read.
+                        </p>
+                        <button
+                          onClick={startEditVerse}
+                          className="px-6 py-2.5 rounded-full text-[12px] uppercase tracking-widest border border-[#ffe6ac]/40 text-[#ffe6ac] hover:bg-[#ffe6ac]/10 transition-colors"
+                        >
+                          Write a Stanza
+                        </button>
+                      </>
+                    )}
                   </div>
-                ))}
-              </div>
-            </section>
-          )} */}
+                  <div className="absolute top-0 left-0 w-12 h-12 sm:w-20 sm:h-20 border-t-2 border-l-2 border-[#ffe6ac]/20 rounded-tl-3xl" />
+                  <div className="absolute bottom-0 right-0 w-12 h-12 sm:w-20 sm:h-20 border-b-2 border-r-2 border-[#ffe6ac]/20 rounded-br-3xl" />
+                </section>
+              )}
+
+              {/* ---------------- Most Liked Kalam (Home + Kalams) ---------------- */}
+              {(topKalam || isOwnProfile) && (
+                <section className="max-w-3xl mx-auto w-full">
+                  <div className="mb-8">
+                    <div className="flex items-end justify-between mb-6">
+                      <h2 className="font-display text-[#ffe6ac] text-[28px] sm:text-[32px] md:text-[40px]">
+                        Most Liked Kalam
+                      </h2>
+                    </div>
+                    {topKalam && (
+                      <div className="flex items-center gap-4 mb-8">
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-[#2e2735] flex items-center justify-center text-[#ffe6ac] font-display shrink-0">
+                          {profileLink ? (
+                            <img src={profileLink} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            initialsFromName(userName)
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-display text-[18px]">{userName}</p>
+                          {topKalam.date && (
+                            <p className="text-[11px] text-[#d0c5b0]/60 uppercase tracking-widest">
+                              {topKalam.date}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {topKalam ? (
+                    <div className="relative flex flex-col md:flex-row gap-6">
+                      <div className="flex-1 glass-panel rounded-3xl p-6 sm:p-8 md:p-10 relative overflow-hidden min-h-[220px] md:min-h-[320px] flex flex-col justify-center">
+                        <blockquote className="font-display text-[18px] sm:text-[22px] md:text-[28px] text-[#ffe6ac] leading-relaxed mb-6 text-center whitespace-pre-line">
+                          {topKalam.text}
+                        </blockquote>
+                        {topKalam.translation && (
+                          <>
+                            <div className="h-[1px] w-24 bg-[#ffe6ac]/20 mx-auto mb-6" />
+                            <p className="text-[#d0c5b0]/80 italic text-center leading-relaxed">
+                              {topKalam.translation}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                      <div className="flex flex-row md:flex-col gap-4 justify-center">
+                        <button
+                          onClick={() => topKalam.onLike?.()}
+                          className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#ff4b4b] hover:bg-[#ffe6ac]/10 transition-all shadow-sm"
+                          aria-label="Like"
+                        >
+                          <Icon name="favorite" filled />
+                        </button>
+                        <button
+                          onClick={() => topKalam.onComment?.()}
+                          className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] transition-all shadow-sm"
+                          aria-label="Comment"
+                        >
+                          <Icon name="chat_bubble" />
+                        </button>
+                        <button
+                          onClick={() => topKalam.onShare?.()}
+                          className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] transition-all shadow-sm"
+                          aria-label="Share"
+                        >
+                          <Icon name="share" />
+                        </button>
+                        <button
+                          onClick={() => topKalam.onBookmark?.()}
+                          className="w-12 h-12 rounded-full bg-[#201926] border border-[#ffe6ac]/10 flex items-center justify-center text-[#ffe6ac] hover:bg-[#ffe6ac]/10 transition-all shadow-sm"
+                          aria-label="Bookmark"
+                        >
+                          <Icon name="bookmark" filled />
+                        </button>
+                      </div>
+                      {(topKalam.likes !== undefined || topKalam.comments !== undefined) && (
+                        <div className="static mt-1 md:absolute md:mt-0 md:-bottom-8 md:left-0 flex gap-4 text-[12px] text-[#d0c5b0]/60">
+                          {topKalam.likes !== undefined && <span>{topKalam.likes} likes</span>}
+                          {topKalam.comments !== undefined && <span>{topKalam.comments} comments</span>}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="glass-panel rounded-3xl p-10 text-center">
+                      <p className="text-[#d0c5b0] text-[14px] md:text-[15px] max-w-md mx-auto leading-relaxed">
+                        Once readers start liking your kalams, your most-loved piece will be
+                        spotlighted here.
+                      </p>
+                    </div>
+                  )}
+                </section>
+              )}
+
+              {/* ---------------- Badges ---------------- */}
+              {/* {badges?.length > 0 && (
+                <section>
+                  <div className="mb-6">
+                    <h3 className="text-[11px] text-[#ffe6ac] mb-1 uppercase tracking-widest">
+                      Recognition
+                    </h3>
+                    <h2 className="font-display text-[28px] sm:text-[32px] md:text-[40px]">Badges</h2>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {badges.map((badge) => (
+                      <div
+                        key={badge.name}
+                        className={`glass-panel rounded-2xl p-6 text-center transition-all ${
+                          badge.earned ? "hover:border-[#ffe6ac]/40" : "opacity-40 grayscale"
+                        }`}
+                      >
+                        <div className="text-[36px] mb-3">{badge.icon}</div>
+                        <h4 className="font-display text-[18px] mb-2">{badge.name}</h4>
+                        <p className="text-[13px] text-[#d0c5b0] leading-relaxed">{badge.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )} */}
+            </div>
+          )}
         </div>
 
         {/* ---------------- Footer ---------------- */}
@@ -4397,9 +4411,9 @@ export function PoetProfileDashboard({
                   Quick Links
                 </h4>
                 <ul className="space-y-3 text-[#d0c5b0]/80">
-                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Library Archive</a></li>
-                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Master Collections</a></li>
-                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Community Guidelines</a></li>
+                  <li><a href="#" className="hover:text-[#ffe6ac] transition-colors">Library Archive</a></li>
+                  <li><a href="#" className="hover:text-[#ffe6ac] transition-colors">Master Collections</a></li>
+                  <li><a href="#" className="hover:text-[#ffe6ac] transition-colors">Community Guidelines</a></li>
                 </ul>
               </div>
               <div>
@@ -4407,9 +4421,9 @@ export function PoetProfileDashboard({
                   Support
                 </h4>
                 <ul className="space-y-3 text-[#d0c5b0]/80">
-                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Get Assistance</a></li>
-                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Settings</a></li>
-                  <li><a className="hover:text-[#ffe6ac] transition-colors" href="#">Terms of Verse</a></li>
+                  <li><a href="#" className="hover:text-[#ffe6ac] transition-colors">Get Assistance</a></li>
+                  <li><a href="#" className="hover:text-[#ffe6ac] transition-colors">Settings</a></li>
+                  <li><a href="#" className="hover:text-[#ffe6ac] transition-colors">Terms of Verse</a></li>
                 </ul>
               </div>
             </div>
@@ -4429,14 +4443,26 @@ export function PoetProfileDashboard({
 
       {/* ---------------- Mobile nav ---------------- */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 w-full h-16 z-50 bg-[#120c18] border-t border-[#ffe6ac]/20 flex items-center justify-around px-4">
-        <Icon name="menu_book" className="!text-[24px] text-[#ffe6ac]" />
-        <Icon name="category" className="!text-[24px] text-[#d0c5b0]" />
-        <Icon name="military_tech" className="!text-[24px] text-[#d0c5b0]" />
+        <button onClick={() => setActiveTab("home")}>
+          <Icon
+            name="menu_book"
+            className={`!text-[24px] ${activeTab === "home" ? "text-[#ffe6ac]" : "text-[#d0c5b0]"}`}
+          />
+        </button>
+        <button onClick={() => setActiveTab("kalams")}>
+          <Icon
+            name="category"
+            className={`!text-[24px] ${activeTab === "kalams" ? "text-[#ffe6ac]" : "text-[#d0c5b0]"}`}
+          />
+        </button>
+        <button onClick={() => setActiveTab("albums")}>
+          <Icon
+            name="album"
+            className={`!text-[24px] ${activeTab === "albums" ? "text-[#ffe6ac]" : "text-[#d0c5b0]"}`}
+          />
+        </button>
         <Icon name="person" className="!text-[24px] text-[#d0c5b0]" />
       </nav>
-      {
-        console.log("See vers", spotlightVerse)
-      }
 
       <FollowersModal
         open={followersOpen}
@@ -4444,7 +4470,6 @@ export function PoetProfileDashboard({
         followersList={followersList}
       />
     </div>
-    
   );
 }
 
