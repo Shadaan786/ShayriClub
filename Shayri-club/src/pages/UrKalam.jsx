@@ -1114,6 +1114,12 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "@/Apis/axiosInstance";
 import NewKalam from "./components/NewKalam";
+import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
+import { ModalContextprovider } from "./Contexts/ModalContext";
+import { useContext } from "react";
+import { ModalContext } from "./Contexts/ModalContext";
+import axios from "axios";
+import Footer from "./Footer";
 
 // ── Type → badge / icon mapping (same spirit as Kalam.jsx's SINF_OPTIONS) ──
 const TYPE_META = {
@@ -1140,6 +1146,9 @@ const UrKalam = () => {
   const [savedKalams, setSavedKalams] = useState([])
   const savedKalams2 = useRef(new Set())
   const[isDone, setIsDone] = useState(false);
+
+  const {isKalamMenuOpen, setIsKalamMenuOpen, menuPosition} = useContext(ModalContext)
+  const {kalamId} = useContext(ModalContext);
 
   useEffect(() => {
     axiosInstance
@@ -1176,13 +1185,45 @@ const UrKalam = () => {
     })
   }, [])
 
-  if(!isDone){
-    return (
-      <>
-      <h1 className="text-9xl">Loading</h1>
-      </>
-    )
-  }
+  const showLoading = loading || !isDone;
+
+  const SkeletonGrid = ({ count = 6 }) => (
+    <div className="uk-grid">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="skel-item">
+          <div className="skel-meta-row">
+            <div className="skel skel-avatar" />
+            <div className="skel-meta-lines">
+              <div className="skel skel-line-name" />
+              <div className="skel skel-line-date" />
+            </div>
+            <div className="skel skel-dots" />
+          </div>
+          <div className="skel-card skel">
+            <div className="skel-card-inner">
+              <div className="skel skel-text-line w-70" />
+              <div className="skel skel-text-line w-80" />
+              <div className="skel skel-text-line w-60" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+   const handleDelete=()=>{
+
+    axiosInstance
+    .post('/api/deleteKalam',{
+      kalamId: kalamId
+    })
+    .then((response)=>{
+      console.log(response.data.message);
+    }).catch((error)=>{
+      console.error("Error while fetching the request", error);
+    })
+
+   }
 
   return (
     <>
@@ -1358,24 +1399,84 @@ const UrKalam = () => {
         }
 
         /* ── Grid ──────────────────────────────────── */
-        /* flex instead of grid so NewKalam's own card width is preserved,
-           not stretched/shrunk to fill a track */
+        /* Real CSS grid so every card gets an equal, predictable column
+           width instead of shrink-to-fit sizing based on its own text. */
         .uk-grid {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+          gap: 20px 16px;
+          align-items: start;
         }
-        .uk-grid > div {
-          flex: 0 0 auto;
+        .uk-grid-item {
+          width: 100%;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .uk-grid-item > * {
+          width: 100%;
+          max-width: 400px;
         }
 
-        /* ── Loading ───────────────────────────────── */
-        .uk-loading { text-align: center; padding: 100px 0; }
-        .uk-loading-dots { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(210,170,90,0.4); }
-        .uk-loading-dots span { display: inline-block; animation: uk-blink 1.2s infinite; }
-        .uk-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .uk-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes uk-blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+        /* ── Skeleton loading ──────────────────────── */
+        @keyframes skelShimmer {
+          0%   { background-position: -400px 0; }
+          100% { background-position: 400px 0; }
+        }
+        .skel {
+          background: linear-gradient(
+            90deg,
+            rgba(255,255,255,0.04) 25%,
+            rgba(255,255,255,0.09) 37%,
+            rgba(255,255,255,0.04) 63%
+          );
+          background-size: 800px 100%;
+          animation: skelShimmer 1.6s linear infinite;
+          border-radius: var(--r-md);
+        }
+        .skel-item {
+          width: 100%;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .skel-item > * { width: 100%; max-width: 400px; }
+        .skel-meta-row {
+          display: flex; align-items: center; gap: 10px;
+          margin-bottom: 12px; padding: 0 4px;
+        }
+        .skel-avatar { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; }
+        .skel-meta-lines { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        .skel-line-name { width: 90px; height: 11px; border-radius: 3px; }
+        .skel-line-date { width: 60px; height: 8px; border-radius: 3px; }
+        .skel-dots { margin-left: auto; width: 20px; height: 20px; border-radius: 50%; }
+        .skel-card {
+          border-radius: 14px 14px 0 0;
+          height: 400px;
+          width: 100%;
+          border: 0.5px solid var(--border-md);
+          position: relative;
+          overflow: hidden;
+        }
+        .skel-card-inner {
+          position: absolute; inset: 0;
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
+          gap: 10px; padding: 0 60px;
+        }
+        .skel-text-line { height: 10px; border-radius: 3px; }
+        .skel-text-line.w-80 { width: 80%; }
+        .skel-text-line.w-60 { width: 60%; }
+        .skel-text-line.w-70 { width: 70%; }
+        .skel-hero-line { border-radius: 4px; }
+        @media (max-width: 900px) {
+          .skel-card { height: 340px; }
+        }
+        @media (max-width: 480px) {
+          .skel-card { height: 300px; }
+        }
 
         /* ── Empty state ───────────────────────────── */
         .uk-empty {
@@ -1405,6 +1506,12 @@ const UrKalam = () => {
         }
         .uk-footer-note { font-size: 10px; color: var(--text-ter); letter-spacing: 0.12em; }
 
+        /* ── Kalam action popover (three-dot menu) ──── */
+        @keyframes popIn {
+          from { opacity: 0; transform: translateY(-4px) scale(0.96); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
         @media (max-width: 480px) {
           .uk-nav { padding: 0 1rem; }
           .uk-hero { padding: 1.5rem 1rem 1.25rem; }
@@ -1415,7 +1522,13 @@ const UrKalam = () => {
           .uk-body { padding: 1.25rem 1rem 3rem; }
           .uk-hamburger { display: flex; }
           .uk-nav-links { display: none; }
-          .uk-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 760px) {
+          .uk-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
         }
       `}</style>
 
@@ -1478,17 +1591,17 @@ const UrKalam = () => {
             </div>
             <div className="uk-stats">
               <div className="uk-stat">
-                <div className="uk-stat-num">{loading ? "—" : kalams.length}</div>
+                <div className="uk-stat-num">{showLoading ? "—" : kalams.length}</div>
                 <div className="uk-stat-label">Kalams</div>
               </div>
               <div className="uk-stat-divider" />
               <div className="uk-stat">
-                <div className="uk-stat-num">{loading ? "—" : ghazalCount}</div>
+                <div className="uk-stat-num">{showLoading ? "—" : ghazalCount}</div>
                 <div className="uk-stat-label">Ghazals</div>
               </div>
               <div className="uk-stat-divider" />
               <div className="uk-stat">
-                <div className="uk-stat-num">{loading ? "—" : nazmCount}</div>
+                <div className="uk-stat-num">{showLoading ? "—" : nazmCount}</div>
                 <div className="uk-stat-label">Nazms</div>
               </div>
             </div>
@@ -1498,10 +1611,8 @@ const UrKalam = () => {
         {/* ── Body ── */}
         <div className="uk-body">
 
-          {loading ? (
-            <div className="uk-loading">
-              <div className="uk-loading-dots"><span>▪</span><span>▪</span><span>▪</span></div>
-            </div>
+          {showLoading ? (
+            <SkeletonGrid count={6} />
           ) : kalams.length === 0 ? (
             <div className="uk-empty">
               <div className="uk-empty-glyph">✦</div>
@@ -1519,13 +1630,7 @@ const UrKalam = () => {
 
               <div className="uk-grid">
                 {kalams.map((item) => (
-                  <div key={item._id}>
-                    {
-                      console.log("checkig=ng he he he", savedKalams2.current.has(item._id))
-                      
-                        
-                      
-                    }
+                  <div key={item._id} className="uk-grid-item">
                     <NewKalam
                       title={item.name}
                       content={item.content}
@@ -1536,9 +1641,7 @@ const UrKalam = () => {
                       customStyles={item.customStyles}
                       isSaved={savedKalams2.current.has(item._id)}
                     />
-                     <br></br>
                   </div>
-                 
                 ))}
               </div>
             </>
@@ -1550,6 +1653,57 @@ const UrKalam = () => {
             </span>
           </div>
         </div>
+
+        {/* ── Anchored kalam action popover (replaces centered modal) ── */}
+        {isKalamMenuOpen && (
+          <>
+            {/* invisible backdrop to catch outside clicks and close the menu */}
+            <div
+              onClick={() => setIsKalamMenuOpen(false)}
+              style={{ position: "fixed", inset: 0, zIndex: 150 }}
+            />
+
+            <div
+              style={{
+                position: "fixed",
+                top: menuPosition?.top ?? 0,
+                right: menuPosition?.right ?? 0,
+                zIndex: 151,
+                minWidth: "140px",
+                background: "rgba(14,13,20,0.98)",
+                border: "0.5px solid rgba(210,170,90,0.25)",
+                borderRadius: "10px",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                padding: "4px",
+                animation: "popIn 0.12s ease",
+              }}
+            >
+              <button
+                onClick={() => { handleDelete(); setIsKalamMenuOpen(false); }}
+                style={{
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "10px 14px",
+                  background: "transparent",
+                  border: "none",
+                  borderRadius: "6px",
+                  color: "rgba(255,140,140,0.9)",
+                  fontSize: "12px",
+                  fontFamily: "'DM Mono', monospace",
+                  letterSpacing: "0.05em",
+                  cursor: "pointer",
+                  transition: "background 0.12s",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = "rgba(226,75,74,0.1)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+              >
+                Delete
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </>
   );

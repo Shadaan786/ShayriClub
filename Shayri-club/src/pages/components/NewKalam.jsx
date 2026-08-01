@@ -1123,7 +1123,6 @@
 
 
 // export default NewKalam
-
 import { useState, useEffect, useContext, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
 import { HeartIcon } from "@animateicons/react/lucide";
@@ -1136,6 +1135,8 @@ import { MyVerticallyCenteredModal } from "./Modals/MyModal";
 import { WhatsappShareButton, WhatsappIcon } from "react-share";
 import {toJpeg} from "html-to-image" 
 import BookmarkIcon from '../components/icons/BookmarkIcon'
+import { ModalContext } from "../Contexts/ModalContext";
+
 
 const NewKalam=({
         title,
@@ -1227,6 +1228,7 @@ const buildGoogleFontsUrl = () => {
   // const[imageSrc, setImageSrc] = useState("")
   const isImage = useRef(false)
   const[isSaved2, setIsSaved2] = useState(isSaved)
+  const {isKalamMenuOpen, setIsKalamMenuOpen, setKalamId, setMenuPosition} = useContext(ModalContext);
 
 
 
@@ -2101,6 +2103,41 @@ const buildGoogleFontsUrl = () => {
             {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
           </span>
         </div>
+
+        <button
+          onClick={(e)=>{
+            const rect = e.currentTarget.getBoundingClientRect();
+            setMenuPosition({
+              top: rect.bottom + 6,
+              right: window.innerWidth - rect.right,
+            });
+            setIsKalamMenuOpen(true);
+            setKalamId(kalId);
+          }}
+          style={{
+            marginLeft: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "36px",
+            height: "36px",
+            flexShrink: 0,
+            background: "transparent",
+            border: "none",
+            borderRadius: "50%",
+            cursor: "pointer",
+            gap: "3px",
+            transition: "background 0.15s",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+          aria-label="Menu"
+        >
+          <span style={{ width: "4px", height: "4px", borderRadius: "50%", background: "rgba(210,170,90,0.7)" }} />
+          <span style={{ width: "4px", height: "4px", borderRadius: "50%", background: "rgba(210,170,90,0.7)" }} />
+          <span style={{ width: "4px", height: "4px", borderRadius: "50%", background: "rgba(210,170,90,0.7)" }} />
+        </button>
       </div>
 
       {/* ── Preview Card + Action Strip Wrapper (position: relative anchor) ── */}

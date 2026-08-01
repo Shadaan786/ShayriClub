@@ -1454,12 +1454,15 @@
 import axiosInstance from "../Apis/axiosInstance";
 import { useState, useEffect, useRef } from "react";
 import { Card } from "./components/Card";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import SidebarExample from "./components/Sidebar"
 import InfiniteScroll from "react-infinite-scroll-component";
 import NewKalam from "./components/NewKalam";
 import { type } from "firebase/firestore/lite/pipelines";
 import { Footer } from "@/Bg";
+import { useContext } from "react";
+import { ModalContextprovider } from "./Contexts/ModalContext";
+import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
 
 
 export const Social = () => {
@@ -1472,7 +1475,7 @@ export const Social = () => {
   // const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const socket = useRef(null);
-  const navigate = useNavigate();
+  const Navigate = useNavigate();
   const [length, setLength] = useState(0);
   const [length2, setLength2] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -1490,6 +1493,8 @@ export const Social = () => {
   const [searchClear, setSearchClear] = useState(false);
   const searchType = useRef("feed_search")
   // const[searchType, setSearchType] = useState("feed_search");
+  const [isSearchFocused, setIsSearchFocused] = useState(false); // UI-only: search bar focus/blur width animation
+  const [iskalamMenuOpen, setIsKalamMenuOpen] = useContext(ModalContextprovider);
 
   const handle = () => {
     axiosInstance
@@ -1514,8 +1519,8 @@ export const Social = () => {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    if (tab === "albums") navigate("/albumsLive");
-    else if (tab === "kotw") navigate("/Kotw");
+    if (tab === "albums") Navigate("/albumsLive");
+    else if (tab === "kotw") Navigate("/Kotw");
   };
 
   const fetchMoreData = () => {
@@ -1617,12 +1622,51 @@ export const Social = () => {
     <div
       id="mainScroll"
       className="relative overflow-auto"
-      style={{ height: "100svh", WebkitOverflowScrolling: "touch", background: "#0a0a10" }}
+      style={{ height: "100svh", WebkitOverflowScrolling: "touch", background: "linear-gradient(to right, #000000, #1a0828, #000000)" }}
     >
       <SidebarExample isOpen={isOpen} onClose={() => setIsOpen(false)} />
 
+      {/* ── Page-wide ambient glow (was previously scoped to hero only) ── */}
+      <div
+        style={{
+          position: "fixed",
+          top: -80,
+          left: -60,
+          width: 500,
+          height: 500,
+          borderRadius: "50%",
+          background: "radial-gradient(circle,rgba(197,160,89,0.10) 0%,transparent 65%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+      <div
+        style={{
+          position: "fixed",
+          bottom: -40,
+          right: -40,
+          width: 340,
+          height: 340,
+          borderRadius: "50%",
+          background: "radial-gradient(circle,rgba(139,92,246,0.10) 0%,transparent 65%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+        .material-symbols-outlined {
+          font-family: 'Material Symbols Outlined';
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+          font-size: 20px;
+          line-height: 1;
+        }
+        .s-nav-input {
+          transition: width 0.3s ease;
+        }
         @keyframes social-fu {
           from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -1672,113 +1716,182 @@ export const Social = () => {
           <nav
             className="s-top-nav flex items-center justify-between px-10 py-4 sticky top-0 z-30"
             style={{
-              background: "rgba(10,10,16,0.98)",
-              borderBottom: "1px solid rgba(255,255,255,0.06)",
-              backdropFilter: "blur(12px)",
+              background: "linear-gradient(to right, #000000, #1a0828, #000000)",
+              borderBottom: "1px solid rgba(78,70,57,0.3)",
             }}
           >
-            {/* Left: sidebar + logo */}
-            <div className="flex items-center gap-3">
-              <button
+            {/* Left: brand + primary nav links */}
+            <div className="flex items-center gap-8">
+              <h1
                 onClick={() => setIsOpen(true)}
-                className="flex items-center justify-center w-9 h-9 flex-shrink-0 transition-all duration-150 active:scale-95"
                 style={{
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.09)",
-                  borderRadius: 10,
-                  color: "#9090b0",
+                  fontFamily: "'EB Garamond', serif",
+                  fontSize: 26,
+                  fontWeight: 600,
+                  color: "#e9c176",
+                  letterSpacing: "-0.02em",
+                  cursor: "pointer",
+                  margin: 0,
                 }}
-                aria-label="Open sidebar"
               >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="12" x2="15" y2="12" />
-                  <line x1="3" y1="18" x2="18" y2="18" />
-                </svg>
-              </button>
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: "linear-gradient(135deg,#7c4dff,#c16dff)" }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
-                </svg>
+                Kalams
+              </h1>
+
+              <div className="s-nav-links hidden md:flex items-center gap-10">
+                <a
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12,
+                    letterSpacing: "0.1em",
+                    fontWeight: 700,
+                    color: "#e9c176",
+                    borderBottom: "2px solid #e9c176",
+                    paddingBottom: 4,
+                    cursor: "pointer",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Explore
+                </a>
+                <button onClick={()=>Navigate('/albumsLive')}>
+                <a
+                  className="nav-link-transition"
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12,
+                    letterSpacing: "0.1em",
+                    fontWeight: 500,
+                    color: "#d1c5b4",
+                    cursor: "pointer",
+                    textTransform: "uppercase",
+                    position: "relative",
+                  }}
+                >
+                  Library
+                </a>
+                </button>
               </div>
-              <span style={{ fontSize: 15, fontWeight: 600, color: "#e2d9ff", letterSpacing: "-0.3px" }}>Kalams</span>
             </div>
 
-            {/* Center: search */}
-            <div
-              className="s-nav-search items-center gap-2 px-3 py-1.5 rounded-lg"
-              style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.09)",
-                width: 260,
-              }}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round">
-                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input onChange={(e)=>{setSearchQuery(e.target.value); setIsSearch(true);(e.target.value.trim()==="")?handle():null}}
-                placeholder="Search kalams..."
-                className="bg-transparent outline-none w-full"
-                style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", border: "none" }}
-              />
-              <button onClick={searchKalams}>
-                search
-              </button>
-            </div>
-
-            {/* Right: links + avatar + publish */}
-            <div className="flex items-center gap-4">
-              <a className="s-nav-links" style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textDecoration: "none", cursor: "pointer" }}>Explore</a>
-              <a className="s-nav-links" style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", textDecoration: "none", cursor: "pointer" }}>Artists</a>
-              <div className="s-nav-links" style={{ width: 1, height: 18, background: "rgba(255,255,255,0.08)" }} />
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white cursor-pointer"
-                style={{ background: "linear-gradient(135deg,#7c4dff,#c16dff)", border: "2px solid rgba(255,255,255,0.1)" }}
-              >
-                A
+            {/* Right: search + publish + menu + avatar */}
+            <div className="flex items-center gap-6">
+              {/* Search */}
+              <div className="s-nav-search relative hidden lg:flex items-center">
+                <span
+                  className="material-symbols-outlined absolute left-3"
+                  style={{ color: "#9a8f80" }}
+                >
+                  search
+                </span>
+                <input
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  onChange={(e) => { setSearchQuery(e.target.value); setIsSearch(true); (e.target.value.trim() === "") ? handle() : null }}
+                  placeholder="Search archive..."
+                  type="text"
+                  className="s-nav-input outline-none"
+                  style={{
+                    background: "#1a1c1c",
+                    borderBottom: `1px solid ${isSearchFocused ? "#e9c176" : "rgba(78,70,57,0.3)"}`,
+                    color: "#e2e2e2",
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12,
+                    letterSpacing: "0.05em",
+                    padding: "8px 16px 8px 40px",
+                    width: isSearchFocused ? 320 : 256,
+                    transition: "all 0.3s ease",
+                  }}
+                />
+                <button
+                  onClick={searchKalams}
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 11,
+                    letterSpacing: "0.1em",
+                    color: "#e9c176",
+                    marginLeft: 8,
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  search
+                </button>
               </div>
-              <Link
-                to="/kalam"
-                className="s-nav-publish-inline items-center gap-1.5 px-4 py-2 rounded-lg text-white text-sm font-semibold transition-all active:scale-95"
-                style={{ background: "linear-gradient(135deg,#7c4dff,#9c6dff)", boxShadow: "0 2px 10px rgba(124,77,255,0.35)" }}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                Publish
-              </Link>
+
+              {/* Action group */}
+              <div className="flex items-center gap-4">
+                <Link
+                  to="/kalam"
+                  className="s-nav-publish-inline items-center"
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12,
+                    letterSpacing: "0.1em",
+                    fontWeight: 600,
+                    padding: "8px 24px",
+                    border: "1px solid #e9c176",
+                    color: "#e9c176",
+                    background: "transparent",
+                    cursor: "pointer",
+                    textTransform: "uppercase",
+                    transition: "all 0.3s ease",
+                    textDecoration: "none",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(233,193,118,0.1)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                >
+                  Publish
+                </Link>
+
+                <button
+                  onClick={() => setIsOpen(true)}
+                  aria-label="Open sidebar"
+                  style={{
+                    color: "#d1c5b4",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "#e9c176"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "#d1c5b4"; }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 24 }}>menu</span>
+                </button>
+
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold cursor-pointer"
+                  style={{
+                    border: "1px solid rgba(78,70,57,0.5)",
+                    color: "#e9c176",
+                    background: "#1a1c1c",
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#e9c176"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(78,70,57,0.5)"; }}
+                >
+                  A
+                </div>
+              </div>
             </div>
           </nav>
 
           {/* ── Hero Header ── */}
           <div
-            className="s-hero-wrap relative overflow-hidden px-10 pt-16 pb-12"
-            style={{ background: "#0a0a10" }}
+            className="s-hero-wrap relative overflow-hidden px-10 pt-16 pb-14"
           >
-            {/* Glow blobs */}
-            <div style={{ position: "absolute", top: -80, left: -60, width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle,rgba(109,40,217,0.18) 0%,transparent 65%)", pointerEvents: "none" }} />
-            <div style={{ position: "absolute", bottom: -40, right: -40, width: 340, height: 340, borderRadius: "50%", background: "radial-gradient(circle,rgba(139,92,246,0.08) 0%,transparent 65%)", pointerEvents: "none" }} />
-
             {/* Decorative open book motif */}
             <svg
               className="s-hero-book"
               viewBox="0 0 320 320"
-              style={{
-                position: "absolute",
-                right: 30,
-                bottom: -10,
-                width: 320,
-                height: 320,
-                pointerEvents: "none",
-              }}
+              style={{ position: "absolute", right: 30, bottom: -10, width: 320, height: 320, pointerEvents: "none" }}
               aria-hidden="true"
             >
-              <circle cx="190" cy="170" r="170" fill="#534AB7" opacity="0.10" />
-
-              <g transform="translate(0,60)" opacity="0.2" stroke="#a78bfa" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="190" cy="170" r="170" fill="#c5a059" opacity="0.08" />
+              <g transform="translate(0,60)" opacity="0.18" stroke="#c5a059" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M 130 10 C 90 0 40 5 0 25 L 0 150 C 40 130 90 125 130 135 Z" />
                 <path d="M 130 10 C 170 0 220 5 260 25 L 260 150 C 220 130 170 125 130 135 Z" />
                 <path d="M 130 10 L 130 135" />
@@ -1791,44 +1904,86 @@ export const Social = () => {
                 <path d="M 160 64 L 242 76" />
                 <path d="M 180 84 L 242 94" />
               </g>
-
-              <g opacity="0.15" stroke="#7c3aed" strokeWidth="1.5" fill="none" strokeLinecap="round">
+              <g opacity="0.15" stroke="#8b5cf6" strokeWidth="1.5" fill="none" strokeLinecap="round">
                 <path d="M 110 305 Q 130 290 150 303" strokeDasharray="2 4" />
                 <path d="M 90 320 Q 110 308 130 318" strokeDasharray="2 4" />
               </g>
             </svg>
 
             <div className="max-w-[680px] relative">
+              {/* Eyebrow label */}
+              <span
+                className="s-a1"
+                style={{
+                  display: "block", fontSize: 10, fontWeight: 600,
+                  letterSpacing: "0.35em", textTransform: "uppercase",
+                  color: "#c5a059", marginBottom: 20,
+                }}
+              >
+                Archive No. 01 / Soulful Verses
+              </span>
+
               {/* Title */}
               <h1
                 className="s-a2"
                 style={{
                   fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  fontSize: "clamp(52px, 6vw, 80px)",
+                  fontSize: "clamp(52px, 6vw, 84px)",
                   fontWeight: 300, fontStyle: "italic",
                   lineHeight: 0.92, marginBottom: 24, letterSpacing: "-1px",
                   textShadow: "0 4px 24px rgba(0,0,0,0.6)",
                 }}
               >
-                <span style={{ color: "#b8aee0", display: "block", fontFamily:"Great Vibes" }}>Browse</span>
-                <span style={{ fontWeight: 800, fontStyle: "normal", color: "#fff", display: "block", fontFamily:"Great Vibes", position: "relative", width: "fit-content" }}>
+                <span style={{ color: "rgba(255,255,255,0.4)", display: "block" }}>Browse</span>
+                <span
+                  style={{
+                    fontWeight: 800, fontStyle: "normal", color: "#c5a059",
+                    display: "block", position: "relative", width: "fit-content",
+                  }}
+                >
                   Kalams
-                  <span style={{ position: "absolute", bottom: -4, left: 0, right: 0, height: 3, background: "linear-gradient(90deg,#7c3aed,#a78bfa,transparent)", borderRadius: 2 }} />
+                  <span
+                    style={{
+                      position: "absolute", bottom: -6, left: 0, right: 0, height: 3,
+                      background: "linear-gradient(90deg,#c5a059,#e2d9ff,transparent)",
+                      borderRadius: 2,
+                    }}
+                  />
                 </span>
               </h1>
 
-              {/* Subtitle + stats */}
-              <div className="s-a3 s-hero-stats flex items-center gap-6">
-                <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", lineHeight: 1.6, maxWidth: 380, margin: 0, textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>
-                  Poetry, qawwali &amp; soulful verses — all in one place.
-                </p>
+              {/* Subtitle + CTA + stats */}
+              <div className="s-a3 s-hero-stats" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 32 }}>
+                <div style={{ maxWidth: 380 }}>
+                  <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: "0 0 20px", textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>
+                    A sanctuary of timeless wisdom — poetry and qawwali that transcends the mundane.
+                  </p>
+                  <button
+                    className="btn-premium"
+                    style={{
+                      padding: "14px 34px", border: "1px solid rgba(255,255,255,0.15)",
+                      fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase",
+                      fontWeight: 600, background: "transparent", color: "#fff",
+                      cursor: "pointer", transition: "all 0.5s ease",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#c5a059"; e.currentTarget.style.color = "#c5a059"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "#fff"; }}
+                  >
+                    Enter Collection
+                  </button>
+                </div>
+
                 <div className="flex gap-5 flex-shrink-0 pl-6" style={{ borderLeft: "1px solid rgba(255,255,255,0.12)" }}>
                   <div>
-                    <div style={{ fontSize: 20, fontWeight: 700, color: "#e2d9ff", letterSpacing: "-0.5px" }}>{totalLength || "—"}</div>
-                  </div>
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 2 }}>
-                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#8b5cf6", display: "inline-block", boxShadow: "0 0 6px rgba(139,92,246,0.8)" }} />
+                    <div style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#c5a059", marginBottom: 4 }}>
+                      Curated Edition
+                    </div>
+                    <div style={{ fontSize: 26, fontWeight: 300, color: "#e2d9ff", letterSpacing: "-0.5px" }}>
+                      {totalLength || "1,240"}
+                      <span style={{ fontSize: 12, verticalAlign: "top", marginLeft: 4, color: "#c5a059" }}>+</span>
+                    </div>
+                    <div style={{ fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
+                      Authenticated Works
                     </div>
                   </div>
                 </div>
@@ -1839,7 +1994,7 @@ export const Social = () => {
           {/* ── Tab Nav (below header) ── */}
           <div
            className="s-a4 s-tabs-row flex items-center justify-center gap-1 px-10"
-            style={{ borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)", background: "#0a0a10" }}
+            style={{ borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)", background: "linear-gradient(to right, #000000, #1a0828, #000000)" }}
           >
             {[
               { id: "kalams", label: "Kalams" },
@@ -1989,7 +2144,11 @@ export const Social = () => {
 
 
         </div>
+        
+        
       </div>
+      
+      
 
       {/* ── Floating Publish button (mobile only) ── */}
       <Link
@@ -2014,6 +2173,11 @@ export const Social = () => {
         </svg>
       </Link>
       <Footer />
+      <MyVerticallyCenteredModal isOpen={iskalamMenuOpen} onClose={()=>setIsKalamMenuOpen(false)}>
+
+        <h1 className="text-9xl">Hey there</h1>
+
+      </MyVerticallyCenteredModal>
     </div>
   );
   

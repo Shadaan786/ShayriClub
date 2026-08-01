@@ -12,7 +12,7 @@ import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path'
 import { SocialContextProvider } from './pages/Contexts/SocketContext.jsx'
 import TokenContextProvider from './services/push notifications/tokenContextProvider'
 import "@fortawesome/fontawesome-free/css/all.min.css";
-
+import { ModalContextprovider } from './pages/Contexts/ModalContext'
 
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -24,8 +24,10 @@ createRoot(document.getElementById('root')).render(
     <SocialContextProvider>
     <ContextProvider>
       <TokenContextProvider>
+        <ModalContextprovider>
   
     <App />
+    </ModalContextprovider>
 
     </TokenContextProvider>
 

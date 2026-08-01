@@ -357,152 +357,168 @@ useEffect(() => {
 
       {/* Content */}
       <div className="relative z-10">
-        {/* Navbar */}
-<nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-black via-[#1a0828] to-black backdrop-blur-lg border-b border-amber-500/20">  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="flex items-center justify-between h-20">
+{/* Navbar */}
+<nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-black via-[#1a0828] to-black backdrop-blur-lg border-b border-amber-500/20">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-between h-20 gap-4">
 
-     {/* Logo */}
-<div className="flex-shrink-0 flex items-center gap-2.5 group cursor-pointer -ml-2 sm:-ml-4 lg:-ml-6">
-  <div className="relative">
-    <div className="absolute  inset-0 bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 rounded-full blur-md opacity-30 group-hover:opacity-60 transition-opacity duration-500" />
-    <img
-      src={logo}
-      alt="Shayri Club Logo"
-      className="relative h-16 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] transition-transform duration-300 ease-out group-hover:scale-105"
-    />
-  </div>
+      {/* Logo */}
+      <div className="flex-shrink-0 flex items-center gap-2.5 group cursor-pointer">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 rounded-full blur-md opacity-30 group-hover:opacity-60 transition-opacity duration-500" />
+          <img
+            src={logo}
+            alt="Shayri Club Logo"
+            className="relative h-14 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] transition-transform duration-300 ease-out group-hover:scale-105"
+          />
+        </div>
 
-<h1
-  className="relative inline-block text-3xl sm:text-5xl leading-none font-black tracking-wide cursor-default group"
->
-  {/* soft glow layer behind the text */}
-  <span
-    aria-hidden="true"
-    className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-amber-400 via-rose-400 to-orange-400 bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-70"
-    style={{ fontFamily: "Playfair Display" }}
-  >
-    Alfaz
-  </span>
+        <h1 className="relative inline-block text-2xl sm:text-4xl leading-none font-black tracking-wide cursor-default group">
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-amber-400 via-rose-400 to-orange-400 bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-70"
+            style={{ fontFamily: "Playfair Display" }}
+          >
+            Alfaz
+          </span>
 
-  {/* main text, floating */}
-  <span className="relative inline-block">
-    <span
-      className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
-      style={{ fontFamily: "'Dancing Script', cursive" }}
-    >
-      A
-    </span>
-    <bdi
-      className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
-      style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
-    >
-      لف
-    </bdi>
-    <span
-      className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
-      style={{ fontFamily: "'Dancing Script', cursive" }}
-    >
-      az
-    </span>
-  </span>
-</h1>
+          <span className="relative inline-block">
+            <span
+              className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
+              style={{ fontFamily: "'Dancing Script', cursive" }}
+            >
+              A
+            </span>
+            <bdi
+              className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
+              style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+            >
+              لف
+            </bdi>
+            <span
+              className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
+              style={{ fontFamily: "'Dancing Script', cursive" }}
+            >
+              az
+            </span>
+          </span>
+        </h1>
+      </div>
 
-{/* <style jsx>{`
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-6px); }
-  }
-  .animate-float {
-    animation: float 3.5s ease-in-out infinite;
-  }
-`}</style> */}
-</div>
-      {/* Desktop Navigation */}
-      <div className="hidden md:flex items-center space-x-1">
-        <a href="/kalam" className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-lg hover:bg-amber-400/10">
+      {/* Desktop Navigation — grouped pill for visual separation */}
+      <div className="hidden md:flex items-center gap-1 px-1.5 py-1.5">
+        <a
+          href="/kalam"
+          className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-full hover:bg-amber-400/10"
+        >
           Kalam
         </a>
-        <a href="/DispCommunities" className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-lg hover:bg-amber-400/10">
+        <a
+          href="/DispCommunities"
+          className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-full hover:bg-amber-400/10"
+        >
           Community
         </a>
-        <a href="/Social" className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-lg hover:bg-amber-400/10">
+        <a
+          href="/Social"
+          className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-full hover:bg-amber-400/10"
+        >
           Browse
         </a>
-        
       </div>
 
-       {isLoggedIn && (
-          <button 
-          className=""
-          onClick={() => setNotificationOpened(true)}>
-            <BellRingIcon size={30} duration={1} color="#ffffff" />
-          </button>
-        )}
+      {/* Right-side actions — all grouped in one consistent flex row */}
+      <div className="flex items-center gap-2 sm:gap-3">
 
-      {/* Auth Buttons */}
-      <div className="hidden md:flex items-center space-x-3">
-        {!isLoggedIn && (
-          <button
-            onClick={() => Navigate('/Signup/Login')}
-            className="px-5 py-2 text-sm font-medium text-white hover:bg-white/10 transition rounded-lg border border-white/20"
-          >
-            Login
-          </button>
-        )}
-        {!isLoggedIn && (
-          <button
-            onClick={() => Navigate('/Signup')}
-            className="px-5 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 text-black rounded-lg hover:shadow-lg hover:shadow-orange-500/40 transition"
-          >
-            Sign Up
-          </button>
-        )}
-        {/* {isLoggedIn && (
-          <button onClick={() => Navigate(`/Profile?userId=${uuid.current}`)} className="w-8 h-8">
-            <UserRoundIcon size={25} duration={1} color="#ffffff" />
-          </button>
-        )}
-       
         {isLoggedIn && (
-          <button onClick={handleLogOut}>
-            <LogoutIcon size={25} duration={1} color="#ffffff" />
+          <button
+            onClick={() => setNotificationOpened(true)}
+            aria-label="Notifications"
+            className="relative p-2.5 rounded-lg text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 transition-colors"
+          >
+            <BellRingIcon size={22} duration={1} color="currentColor" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-black" />
           </button>
-        )} */}
-        {
-          isLoggedIn && <Dropdown title={"Profile ^"} items={menuItems}/>
-        }
-      </div>
+        )}
 
-      {/* Mobile menu button */}
-      <button
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
-      >
-        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+        {/* Auth / profile — desktop only */}
+        <div className="hidden md:flex items-center gap-3">
+          {!isLoggedIn && (
+            <>
+              <button
+                onClick={() => Navigate('/Signup/Login')}
+                className="px-5 py-2 text-sm font-medium text-white hover:bg-white/10 transition rounded-lg border border-white/20"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => Navigate('/Signup')}
+                className="px-5 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 text-black rounded-lg hover:shadow-lg hover:shadow-orange-500/40 transition"
+              >
+                Sign Up
+              </button>
+            </>
+          )}
+
+          {isLoggedIn && (
+            <div className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg border border-white/10 hover:border-amber-400/30 hover:bg-amber-400/5 transition-colors">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-black text-xs font-bold flex-shrink-0">
+                {("user" || "U")}
+              </div>
+              <Dropdown title={"Profile"} items={menuItems} />
+            </div>
+          )}
+        </div>
+
+        {/* Mobile menu toggle */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
+          className="md:hidden p-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+        >
+          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
     </div>
   </div>
 
   {/* Mobile Menu */}
   {mobileMenuOpen && (
     <div className="md:hidden bg-black/95 backdrop-blur-lg border-t border-white/10">
-      <div className="px-4 py-4 space-y-2">
+      <div className="px-4 py-4 space-y-1">
         <a href="/kalam" className="block px-4 py-3 text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg transition">
           Kalam
         </a>
-        <a href="/community" className="block px-4 py-3 text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg transition">
+        <a href="/DispCommunities" className="block px-4 py-3 text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg transition">
           Community
         </a>
-        <a href="/browse" className="block px-4 py-3 text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg transition">
+        <a href="/Social" className="block px-4 py-3 text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg transition">
           Browse
         </a>
-        <div className="pt-4 space-y-2 border-t border-white/10">
-          <button className="w-full px-4 py-3 text-white border border-white/20 rounded-lg hover:bg-white/10 transition">
-            Login
-          </button>
-          <button className="w-full px-4 py-3 bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 text-black font-semibold rounded-lg">
-            Sign Up
-          </button>
+
+        <div className="pt-4 mt-2 space-y-2 border-t border-white/10">
+          {!isLoggedIn && (
+            <>
+              <button
+                onClick={() => Navigate('/Signup/Login')}
+                className="w-full px-4 py-3 text-white border border-white/20 rounded-lg hover:bg-white/10 transition"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => Navigate('/Signup')}
+                className="w-full px-4 py-3 bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 text-black font-semibold rounded-lg"
+              >
+                Sign Up
+              </button>
+            </>
+          )}
+
+          {isLoggedIn && (
+            <div className="px-2">
+              <Dropdown title={"Profile"} items={menuItems} />
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -48,10 +48,10 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
-        // Shayar design tokens
-        DEFAULT: "0.125rem",
-        xl: "0.5rem",
-        full: "0.75rem",
+        // // Shayar design tokens
+        // DEFAULT: "0.125rem",
+        // xl: "0.5rem",
+        // full: "0.75rem",
       },
       spacing: {
         "stack-lg": "48px",

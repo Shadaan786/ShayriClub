@@ -51,13 +51,13 @@ export function AlbumsPanel() {
         page: String(page),
       });
       const res = await axiosInstance
-      .get(`/api/albumsLive?category=all&page=1&limit=2`);
-      if (!res.ok) {
-        throw new Error(`Request failed with status ${res.status}`);
-      }
-      const data = await res.json();
-      setAlbums(Array.isArray(data.albums) ? data.albums : []);
-      setTotal(typeof data.total === "number" ? data.total : (data.albums || []).length);
+      .get(`/api/albumsLive?query=all&page=1&limit=2`);
+      // if (!res.ok) {
+      //   throw new Error(`Request failed with status ${res.status}`);
+      // }
+      // const res = await res.json();
+      setAlbums(Array.isArray(res.data) ? res.data : []);
+      setTotal(typeof res.total === "number" ? res.total : (res.data || []).length);
     } catch (err) {
       setError(err.message || "Something went wrong while loading albums.");
       setAlbums([]);
@@ -243,10 +243,10 @@ export function AlbumsPanel() {
 
 function AlbumCard({ album }) {
   const [hovered, setHovered] = useState(false);
-  const title = album.title || "Untitled Album";
-  const count = album.compositionsCount ?? album.compositions ?? 0;
+  const title = album.name || "Untitled Album";
+  const count = album.kalamCollection.length ?? album.compositions ?? 0;
   const cover =
-    album.coverImageUrl ||
+    album.albumCover ||
     album.cover ||
     "https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800&auto=format&fit=crop";
 
