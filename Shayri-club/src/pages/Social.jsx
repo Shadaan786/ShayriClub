@@ -1460,9 +1460,6 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import NewKalam from "./components/NewKalam";
 import { type } from "firebase/firestore/lite/pipelines";
 import { Footer } from "@/Bg";
-import { useContext } from "react";
-import { ModalContextprovider } from "./Contexts/ModalContext";
-import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
 
 
 export const Social = () => {
@@ -1494,7 +1491,6 @@ export const Social = () => {
   const searchType = useRef("feed_search")
   // const[searchType, setSearchType] = useState("feed_search");
   const [isSearchFocused, setIsSearchFocused] = useState(false); // UI-only: search bar focus/blur width animation
-  const [iskalamMenuOpen, setIsKalamMenuOpen] = useContext(ModalContextprovider);
 
   const handle = () => {
     axiosInstance
@@ -2144,11 +2140,7 @@ export const Social = () => {
 
 
         </div>
-        
-        
       </div>
-      
-      
 
       {/* ── Floating Publish button (mobile only) ── */}
       <Link
@@ -2173,11 +2165,6 @@ export const Social = () => {
         </svg>
       </Link>
       <Footer />
-      <MyVerticallyCenteredModal isOpen={iskalamMenuOpen} onClose={()=>setIsKalamMenuOpen(false)}>
-
-        <h1 className="text-9xl">Hey there</h1>
-
-      </MyVerticallyCenteredModal>
     </div>
   );
   

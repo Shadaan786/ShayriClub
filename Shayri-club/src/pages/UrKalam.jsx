@@ -1149,6 +1149,7 @@ const UrKalam = () => {
 
   const {isKalamMenuOpen, setIsKalamMenuOpen, menuPosition} = useContext(ModalContext)
   const {kalamId} = useContext(ModalContext);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     axiosInstance
@@ -1211,18 +1212,17 @@ const UrKalam = () => {
     </div>
   );
 
-   const handleDelete=()=>{
-
+   const handleDelete = () => {
     axiosInstance
-    .post('/api/deleteKalam',{
-      kalamId: kalamId
-    })
-    .then((response)=>{
-      console.log(response.data.message);
-    }).catch((error)=>{
-      console.error("Error while fetching the request", error);
-    })
-
+      .post('/api/deleteKalam', {
+        kalamId: kalamId
+      })
+      .then((response) => {
+        console.log(response.data.message);
+        setKalams((prev) => prev.filter((k) => k._id !== kalamId));
+      }).catch((error) => {
+        console.error("Error while fetching the request", error);
+      })
    }
 
   return (
@@ -1512,6 +1512,61 @@ const UrKalam = () => {
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+        /* ── Confirm modal ─────────────────────────────── */
+        .uk-confirm {
+          padding: 28px 26px 22px;
+          min-width: 300px;
+          max-width: 360px;
+        }
+        .uk-confirm-icon {
+          width: 44px; height: 44px; border-radius: 50%;
+          background: rgba(226,75,74,0.12);
+          border: 0.5px solid rgba(226,75,74,0.3);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 18px; color: rgba(255,140,140,0.9);
+          margin-bottom: 16px;
+        }
+        .uk-confirm-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 19px; font-weight: 700; font-style: italic;
+          color: var(--text-pri);
+          margin-bottom: 6px;
+        }
+        .uk-confirm-sub {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 13px; font-style: italic;
+          color: var(--text-sec);
+          line-height: 1.5;
+          margin-bottom: 24px;
+        }
+        .uk-confirm-actions {
+          display: flex; justify-content: flex-end; gap: 8px;
+        }
+        .uk-btn-danger {
+          background: linear-gradient(135deg, #b23a3a, #8f2626);
+          border: 0.5px solid rgba(255,140,140,0.3);
+          border-radius: var(--r-md);
+          padding: 8px 16px; font-size: 11px;
+          color: rgba(255,225,220,0.95);
+          cursor: pointer; font-family: 'DM Mono', monospace;
+          letter-spacing: 0.08em;
+          transition: opacity 0.12s, box-shadow 0.12s;
+          box-shadow: 0 2px 12px rgba(180,50,50,0.25);
+        }
+        .uk-btn-danger:hover { opacity: 0.88; box-shadow: 0 4px 20px rgba(180,50,50,0.4); }
+
+        .uk-btn-cancel {
+          background: transparent;
+          border: 0.5px solid var(--border-md);
+          border-radius: var(--r-md);
+          padding: 8px 16px; font-size: 11px;
+          color: var(--text-sec);
+          cursor: pointer; font-family: 'DM Mono', monospace;
+          letter-spacing: 0.08em;
+          transition: all 0.12s;
+        }
+        .uk-btn-cancel:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.18); color: var(--text-pri); }
+
         @media (max-width: 480px) {
           .uk-nav { padding: 0 1rem; }
           .uk-hero { padding: 1.5rem 1rem 1.25rem; }
@@ -1681,7 +1736,7 @@ const UrKalam = () => {
               }}
             >
               <button
-                onClick={() => { handleDelete(); setIsKalamMenuOpen(false); }}
+                onClick={() => {setIsKalamMenuOpen(false); setConfirmModalOpen(true)}}
                 style={{
                   width: "100%",
                   textAlign: "left",
@@ -1704,6 +1759,30 @@ const UrKalam = () => {
             </div>
           </>
         )}
+
+        <MyVerticallyCenteredModal isOpen={confirmModalOpen} onClose={() => setConfirmModalOpen(false)}>
+          <div className="uk-confirm">
+            <div className="uk-confirm-icon">⚠</div>
+            <h2 className="uk-confirm-title">Delete this kalam?</h2>
+            <p className="uk-confirm-sub">
+              This kalam will be permanently removed from your collection. This action can't be undone.
+            </p>
+            <div className="uk-confirm-actions">
+              <button className="uk-btn-cancel" onClick={() => setConfirmModalOpen(false)}>
+                Cancel
+              </button>
+              <button
+                className="uk-btn-danger"
+                onClick={() => {
+                  handleDelete();
+                  setConfirmModalOpen(false);
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </MyVerticallyCenteredModal>
       </div>
     </>
   );
