@@ -1898,7 +1898,7 @@ const Kalam = () => {
             <span className="k-wordmark">Kalam</span>
           </div>
           <div className="k-nav-links">
-            {["Compose","Collection","Explore","Analytics"].map(n => (
+            {["Compose","Collection"].map(n => (
               <button key={n} className={`k-nl${activeNav === n ? " active" : ""}`} onClick={() => setActiveNav(n)}>
                 {n}
               </button>

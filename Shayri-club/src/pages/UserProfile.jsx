@@ -39,6 +39,7 @@ const UserProfile = () =>{
     const[isFollowing, setIsFollowing] = useState(false);
     const[followersList, setFollowersList] = useState([]);
     const [featuredVerse, setFeaturedVerse] = useState("");
+    const [coverImage, setCoverImage] = useState("");
 
     const[SearchParams] = useSearchParams();
     const navigate = useNavigate();
@@ -80,10 +81,14 @@ const UserProfile = () =>{
 
              // ProfilePic Link from cloudinary
 
-             const profilePic = response.data.userDb?.[0].profilePic || response.data.profilePic
+             const profilePic = response.data.userDb?.[0].profilePic || response.data.profilePic;
 
 
              setProfilePic(profilePic)
+
+             const profileCover = response.data.userDb?.[0].profileCover || response.data.profileCover;
+
+             setCoverImage(profileCover);
 
              const featuredVerse = response.data.userDb?.[0].featuredVerse || JSON.parse(response.data.userInfo).featuredVerse;
              console.log("see it",response.data.userDb?.[0].featuredVerse || JSON.parse(response.data.userInfo).featuredVerse)
@@ -452,6 +457,7 @@ const UserProfile = () =>{
         totalFollowers={followerCount}
         userId={userId}
         spotlightVerse={featuredVerse}
+        coverImage={coverImage}
         
 
         isOwnProfile={isOwnProfile}

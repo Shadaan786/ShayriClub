@@ -3446,7 +3446,8 @@
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
 import { useNavigate } from "react-router-dom";
-import { AlbumsPanel } from "../new"; // adjust path to wherever profileAlbums.jsx lives
+import { AlbumsPanel } from "../new"; // adjust path to wherever profileAlbums.jsx lives;
+import { useSearchParams } from "react-router-dom";
 
 /* ------------------------------------------------------------------ */
 /*  Fonts + Material Symbols — injected once, so this file can be     */
@@ -3825,7 +3826,10 @@ export function PoetProfileDashboard({
   useInjectFonts();
   const [followersOpen, setFollowersOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("home"); // "home" | "kalams" | "albums"
+  const file = useRef("");
   console.log("see usernameee", userName)
+  const [SearchParams, setSearchParams] = useSearchParams()
+  const profileCover = useRef("");
 
   const loading = !userName;
   const memberSince = formatJoinDate(joiningDate);
@@ -3886,6 +3890,28 @@ export function PoetProfileDashboard({
     }
   };
 
+
+
+  const handleProfilePicUpload=()=>{
+
+    console.log("See image selected", file.current)
+
+    const formdata = new FormData;
+    formdata.append("profilePic", file.current);
+    formdata.append("userId",userId)
+    formdata.append("fileType", "profilePic")
+    axiosInstance.post("/upload",formdata, {
+      headers:{"Content-Type":"multipart/form-data"},
+      withCredentials: true,
+      
+    })
+    .then((response)=>{
+      console.log("response", response.data)
+    }).catch((error)=>{
+      console.error("Error while fetching upload url",error)
+    })
+  }
+
   /* ---------------- Mobile-only profile picture upload ---------------- */
   const fileInputRef = useRef(null);
   const [localProfilePic, setLocalProfilePic] = useState(null);
@@ -3926,6 +3952,18 @@ export function PoetProfileDashboard({
       e.target.value = "";
     }
   };
+  const uploadProfileCover=()=>{
+    const formData = new FormData();
+    formData.append("profileCover",profileCover.current);
+    formData.append("fileType","profileCover");
+    formData.append("userId", userId);
+
+    axiosInstance
+    .post('/upload/profileCover', formData,{
+      headers:{"Content-Type": "multipart/form-data"},
+      withCredentials: true
+    })
+  }
 
   return (
     <div className="poet-profile-dashboard min-h-screen w-full bg-[#0a0510] text-[#ebdef1]">
@@ -3989,6 +4027,8 @@ export function PoetProfileDashboard({
         {/* ---------------- Hero ---------------- */}
         <section className="relative w-full overflow-hidden">
           <div className="h-[300px] sm:h-[360px] md:h-[420px] relative bg-gradient-to-br from-[#241d2a] to-[#120c18]">
+          
+            
             {coverImage && (
               <div
                 className="absolute inset-0 bg-cover bg-center"
@@ -4469,6 +4509,11 @@ export function PoetProfileDashboard({
         onClose={() => setFollowersOpen(false)}
         followersList={followersList}
       />
+      <input type="file" onChange={(e)=>file.current = e.target.files[0]} />
+      <h1>albcvr</h1>
+        <input type="file" placeholder="albumCover" onChange={(e)=>profileCover.current= e.target.files[0]} />
+        <button onClick={uploadProfileCover}>saveAlbCvr</button>
+      <button onClick={handleProfilePicUpload}>save</button>
     </div>
   );
 }

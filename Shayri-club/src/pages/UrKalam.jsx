@@ -1596,7 +1596,7 @@ const UrKalam = () => {
             <span className="uk-wordmark">Kalam</span>
           </div>
           <div className="uk-nav-links">
-            {["Compose", "Collection", "Explore", "Analytics"].map((n) => (
+            {["Compose", "Collection"].map((n) => (
               <button
                 key={n}
                 className={`uk-nl${activeNav === n ? " active" : ""}`}
