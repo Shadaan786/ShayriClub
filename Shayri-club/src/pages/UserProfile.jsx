@@ -88,6 +88,7 @@ const UserProfile = () =>{
 
              const profileCover = response.data.userDb?.[0].profileCover || response.data.profileCover;
 
+             console.log("See profileCover", profileCover)
              setCoverImage(profileCover);
 
              const featuredVerse = response.data.userDb?.[0].featuredVerse || JSON.parse(response.data.userInfo).featuredVerse;

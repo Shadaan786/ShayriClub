@@ -3448,6 +3448,7 @@ import axiosInstance from "@/Apis/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { AlbumsPanel } from "../new"; // adjust path to wherever profileAlbums.jsx lives;
 import { useSearchParams } from "react-router-dom";
+import { Edit } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
 /*  Fonts + Material Symbols — injected once, so this file can be     */
@@ -3606,11 +3607,13 @@ function HeaderSearch({ onSearchUser, onSelectSearchResult }) {
                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[rgba(240,200,90,0.08)] transition-colors text-left"
               >
                 <div className="w-7 h-7 rounded-full overflow-hidden bg-[#2e2735] flex items-center justify-center text-[10px] text-[#ffe6ac] shrink-0">
+                  
                   {item.profilePic ? (
                     <img src={item.profilePic} alt="" className="w-full h-full object-cover" />
                   ) : (
                     initialsFromName(item.name)
                   )}
+                  
                 </div>
                 <span className="text-sm text-[#ebdef1] truncate">{item.name}</span>
               </button>
@@ -3786,6 +3789,47 @@ function AlbumsGrid({ userId }) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Delete confirmation modal — reused for profile picture removal    */
+/* ------------------------------------------------------------------ */
+
+function DeleteConfirmModal({ open, onCancel, onConfirm, title, description }) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+      onClick={onCancel}
+    >
+      <div
+        className="w-full max-w-sm rounded-2xl glass-panel overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="px-6 pt-6 pb-2 text-center">
+          <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-[rgba(255,75,75,0.1)] border border-[rgba(255,75,75,0.3)] flex items-center justify-center">
+            <Icon name="delete" className="!text-[22px] text-[#ff4b4b]" />
+          </div>
+          <h3 className="font-display text-[#ffe6ac] text-lg mb-2">{title}</h3>
+          <p className="text-[#d0c5b0] text-[13px] leading-relaxed">{description}</p>
+        </div>
+        <div className="flex items-center gap-3 px-6 py-6">
+          <button
+            onClick={onCancel}
+            className="flex-1 px-4 py-2.5 rounded-full text-[12px] uppercase tracking-widest border border-[#ffe6ac]/20 text-[#d0c5b0] hover:text-[#ffe6ac] hover:border-[#ffe6ac]/40 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 px-4 py-2.5 rounded-full text-[12px] uppercase tracking-widest bg-[#ff4b4b] text-white hover:bg-[#e63c3c] transition-colors"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Main component                                                     */
 /* ------------------------------------------------------------------ */
 
@@ -3912,7 +3956,7 @@ export function PoetProfileDashboard({
     })
   }
 
-  /* ---------------- Mobile-only profile picture upload ---------------- */
+  /* ---------------- Profile picture upload (mobile + desktop) ---------------- */
   const fileInputRef = useRef(null);
   const [localProfilePic, setLocalProfilePic] = useState(null);
   const [uploadingPic, setUploadingPic] = useState(false);
@@ -3964,6 +4008,97 @@ export function PoetProfileDashboard({
       withCredentials: true
     })
   }
+
+  /* ---------------- Cover photo upload trigger (desktop + mobile) ---------------- */
+  const coverInputRef = useRef(null);
+  const [localCoverImage, setLocalCoverImage] = useState(null);
+  const displayedCoverImage = localCoverImage || coverImage;
+
+  const triggerCoverUpload = () => {
+    coverInputRef.current?.click();
+  };
+
+  const handleCoverChange = (e) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    // Instant local preview
+    const previewUrl = URL.createObjectURL(selectedFile);
+    setLocalCoverImage(previewUrl);
+
+    // Feed the existing (untouched) upload logic with the new file
+    profileCover.current = selectedFile;
+    uploadProfileCover();
+
+    e.target.value = "";
+  };
+
+  const deleteProfilePic = ()=>{
+
+    axiosInstance
+    .post('/api/deleteProflePic',{
+      profileLink
+    },{
+      withCredentials: true
+    })
+  }
+
+  const handleProfilePicInputChange = (e) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    // Instant local preview
+    const previewUrl = URL.createObjectURL(selectedFile);
+    setLocalProfilePic(previewUrl);
+
+    // Feed the existing (untouched) upload logic with the new file
+    file.current = selectedFile;
+    handleProfilePicUpload();
+
+    e.target.value = "";
+  };
+
+  /* ---------------- Profile picture / cover: edit menus ---------------- */
+  const [profilePicMenuOpen, setProfilePicMenuOpen] = useState(false);
+  const profilePicMenuRef = useRef(null);
+  const [coverMenuOpen, setCoverMenuOpen] = useState(false);
+  const coverMenuRef = useRef(null);
+
+  useEffect(() => {
+    if (!profilePicMenuOpen) return;
+    function handleClickOutside(e) {
+      if (profilePicMenuRef.current && !profilePicMenuRef.current.contains(e.target)) {
+        setProfilePicMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [profilePicMenuOpen]);
+
+  useEffect(() => {
+    if (!coverMenuOpen) return;
+    function handleClickOutside(e) {
+      if (coverMenuRef.current && !coverMenuRef.current.contains(e.target)) {
+        setCoverMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [coverMenuOpen]);
+
+  const [deleteProfilePicConfirmOpen, setDeleteProfilePicConfirmOpen] = useState(false);
+
+  const handleRemoveProfilePic = () => {
+    setProfilePicMenuOpen(false);
+    setDeleteProfilePicConfirmOpen(true);
+  };
+
+  const confirmRemoveProfilePic = () => {
+    // Existing (untouched) delete call — just reset the local preview after
+    deleteProfilePic();
+    setLocalProfilePic(null);
+    setDeleteProfilePicConfirmOpen(false);
+  };
 
   return (
     <div className="poet-profile-dashboard min-h-screen w-full bg-[#0a0510] text-[#ebdef1]">
@@ -4026,16 +4161,53 @@ export function PoetProfileDashboard({
       <main className="pt-16 min-h-screen w-full bg-[#120c18] pb-16 md:pb-0">
         {/* ---------------- Hero ---------------- */}
         <section className="relative w-full overflow-hidden">
-          <div className="h-[300px] sm:h-[360px] md:h-[420px] relative bg-gradient-to-br from-[#241d2a] to-[#120c18]">
-          
-            
-            {coverImage && (
+          <div className="h-[300px] sm:h-[360px] md:h-[420px] relative bg-gradient-to-br from-[#241d2a] to-[#120c18] group/cover">
+
+            {displayedCoverImage && (
               <div
                 className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url('${coverImage}')` }}
+                style={{ backgroundImage: `url('${displayedCoverImage}')` }}
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#120c18] via-[#120c18]/60 to-transparent" />
+
+            {/* ---------------- Cover photo edit menu (mobile + desktop) ---------------- */}
+            {isOwnProfile && (
+              <div className="absolute top-4 right-4 md:top-6 md:right-8 z-20" ref={coverMenuRef}>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverChange}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => setCoverMenuOpen((v) => !v)}
+                  aria-label="Edit cover photo"
+                  aria-expanded={coverMenuOpen}
+                  className="flex items-center gap-2 px-3.5 py-2 md:px-4 md:py-2.5 rounded-full bg-[#120c18]/70 backdrop-blur-md border border-[#ffe6ac]/25 text-[#ffe6ac] text-[11px] md:text-[12px] uppercase tracking-widest hover:bg-[#120c18]/90 hover:border-[#ffe6ac]/50 transition-all shadow-lg active:scale-95"
+                >
+                  <Icon name="edit" className="!text-[16px] md:!text-[18px]" />
+                  <span className="hidden sm:inline">Edit Cover</span>
+                </button>
+
+                {coverMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 rounded-xl overflow-hidden bg-[rgba(18,8,29,0.95)] backdrop-blur-xl border border-[rgba(240,200,90,0.2)] shadow-2xl">
+                    <button
+                      onClick={() => {
+                        setCoverMenuOpen(false);
+                        triggerCoverUpload();
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left text-[13px] text-[#ebdef1] hover:bg-[rgba(240,200,90,0.08)] transition-colors"
+                    >
+                      <Icon name="photo_camera" className="!text-[16px] text-[#ffe6ac]" />
+                      {displayedCoverImage ? "Change Cover Photo" : "Upload Cover Photo"}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="absolute inset-0 flex items-end justify-center">
               <div className="max-w-[1120px] w-full px-5 md:px-16 pb-8 sm:pb-12">
                 <div className="flex flex-col md:flex-row items-center md:items-end gap-4 sm:gap-6 md:gap-10">
@@ -4052,28 +4224,69 @@ export function PoetProfileDashboard({
                       )}
                     </div>
 
-                    {/* Mobile-only profile picture upload trigger — desktop view is untouched */}
+                    {/* ---------------- Profile picture edit menu (mobile always, desktop on hover) ---------------- */}
                     {isOwnProfile && (
-                      <div className="md:hidden">
+                      <div
+                        className="absolute bottom-1 right-1 md:bottom-2 md:right-3 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200"
+                        ref={profilePicMenuRef}
+                      >
                         <input
                           ref={fileInputRef}
                           type="file"
                           accept="image/*"
-                          onChange={handleProfilePicChange}
+                          onChange={handleProfilePicInputChange}
                           className="hidden"
                         />
                         <button
-                          onClick={triggerProfilePicUpload}
+                          onClick={() => setProfilePicMenuOpen((v) => !v)}
                           disabled={uploadingPic}
-                          aria-label={displayedProfilePic ? "Change profile picture" : "Upload profile picture"}
-                          className="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-[#ffe6ac] text-[#3d2e00] flex items-center justify-center border-2 border-[#0a0510] shadow-md active:scale-90 transition-transform disabled:opacity-60"
+                          aria-label="Edit profile picture"
+                          aria-expanded={profilePicMenuOpen}
+                          className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#ffe6ac] text-[#3d2e00] flex items-center justify-center border-2 border-[#0a0510] shadow-lg active:scale-90 transition-transform disabled:opacity-60 hover:bg-[#f0c85a]"
                         >
                           {uploadingPic ? (
                             <span className="w-3.5 h-3.5 rounded-full border-2 border-[#3d2e00]/40 border-t-[#3d2e00] animate-spin" />
                           ) : (
-                            <Icon name="photo_camera" className="!text-[16px]" filled />
+                            <Icon name="edit" className="!text-[16px] md:!text-[18px]" />
                           )}
                         </button>
+
+                        {profilePicMenuOpen && (
+                          <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 w-44 rounded-xl overflow-hidden bg-[rgba(18,8,29,0.95)] backdrop-blur-xl border border-[rgba(240,200,90,0.2)] shadow-2xl z-30">
+                            {displayedProfilePic ? (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    setProfilePicMenuOpen(false);
+                                    triggerProfilePicUpload();
+                                  }}
+                                  className="w-full flex items-center gap-3 px-4 py-3 text-left text-[13px] text-[#ebdef1] hover:bg-[rgba(240,200,90,0.08)] transition-colors"
+                                >
+                                  <Icon name="photo_camera" className="!text-[16px] text-[#ffe6ac]" />
+                                  Change Photo
+                                </button>
+                                <button
+                                  onClick={handleRemoveProfilePic}
+                                  className="w-full flex items-center gap-3 px-4 py-3 text-left text-[13px] text-[#ebdef1] hover:bg-[rgba(255,75,75,0.08)] hover:text-[#ff4b4b] transition-colors border-t border-[rgba(240,200,90,0.1)]"
+                                >
+                                  <Icon name="delete" className="!text-[16px]" />
+                                  Delete Photo
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  setProfilePicMenuOpen(false);
+                                  triggerProfilePicUpload();
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-left text-[13px] text-[#ebdef1] hover:bg-[rgba(240,200,90,0.08)] transition-colors"
+                              >
+                                <Icon name="photo_camera" className="!text-[16px] text-[#ffe6ac]" />
+                                Upload Photo
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -4509,11 +4722,13 @@ export function PoetProfileDashboard({
         onClose={() => setFollowersOpen(false)}
         followersList={followersList}
       />
-      <input type="file" onChange={(e)=>file.current = e.target.files[0]} />
-      <h1>albcvr</h1>
-        <input type="file" placeholder="albumCover" onChange={(e)=>profileCover.current= e.target.files[0]} />
-        <button onClick={uploadProfileCover}>saveAlbCvr</button>
-      <button onClick={handleProfilePicUpload}>save</button>
+      <DeleteConfirmModal
+        open={deleteProfilePicConfirmOpen}
+        onCancel={() => setDeleteProfilePicConfirmOpen(false)}
+        onConfirm={confirmRemoveProfilePic}
+        title="Delete profile photo?"
+        description="This will remove your current profile picture. This action can't be undone."
+      />
     </div>
   );
 }
