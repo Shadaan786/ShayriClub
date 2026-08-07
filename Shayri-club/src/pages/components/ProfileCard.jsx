@@ -3789,7 +3789,8 @@ function AlbumsGrid({ userId }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Delete confirmation modal — reused for profile picture removal    */
+/*  Delete confirmation modal — reused for profile picture AND cover  */
+/*  photo removal                                                     */
 /* ------------------------------------------------------------------ */
 
 function DeleteConfirmModal({ open, onCancel, onConfirm, title, description }) {
@@ -4100,6 +4101,33 @@ export function PoetProfileDashboard({
     setDeleteProfilePicConfirmOpen(false);
   };
 
+  const handleProfileCoverDelete=()=>{
+    axiosInstance
+    .post('api/deleteProfileCover',{
+      profileCover: profileCover
+    },{
+      withCredentials: true
+    }).then((response)=>{
+      console.log(response.data);
+    }).catch((error)=>{
+      console.error("Error while fetching request",error);
+    })
+  }
+
+  const [deleteCoverConfirmOpen, setDeleteCoverConfirmOpen] = useState(false);
+
+  const handleRemoveCoverPhoto = () => {
+    setCoverMenuOpen(false);
+    setDeleteCoverConfirmOpen(true);
+  };
+
+  const confirmRemoveCoverPhoto = () => {
+    // Existing (untouched) delete call — just reset the local preview after
+    handleProfileCoverDelete();
+    setLocalCoverImage(null);
+    setDeleteCoverConfirmOpen(false);
+  };
+
   return (
     <div className="poet-profile-dashboard min-h-screen w-full bg-[#0a0510] text-[#ebdef1]">
       <style>{`
@@ -4193,16 +4221,38 @@ export function PoetProfileDashboard({
 
                 {coverMenuOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 rounded-xl overflow-hidden bg-[rgba(18,8,29,0.95)] backdrop-blur-xl border border-[rgba(240,200,90,0.2)] shadow-2xl">
-                    <button
-                      onClick={() => {
-                        setCoverMenuOpen(false);
-                        triggerCoverUpload();
-                      }}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-left text-[13px] text-[#ebdef1] hover:bg-[rgba(240,200,90,0.08)] transition-colors"
-                    >
-                      <Icon name="photo_camera" className="!text-[16px] text-[#ffe6ac]" />
-                      {displayedCoverImage ? "Change Cover Photo" : "Upload Cover Photo"}
-                    </button>
+                    {displayedCoverImage ? (
+                      <>
+                        <button
+                          onClick={() => {
+                            setCoverMenuOpen(false);
+                            triggerCoverUpload();
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left text-[13px] text-[#ebdef1] hover:bg-[rgba(240,200,90,0.08)] transition-colors"
+                        >
+                          <Icon name="photo_camera" className="!text-[16px] text-[#ffe6ac]" />
+                          Change Cover Photo
+                        </button>
+                        <button
+                          onClick={handleRemoveCoverPhoto}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left text-[13px] text-[#ebdef1] hover:bg-[rgba(255,75,75,0.08)] hover:text-[#ff4b4b] transition-colors border-t border-[rgba(240,200,90,0.1)]"
+                        >
+                          <Icon name="delete" className="!text-[16px]" />
+                          Delete Cover Photo
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setCoverMenuOpen(false);
+                          triggerCoverUpload();
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-left text-[13px] text-[#ebdef1] hover:bg-[rgba(240,200,90,0.08)] transition-colors"
+                      >
+                        <Icon name="photo_camera" className="!text-[16px] text-[#ffe6ac]" />
+                        Upload Cover Photo
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -4728,6 +4778,13 @@ export function PoetProfileDashboard({
         onConfirm={confirmRemoveProfilePic}
         title="Delete profile photo?"
         description="This will remove your current profile picture. This action can't be undone."
+      />
+      <DeleteConfirmModal
+        open={deleteCoverConfirmOpen}
+        onCancel={() => setDeleteCoverConfirmOpen(false)}
+        onConfirm={confirmRemoveCoverPhoto}
+        title="Delete cover photo?"
+        description="This will remove your current cover photo. This action can't be undone."
       />
     </div>
   );

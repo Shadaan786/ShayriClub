@@ -89,7 +89,13 @@ const Carousel = ({ children }) => {
   );
 };
 
-export const Footer = () => (
+export const Footer = () => {
+
+  const Navigate = useNavigate();
+
+  return(
+    <>
+   
   <footer className="mt-32 pb-8 border-t bg-gradient-to-r from-black via-[#12061c] to-black backdrop-blur-lg border-b border-amber-500/20">
     <div className="max-w-7xl mx-auto px-4 pt-12">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -152,10 +158,26 @@ export const Footer = () => (
         <div>
           <h4 className="text-white font-semibold mb-4">Legal</h4>
           <ul className="space-y-2 text-gray-400 text-sm">
-            <li className="hover:text-white cursor-pointer transition">Privacy Policy</li>
-            <li className="hover:text-white cursor-pointer transition">Terms of Service</li>
-            <li className="hover:text-white cursor-pointer transition">Contact</li>
-          </ul>
+  <li>
+    <button
+      onClick={() => Navigate('/privacyPolicy')}
+      className="block w-full hover:text-white cursor-pointer transition"
+    >
+      Privacy Policy
+    </button>
+  </li>
+  <li>
+    <button
+      onClick={() => Navigate('/termsofservices')}
+      className="block w-full hover:text-white cursor-pointer transition"
+    >
+      Terms of Service
+    </button>
+  </li>
+  <li className="hover:text-white cursor-pointer transition">
+    Contact
+  </li>
+</ul>
         </div>
       </div>
       <div className="text-center text-gray-500 text-sm pt-8 border-t border-white/5">
@@ -163,7 +185,9 @@ export const Footer = () => (
       </div>
     </div>
   </footer>
-);
+   </>
+  )
+};
 
 export default function ShayriClub() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
