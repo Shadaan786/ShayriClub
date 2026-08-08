@@ -1244,7 +1244,7 @@ const buildGoogleFontsUrl = () => {
   // Checking like 
 
   
-  if(customStyles.imageSrc){
+  if(customStyles?.imageSrc){
 
     isImage.current = true
     

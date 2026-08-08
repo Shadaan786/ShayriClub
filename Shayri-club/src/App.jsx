@@ -53,6 +53,7 @@ import PrivacyPolicy from './legal/PrivacyPolicy';
 import TermsOfServices from './legal/TermsOfServices';
 import CookiePolicy from './legal/CookiePolicy';
 import CommunityGuidelines from './legal/CommunityGuidelines';
+import CommunitySPaces from './pages/CommunitySpaces';
 
 
 function App() {
@@ -143,6 +144,7 @@ onMessage(messaging, (data) => {
       <Route path='/termsofservices' element= {<TermsOfServices/>}/>
       <Route path='/cookiepolicy' element= {<CookiePolicy/>}/>
       <Route path='/communityguidelines' element= {<CommunityGuidelines/>}/>
+      <Route path='/spaces' element= {<CommunitySPaces/>}/>
 
       {/* <ContextProvider>
         <Kalam/>
