@@ -1,4 +1,6 @@
 import React from "react";
+import NewKalam2 from "./NewKalam2";
+import { useNavigate } from "react-router-dom";
 
 /**
  * PostCard — fully self-contained, no external CSS framework or icon font required.
@@ -7,32 +9,22 @@ import React from "react";
  */
 
 const styles = `
-.pc-wrapper {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: #121317;
-  color: #e3e2e7;
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  box-sizing: border-box;
-}
+
 .pc-wrapper *, .pc-wrapper *::before, .pc-wrapper *::after {
   box-sizing: border-box;
 }
 .pc-card {
   width: 100%;
   max-width: 672px;
-  border-radius: 24px;
-  padding: 24px;
+  border-radius: 20px;
+  padding: 18px 20px;
   position: relative;
   overflow: hidden;
   background: rgba(30, 31, 35, 0.6);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(153, 144, 124, 0.2);
-  border-top: 1px solid rgba(242, 202, 80, 0.15);
+   border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top: 2px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   transition: box-shadow 0.3s ease;
 }
@@ -43,17 +35,17 @@ const styles = `
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .pc-header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 .pc-avatar {
   position: relative;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 9999px;
   overflow: hidden;
   border: 1px solid rgba(77, 70, 53, 0.3);
@@ -72,8 +64,8 @@ const styles = `
   gap: 6px;
 }
 .pc-name {
-  font-size: 18px;
-  line-height: 28px;
+  font-size: 15px;
+  line-height: 20px;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: #e3e2e7;
@@ -84,9 +76,9 @@ const styles = `
   flex-shrink: 0;
 }
 .pc-timestamp {
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 0.05em;
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #d0c5af;
   margin: 2px 0 0 0;
@@ -110,28 +102,34 @@ const styles = `
 .pc-text {
   font-family: Georgia, 'Times New Roman', serif;
   font-style: italic;
-  font-size: 20px;
-  line-height: 32px;
+  font-size: 16px;
+  line-height: 24px;
   text-align: center;
   color: #f2efe8;
-  margin: 8px 0 0 0;
-  padding: 0 8px;
+  margin: 4px 0 0 0;
+  padding: 0 4px;
 }
 .pc-text.pc-text-with-embed {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 .pc-text p {
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
 }
 .pc-text p:last-child {
   margin-bottom: 0;
 }
 .pc-embed {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 12px;
   border: 1px solid rgba(77, 70, 53, 0.25);
   border-radius: 12px;
   overflow: hidden;
   background: rgba(26, 27, 31, 0.5);
   cursor: pointer;
+  padding: 10px;
   transition: border-color 0.3s ease;
 }
 .pc-embed:hover {
@@ -140,14 +138,12 @@ const styles = `
 .pc-embed:hover .pc-embed-img {
   transform: scale(1.05);
 }
-.pc-embed-inner {
-  display: flex;
-  flex-direction: column;
-}
 .pc-embed-media {
   position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 8px;
   overflow: hidden;
 }
 .pc-embed-img {
@@ -158,41 +154,55 @@ const styles = `
   transition: transform 0.7s ease;
 }
 .pc-embed-body {
-  padding: 20px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   justify-content: center;
+  text-align: left;
   flex: 1;
 }
 .pc-embed-title {
-  font-size: 22px;
-  line-height: 30px;
+  font-size: 15px;
+  line-height: 20px;
   letter-spacing: -0.01em;
   color: #e3e2e7;
-  margin: 0 0 4px 0;
+  margin: 0 0 2px 0;
   font-weight: 500;
+  text-align: left;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .pc-embed-desc {
-  font-size: 15px;
-  line-height: 22px;
+  font-size: 12px;
+  line-height: 16px;
   color: #d0c5af;
-  margin: 0 0 16px 0;
+  margin: 0 0 6px 0;
+  text-align: left;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .pc-cta {
   align-self: flex-start;
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #f2ca50;
   color: #3c2f00;
   border: none;
-  padding: 10px 18px;
+  padding: 6px 12px;
   border-radius: 9999px;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 10px;
+  line-height: 14px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  text-align: left;
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(242, 202, 80, 0.2);
   transition: background-color 0.2s ease;
@@ -204,19 +214,19 @@ const styles = `
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 16px;
-  margin-top: 24px;
+  padding-top: 12px;
+  margin-top: 16px;
   border-top: 1px solid rgba(77, 70, 53, 0.15);
 }
 .pc-footer-left {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 .pc-metric-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: transparent;
   border: none;
   color: #d0c5af;
@@ -234,19 +244,6 @@ const styles = `
 }
 .pc-metric-btn:hover svg {
   transform: translateY(-2px);
-}
-
-@media (min-width: 640px) {
-  .pc-embed-inner {
-    flex-direction: row;
-  }
-  .pc-embed-media {
-    width: 33.333%;
-    aspect-ratio: auto;
-  }
-  .pc-embed-body {
-    flex: 1;
-  }
 }
 `;
 
@@ -268,7 +265,7 @@ const MoreIcon = (props) => (
 );
 
 const PlayIcon = (props) => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" {...props}>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" {...props}>
     <path d="M8 5v14l11-7z" />
   </svg>
 );
@@ -323,30 +320,34 @@ const QuotedText = ({ text }) => {
 /* ---------------------------------------------------------------------------- */
 
 export default function PostCard({
-  authorName = "Mirza Ghalib",
-  authorAvatarUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuC3WCHrM77vm-tD4xwWP0SIL5OuGFqupNdcswr0shLsI40472L1lTQGiVt809URfmOilf3dNKHN7lY4HfiHz58VMGj5mvmICJYdAT655ABsAMbPolJ-loEBTI6bQRZSSZS6N7LhNuqf5U5CfenqFkiJnVEUCzla6Ww09xaZPYY6ukalIq73GTrBEOiM7cwrqK0-POgLOq4KUgx8r_gPWBhuvptcMEiyZVj6A9ZUUYp-tTbk4TF_taSN",
-  timestamp = "2 hours ago",
-  verified = true,
-  postText = "Welcome to the global channel. Ensure your encryption keys are updated for this session.",
-  embed = {
-    imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuC4PS-qi6gnp_PNKrnxCkocGWy3gWcR_d68oTzb1hkAUc-2oatuSV1L11_4FSkXlX79mMcBo4d8XjStPMd5AmIqmzYOIiTSFWtkiCyuv9YEOQQhazV5Xqzqr58bLNtuMbIartDk7HH5VpwLxS92nxfw5iYgJkUWv3ZMdo_AwL7yBZzUu65_3MVN2pbS5HtYsLumkSV-YqJjU7Q-RuwQBMWoLW4vtlhN_TSo_NAuTsIYL9K_v-9MY-ZT",
-    title: "Nocturnal Protocols",
-    description:
-      "A curated mix of deep focus frequencies and encrypted transmissions.",
-    ctaLabel: "Listen to Recitation",
-    onCtaClick: undefined,
-  },
-  likeCount = 12,
-  commentCount = 3,
+  authorName,
+  authorAvatarUrl,
+  timestamp,
+  verified,
+  postText,
+  embed,
+  likeCount,
+  commentCount,
   onLikeClick,
   onCommentClick,
   onShareClick,
   onMoreClick,
-  isAlbumAvailable = true,
-  isKalamAvailable = true,
+  isAlbumAvailable,
+  isKalamAvailable,
+  customStyles,
+  title,
+  content,
+  muid,
+  kalId,
+  isLiked2,
+  isSaved,
 }) {
-  const showEmbed = isAlbumAvailable || isKalamAvailable;
+  // Album embed fields (embed.imageUrl / embed.title / embed.description) are only
+  // relevant — and only rendered — when isAlbumAvailable is true.
+  const showAlbum = isAlbumAvailable && !!embed;
+  // Kalam is rendered instead whenever it's available and there's no album to show.
+  const showKalam = !isAlbumAvailable && isKalamAvailable;
+  const Navigate= useNavigate();
 
   return (
     <div className="pc-wrapper">
@@ -372,33 +373,44 @@ export default function PostCard({
         </header>
 
         {/* Main content */}
-        <div className={`pc-text${showEmbed ? " pc-text-with-embed" : ""}`}>
+        <div className={`pc-text${showAlbum || showKalam ? " pc-text-with-embed" : ""}`}>
           <QuotedText text={postText} />
         </div>
 
-        {/* Embedded card — only rendered when an album or kalam is actually available */}
-        {showEmbed && (
+        {/* Album embed — only when isAlbumAvailable is true */}
+        {showAlbum && (
           <div className="pc-embed" onClick={embed?.onCtaClick}>
-            <div className="pc-embed-inner">
-              <div className="pc-embed-media">
-                <img className="pc-embed-img" alt={`${embed.title} cover`} src={embed.imageUrl} />
-              </div>
-              <div className="pc-embed-body">
-                <h4 className="pc-embed-title">{embed.title}</h4>
-                <p className="pc-embed-desc">{embed.description}</p>
-                <button
-                  className="pc-cta"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    embed?.onCtaClick?.();
-                  }}
-                >
-                  <PlayIcon />
-                  {embed.ctaLabel}
-                </button>
-              </div>
+            <div className="pc-embed-media">
+              <img className="pc-embed-img" alt={`${embed.title} cover`} src={embed.imageUrl} />
+            </div>
+            <div className="pc-embed-body">
+              <h4 className="pc-embed-title">{embed.title}</h4>
+              <p className="pc-embed-desc">{embed.description}</p>
+              <button
+                className="pc-cta"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  embed?.onCtaClick?.();
+                }}
+              >
+                <PlayIcon />
+                {embed.ctaLabel}
+              </button>
             </div>
           </div>
+        )}
+
+        {/* Kalam — only when isKalamAvailable is true and there's no album */}
+        {showKalam && (
+          <NewKalam2
+            title={title}
+            content={content}
+            mUid={muid}
+            kalId={kalId}
+            isLiked2={isLiked2}
+            isSaved={isSaved}
+            customStyles={customStyles}
+          />
         )}
 
         {/* Footer */}

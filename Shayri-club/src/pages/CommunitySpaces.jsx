@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PostCard from "./components/PostCard";
 import Icon from "./components/icons/Icon";
 import axiosInstance from "@/Apis/axiosInstance";
@@ -739,7 +739,23 @@ export default function CommunitySPaces({
           const [kalam, setKalam] = useState(null); // selected kalam _id
           const [album, setAlbum] = useState(null); // selected album _id
           const [isAttached, setIsAttached] = useState(false);
+          const [userPosts, setUserPosts] = useState([]);
 
+          const fetchPosts=()=>{
+            axiosInstance
+            .get('/api/userPosts',{
+              withCredentials: true
+            }).then((response)=>{
+              setUserPosts(response.data.content)
+              console.log("see fetched posts", response.data.content)
+            }).catch((error)=>{
+              console.error("Error while fetching user posts", error);
+            })
+          }
+
+          useEffect(()=>{
+            fetchPosts()
+          }, [])
 
     const fetchUserKalams=()=>{
         axiosInstance
@@ -762,10 +778,13 @@ export default function CommunitySPaces({
     }
 
     const handlePublish=()=>{
+      console.log("see kalam", kalam);
+      console.log("see album", album);
       axiosInstance
       .post('/api/userPost',{
-          value: value.current,
-          kalam: kalam
+          text: value.current,
+          kalam: kalam,
+          album: album
 
       })
     }
@@ -774,10 +793,12 @@ export default function CommunitySPaces({
       setKalam((current) => (current === id ? null : id));
 
       console.log("see naa", id)
+
     };
 
     const handleSelectAlbum = (id) => {
       setAlbum((current) => (current === id ? null : id));
+      
     };
 
   /* ---------------------- Sub components ---------------------- */
@@ -859,9 +880,9 @@ export default function CommunitySPaces({
                   <Icon name="book" size={18} />
                 </button> */}
                 {!isAttached && <button onClick={()=>{setIsSelectionModalOpen(true); fetchUserAlbums(); fetchUserKalams();}} >Attach</button>}
-                {isAttached && <button>remove</button>}
+                {isAttached && <button onClick={handleDeAttach}>remove</button>}
               </div>
-              <button className="cs-publish-btn" onClick={() => onPublish?.(value)}>
+              <button className="cs-publish-btn" onClick={() => {onPublish?.(value); handlePublish()}}>
                 Publish
               </button>
             </div>
@@ -927,6 +948,13 @@ export default function CommunitySPaces({
     </nav>
   );
 
+  const handleDeAttach=()=>{
+
+    console.log("deAttach function ran!!!");
+    (album)?setAlbum(null):setKalam(null);
+    setIsAttached(false);
+  }
+
   return (
     <div className="cs-root">
       <style>{styles}</style>
@@ -955,8 +983,13 @@ export default function CommunitySPaces({
             </div>
 
             <div className="cs-posts">
-              {posts.map((post) => (
-                <PostCard key={post.id} post={post} onLike={onLike} onComment={onComment} onShare={onShare} />
+              {userPosts.map((item) => (
+                (item.featuredAlbum)?
+                <PostCard key={item._id}  postText={"He yaaaa from album!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}   onShare={onShare} isAlbumAvailable={true} isKalamAvailable={false} embed={{title: item.featuredAlbum.name, imageUrl:  "https://lh3.googleusercontent.com/aida-public/AB6AXuC4PS-qi6gnp_PNKrnxCkocGWy3gWcR_d68oTzb1hkAUc-2oatuSV1L11_4FSkXlX79mMcBo4d8XjStPMd5AmIqmzYOIiTSFWtkiCyuv9YEOQQhazV5Xqzqr58bLNtuMbIartDk7HH5VpwLxS92nxfw5iYgJkUWv3ZMdo_AwL7yBZzUu65_3MVN2pbS5HtYsLumkSV-YqJjU7Q-RuwQBMWoLW4vtlhN_TSo_NAuTsIYL9K_v-9MY-ZT", description:"This is description", ctaLabel: "Listen Now"}} />
+             : (item.featurdKalam)?                <PostCard key={item._id}  postText={"He yaaaa from kalam!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}  onShare={onShare} isAlbumAvailable={false} isKalamAvailable={true} title={item.featurdKalam.name} content={item.featurdKalam.content} muid={"939297973293783902"} kalId={item.featurdKalam._id} isLiked2={true} isSaved={true} customStyles={item.featurdKalam.customStyles} embed={null} />
+             :                 <PostCard key={item._id}  postText={"He yaaaa from text!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}  onShare={onShare} isAlbumAvailable={false} isKalamAvailable={false} embed={"no "} />
+
+
               ))}
             </div>
 
