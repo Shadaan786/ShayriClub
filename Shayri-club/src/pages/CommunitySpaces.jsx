@@ -160,7 +160,7 @@ const styles = `
   display: none;
   flex-direction: column;
   width: 256px;
-  border-right: 1px solid rgba(212,175,55,0.1);
+  border-right: 2px solid rgba(255, 255, 255, 0.2);
   background: rgba(13,14,18,0.4);
   padding: 24px;
   overflow-y: auto;
@@ -386,7 +386,7 @@ const styles = `
   display: none;
   flex-direction: column;
   width: 288px;
-  border-left: 1px solid rgba(212,175,55,0.1);
+  border-left: 2px solid rgba(255, 255, 255, 0.2);
   background: rgba(13,14,18,0.4);
   padding: 24px;
   position: fixed;
@@ -403,10 +403,6 @@ const styles = `
   min-height: 100%;
 }
 .cs-sidebar-right-top { display: flex; flex-direction: column; gap: 24px; }
-.cs-sidebar-composer {
-  margin-top: auto;
-  padding-top: 24px;
-}
 .cs-widget {
   background: rgba(26,27,31,0.4);
   border: 1px solid rgba(212,175,55,0.2);
@@ -653,9 +649,10 @@ const NAV_SECTIONS = [
   {
     label: "Network",
     links: [
-      { icon: "book", text: "Library", active: true },
-      { icon: "group", text: "Poets" },
-      { icon: "festival", text: "Mushaira" },
+      { icon: "book", text: "Home", navigate: '/'},
+      { icon: "group", text: "Spaces", active:true },
+      { icon: "festival", text: "Kalam", navigate: '/kalam' },
+      { icon: "festival", text: "Library", navigate: '/albumsLive'},
     ],
   },
   {
@@ -670,6 +667,27 @@ const NAV_SECTIONS = [
     links: [{ icon: "settings", text: "Preferences" }],
   },
 ];
+// const NAV_SECTIONS = [
+//   {
+//     label: "Network",
+//     links: [
+//       { icon: "book", text: "Library", active: true },
+//       { icon: "group", text: "Poets" },
+//       { icon: "festival", text: "Mushaira" },
+//     ],
+//   },
+//   {
+//     label: "Creation",
+//     links: [
+//       { icon: "edit_document", text: "Drafts" },
+//       { icon: "book", text: "Publications" },
+//     ],
+//   },
+//   {
+//     label: "System",
+//     links: [{ icon: "settings", text: "Preferences" }],
+//   },
+// ];
 
 const BOTTOM_NAV_ITEMS = [
   { icon: "book", label: "Library" },
@@ -729,7 +747,7 @@ export default function CommunitySPaces({
   onComment,
   onShare,
 }) {
-          const value = useRef("");
+          const[value, setValue] = useState("");
           const [userAlbums, setUserAlbums] = useState([]);
           const [userKalams, setUserKalams] = useState([]);
           const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
@@ -782,7 +800,7 @@ export default function CommunitySPaces({
       console.log("see album", album);
       axiosInstance
       .post('/api/userPost',{
-          text: value.current,
+          text: value,
           kalam: kalam,
           album: album
 
@@ -817,10 +835,10 @@ export default function CommunitySPaces({
         </div>
       </div>
       <div className="cs-header-right">
-        <div className="cs-live-pill">
+        {/* <div className="cs-live-pill">
           <div className="cs-live-dot cs-pulse-dot" />
           <span className="cs-live-label">Live</span>
-        </div>
+        </div> */}
         <div className="cs-header-icons">
           <button aria-label="Search">
             <Icon name="search" size={20} />
@@ -842,7 +860,7 @@ export default function CommunitySPaces({
           <React.Fragment key={section.label}>
             <div className="cs-nav-section">{section.label}</div>
             {section.links.map((link) => (
-              <a key={link.text} href="#" className={`cs-nav-link${link.active ? " active" : ""}`}>
+              <a key={link.text} href={link.navigate} className={`cs-nav-link${link.active ? " active" : ""}`}>
                 <Icon name={link.icon} size={18} />
                 <span>{link.text}</span>
               </a>
@@ -864,8 +882,8 @@ export default function CommunitySPaces({
               className="cs-textarea"
               placeholder={placeholder}
               rows={2}
-              value={value.current}
-              onChange={(e) => value.current = e.target.value}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
             />
             <div className="cs-composer-toolbar">
               <div className="cs-toolbar-icons">
@@ -928,11 +946,6 @@ export default function CommunitySPaces({
             </div>
           </div> */}
         </div>
-
-        {/* Composer now lives pinned to the bottom of the right sidebar */}
-        <div className="cs-sidebar-composer">
-          <Composer userAvatarUrl={userAvatarUrl} onPublish={onPublish} />
-        </div>
       </div>
     </aside>
   );
@@ -959,7 +972,7 @@ export default function CommunitySPaces({
     <div className="cs-root">
       <style>{styles}</style>
 
-      <TopAppBar userAvatarUrl={userAvatarUrl} />
+      {TopAppBar({ userAvatarUrl })}
 
       <div className="cs-layout">
         <LeftSidebar />
@@ -982,10 +995,17 @@ export default function CommunitySPaces({
               <div className="cs-diamond" />
             </div>
 
+            {/* Composer, placed right below "Today's Gatherings".
+                Hidden on wide screens where the right sidebar's own
+                composer is already visible, so it never shows twice. */}
+            <div className="cs-main-composer">
+              {Composer({ userAvatarUrl, onPublish })}
+            </div>
+
             <div className="cs-posts">
               {userPosts.map((item) => (
                 (item.featuredAlbum)?
-                <PostCard key={item._id}  postText={"He yaaaa from album!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}   onShare={onShare} isAlbumAvailable={true} isKalamAvailable={false} embed={{title: item.featuredAlbum.name, imageUrl:  "https://lh3.googleusercontent.com/aida-public/AB6AXuC4PS-qi6gnp_PNKrnxCkocGWy3gWcR_d68oTzb1hkAUc-2oatuSV1L11_4FSkXlX79mMcBo4d8XjStPMd5AmIqmzYOIiTSFWtkiCyuv9YEOQQhazV5Xqzqr58bLNtuMbIartDk7HH5VpwLxS92nxfw5iYgJkUWv3ZMdo_AwL7yBZzUu65_3MVN2pbS5HtYsLumkSV-YqJjU7Q-RuwQBMWoLW4vtlhN_TSo_NAuTsIYL9K_v-9MY-ZT", description:"This is description", ctaLabel: "Listen Now"}} />
+                <PostCard key={item._id} albumId={item.featuredAlbum._id} postText={"He yaaaa from album!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}   onShare={onShare} isAlbumAvailable={true} isKalamAvailable={false} embed={{title: item.featuredAlbum.name, imageUrl:  "https://lh3.googleusercontent.com/aida-public/AB6AXuC4PS-qi6gnp_PNKrnxCkocGWy3gWcR_d68oTzb1hkAUc-2oatuSV1L11_4FSkXlX79mMcBo4d8XjStPMd5AmIqmzYOIiTSFWtkiCyuv9YEOQQhazV5Xqzqr58bLNtuMbIartDk7HH5VpwLxS92nxfw5iYgJkUWv3ZMdo_AwL7yBZzUu65_3MVN2pbS5HtYsLumkSV-YqJjU7Q-RuwQBMWoLW4vtlhN_TSo_NAuTsIYL9K_v-9MY-ZT", description:"This is description", ctaLabel: "Listen Now"}} />
              : (item.featurdKalam)?                <PostCard key={item._id}  postText={"He yaaaa from kalam!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}  onShare={onShare} isAlbumAvailable={false} isKalamAvailable={true} title={item.featurdKalam.name} content={item.featurdKalam.content} muid={"939297973293783902"} kalId={item.featurdKalam._id} isLiked2={true} isSaved={true} customStyles={item.featurdKalam.customStyles} embed={null} />
              :                 <PostCard key={item._id}  postText={"He yaaaa from text!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}  onShare={onShare} isAlbumAvailable={false} isKalamAvailable={false} embed={"no "} />
 
@@ -1099,10 +1119,10 @@ export default function CommunitySPaces({
           </div>
         </MyVerticallyCenteredModal>
 
-        <RightSidebar userAvatarUrl={userAvatarUrl} onPublish={onPublish} />
+        {RightSidebar({ userAvatarUrl, onPublish })}
       </div>
 
-      <BottomNav />
+      {BottomNav()}
     </div>
   );
 }

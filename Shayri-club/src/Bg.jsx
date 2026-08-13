@@ -438,7 +438,7 @@ useEffect(() => {
           Kalam
         </a>
         <a
-          href="/DispCommunities"
+          href="/spaces"
           className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-full hover:bg-amber-400/10"
         >
           Community
@@ -448,6 +448,12 @@ useEffect(() => {
           className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-full hover:bg-amber-400/10"
         >
           Browse
+        </a>
+        <a
+          href="/albumsLive"
+          className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-amber-300 transition-colors rounded-full hover:bg-amber-400/10"
+        >
+          Library
         </a>
       </div>
 

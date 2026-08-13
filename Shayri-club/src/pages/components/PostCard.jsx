@@ -216,7 +216,7 @@ const styles = `
   justify-content: space-between;
   padding-top: 12px;
   margin-top: 16px;
-  border-top: 1px solid rgba(77, 70, 53, 0.15);
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
 }
 .pc-footer-left {
   display: flex;
@@ -341,6 +341,8 @@ export default function PostCard({
   kalId,
   isLiked2,
   isSaved,
+  albumId,
+  kalamId
 }) {
   // Album embed fields (embed.imageUrl / embed.title / embed.description) are only
   // relevant — and only rendered — when isAlbumAvailable is true.
@@ -390,7 +392,8 @@ export default function PostCard({
                 className="pc-cta"
                 onClick={(e) => {
                   e.stopPropagation();
-                  embed?.onCtaClick?.();
+                  // embed?.onCtaClick?.();
+                  Navigate(`/album?albumId=${albumId}`)
                 }}
               >
                 <PlayIcon />

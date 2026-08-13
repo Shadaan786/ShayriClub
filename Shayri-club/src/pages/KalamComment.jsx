@@ -230,32 +230,81 @@ export const KalamComment = () => {
   const [SearchParams] = useSearchParams();
   const [allComments, setAllComments] = useState([]);
 
-  const kalamId = SearchParams.get("kalamId");
+  const commentType = SearchParams.get("commentType")
+  if(commentType === "postComments"){
+    const postId = SearchParams.get('postId');
+
+    const fetchUserPostComments=()=>{
+      axiosInstance
+      .get()
+      .then((response)=>{
+
+         console.log(response.data);
+        setMemberId(response.data.mId[0]._id);
+        setTotalComments(response.data.userKalam[0].comments);
+        console.log(totalComments);
+        
+      }).catch((error)=>{
+        console.error("Error while fetching user post comments", error);
+      })
+    }
+    useEffect(()=>{
+      
+      fetchUserPostComments();
+
+    }, [])
+  }else if(commentType === 'kalamComment'){
+
+     const kalamId = SearchParams.get("kalamId");
+  
 
   console.log(kalamId);
 
   const Handle = () => {
     axiosInstance
-      .get(`/api/kalam/comment?kalamId=${kalamId}`, { withCredentials: true })
+      .get(`/api/comment?commentType=${commentType}&kalamId=${kalamId}`, { withCredentials: true })
       .then((response) => {
         console.log(response.data);
-        setMemberId(response.data.mId[0]._id);
-        setTotalComments(response.data.userKalam[0].comments);
+        // setMemberId(response.data.mId[0]._id);
+        setTotalComments(response.data.content);
         console.log(totalComments);
       });
   };
 
+  const getUserId=()=>{
+    axiosInstance
+    .get('/api/userId',{
+      withCredentials: true
+    })
+    .then((response)=>{
+      setMemberId(response.data._id)
+    })
+  }
+
   useEffect(() => {
     Handle();
+    getUserId()
   }, []);
 
-  const handleComment = () => {
-    axiosInstance.post(
-      `/api/kalam/comm?kalamId=${kalamId}`,
+
+  }
+ 
+  const handleComment = (commentType) => {
+
+  
+      const postId = SearchParams.get('postId');
+      const kalamId = SearchParams.get('kalamId');
+       
+    axiosInstance
+    .post(`/api/kalam/comm?commentType=${commentType}&kalamId=${kalamId}&postId=${postId}`,
       { comment: commentValue, mUid: memberId },
       { withCredentials: true }
     );
-  };
+
+
+    }
+
+   
 
   console.log(totalComments.length);
   console.log("see total comments", totalComments)
@@ -328,7 +377,8 @@ export const KalamComment = () => {
       onKeyDown={(e) => { if (e.key === "Enter" && commentValue.trim()) handleComment(); }}
     />
     <button
-      onClick={handleComment}
+
+      onClick={()=>handleComment(commentType)}
       disabled={!commentValue.trim()}
       className="h-9 px-4 bg-[#18183a] border border-[#2e2e5e] rounded-lg text-indigo-400 text-sm flex items-center gap-1.5 hover:opacity-80 transition disabled:opacity-30 disabled:cursor-not-allowed"
     >

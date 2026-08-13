@@ -393,7 +393,7 @@ const NewKalam2 = ({
           <button
             className="nk2-action-btn"
             aria-label="Comment"
-            onClick={() => navigate(`/comment?kalamId=${kalId}`)}
+            onClick={() => navigate(`/comment?kalamId=${kalId}&commentType=kalamComment`)}
           >
             <MessageCircleIcon size={14} duration={1} color="#ffffff" />
           </button>
