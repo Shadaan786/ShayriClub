@@ -1151,6 +1151,25 @@ const UrKalam = () => {
   const {kalamId} = useContext(ModalContext);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
+  // ── Global nav: user id / profile pic (same as Kalam.jsx) ──
+  const [userId, setUserId] = useState("");
+  const [profilePic, setProfilePic] = useState(null);
+
+  const getUserId = () => {
+    axiosInstance
+      .get('/api/userId', {
+        withCredentials: true
+      })
+      .then((response) => {
+        setUserId(response.data._id);
+        setProfilePic(response.data.profilePic);
+      })
+  }
+
+  useEffect(() => {
+    getUserId();
+  }, []);
+
   useEffect(() => {
     axiosInstance
       .get("/api/urKalam", { withCredentials: true })
@@ -1229,6 +1248,7 @@ const UrKalam = () => {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap');
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1254,7 +1274,83 @@ const UrKalam = () => {
           overflow-x: hidden;
         }
 
-        /* ── Nav (matches Kalam.jsx) ───────────────── */
+        /* ── Global Navbar (Kalam theme) — bigger, dominant tier ── */
+        .k-global-nav {
+          background: #050408;
+          padding: 0 max(1.5rem, env(safe-area-inset-left));
+          display: flex; align-items: center; justify-content: space-between;
+          height: 68px; width: 100%;
+          box-shadow: 0 1px 0 rgba(210,170,90,0.1), 0 8px 20px -10px rgba(0,0,0,0.65);
+          position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+        }
+        .k-global-brand { display: flex; align-items: center; gap: 10px; }
+
+        .k-global-logo-wrap { position: relative; display: flex; align-items: center; }
+        .k-global-logo-glow {
+          position: absolute; inset: 0;
+          background: linear-gradient(135deg, #f0c060, #f0a080, #f0d890);
+          border-radius: 50%; filter: blur(10px); opacity: 0.35;
+          transition: opacity 0.4s;
+        }
+        .k-global-brand:hover .k-global-logo-glow { opacity: 0.6; }
+        .k-global-logo-img {
+          position: relative; height: 34px; width: auto;
+          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+          transition: transform 0.3s ease;
+        }
+        .k-global-brand:hover .k-global-logo-img { transform: scale(1.05); }
+
+        .k-global-wordmark {
+          position: relative; display: inline-block;
+          font-size: 22px; line-height: 1; font-weight: 900; letter-spacing: 0.02em;
+        }
+        .k-global-wordmark-glow {
+          position: absolute; inset: 0; filter: blur(10px); opacity: 0.4;
+          background: linear-gradient(90deg, #f0c060, #e8a0b0, #f0a080);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+          font-family: 'Playfair Display', serif;
+        }
+        .k-global-wordmark-text { position: relative; }
+        .k-global-wm-a {
+          font-family: 'Dancing Script', cursive;
+          background: linear-gradient(90deg, #f0d890, #f0c060);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .k-global-wm-ur {
+          font-family: 'Noto Nastaliq Urdu', serif;
+          display: inline-block; margin: 0 -1px; transform: translateY(2px);
+          background: linear-gradient(90deg, #e8a0b0, #d4a0c0, #f0a080);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .k-global-links { display: flex; align-items: center; gap: 30px; height: 100%; }
+        .k-global-link {
+          position: relative;
+          font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;
+          color: var(--text-sec); text-decoration: none;
+          font-family: 'DM Mono', monospace; font-weight: 600;
+          height: 100%; display: flex; align-items: center;
+          transition: color 0.15s; cursor: pointer;
+        }
+        .k-global-link:hover { color: var(--text-pri); }
+        .k-global-link.active { color: rgba(210,170,90,0.95); }
+        .k-global-link.active::after {
+          content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+          height: 2.5px; background: linear-gradient(90deg, rgba(210,170,90,0.9), rgba(210,170,90,0.4));
+        }
+        .k-global-bell {
+          width: 34px; height: 34px; border-radius: 50%;
+          border: none; background: rgba(255,255,255,0.04);
+          color: var(--text-sec); font-size: 15px; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          transition: all 0.15s;
+        }
+        .k-global-bell:hover { background: rgba(210,170,90,0.12); color: rgba(210,170,90,0.9); }
+
+        @media (max-width: 900px) {
+          .k-global-links { display: none; }
+        }
+
+        /* ── Page nav (matches Kalam.jsx) ───────────────── */
         .uk-nav {
           background: rgba(10,10,14,0.92);
           backdrop-filter: blur(18px);
@@ -1262,7 +1358,8 @@ const UrKalam = () => {
           border-bottom: 0.5px solid var(--border-sm);
           padding: 0 1.25rem;
           display: flex; align-items: center; justify-content: space-between;
-          height: 52px; position: sticky; top: 0; z-index: 50;
+          height: 52px; position: sticky; top: 68px; z-index: 50;
+          margin-top: 68px;
         }
         .uk-brand { display: flex; align-items: center; gap: 9px; }
         .uk-logo {
@@ -1294,6 +1391,7 @@ const UrKalam = () => {
           background: rgba(83,74,183,0.18); border: 0.5px solid rgba(210,170,90,0.3);
           display: flex; align-items: center; justify-content: center;
           font-size: 11px; font-weight: 500; color: rgba(210,170,90,0.8); cursor: pointer;
+          overflow: hidden;
         }
         .uk-hamburger {
           display: none; flex-direction: column; justify-content: center;
@@ -1302,7 +1400,7 @@ const UrKalam = () => {
         }
         .uk-hamburger span { display: block; width: 18px; height: 1.5px; background: rgba(210,170,90,0.7); border-radius: 2px; }
         .uk-mobile-menu {
-          position: fixed; top: 52px; left: 0; right: 0; z-index: 49;
+          position: fixed; top: 120px; left: 0; right: 0; z-index: 49;
           background: rgba(10,10,14,0.97); backdrop-filter: blur(20px);
           border-bottom: 0.5px solid rgba(210,170,90,0.1); padding: 0.5rem 0;
           display: flex; flex-direction: column;
@@ -1399,8 +1497,6 @@ const UrKalam = () => {
         }
 
         /* ── Grid ──────────────────────────────────── */
-        /* Real CSS grid so every card gets an equal, predictable column
-           width instead of shrink-to-fit sizing based on its own text. */
         .uk-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -1589,11 +1685,45 @@ const UrKalam = () => {
 
       <div className="uk-root">
 
-        {/* ── Navbar ── */}
+        {/* ── Global Navbar (same as Kalam.jsx) ─────────────── */}
+        <nav className="k-global-nav">
+          <div className="k-global-brand">
+            <div className="k-global-logo-wrap">
+              <div className="k-global-logo-glow" />
+              <img src="/logo2.svg" alt="Alfaz Logo" className="k-global-logo-img" />
+            </div>
+            <h1 className="k-global-wordmark">
+              <span aria-hidden="true" className="k-global-wordmark-glow">Alfaz</span>
+              <span className="k-global-wordmark-text">
+                <span className="k-global-wm-a">A</span>
+                <bdi className="k-global-wm-ur">لف</bdi>
+                <span className="k-global-wm-a">az</span>
+              </span>
+            </h1>
+          </div>
+          <div className="k-global-links">
+            <a href="/kalam" className="k-global-link">Kalam</a>
+            <a href="/spaces" className="k-global-link">Community</a>
+            <a href="/Social" className="k-global-link">Browse</a>
+            <a href="/albumsLive" className="k-global-link active">Library</a>
+          </div>
+          <button className="k-global-bell" aria-label="Notifications">
+            🔔
+          </button>
+          <div className="uk-avatar" onClick={() => navigate(`/profile?userId=${userId}`)}>
+            {profilePic ? (
+              <img className="rounded-full h-full w-full" src={profilePic} alt="profilePic" />
+            ) : (
+              "AK"
+            )}
+          </div>
+        </nav>
+
+        {/* ── Page-specific Navbar ── */}
         <nav className="uk-nav">
           <div className="uk-brand">
-            <div className="uk-logo">✦</div>
-            <span className="uk-wordmark">Kalam</span>
+            {/* <div className="uk-logo">✦</div> */}
+            {/* <span className="uk-wordmark">Kalam</span> */}
           </div>
           <div className="uk-nav-links">
             {["Compose", "Collection"].map((n) => (
@@ -1611,7 +1741,6 @@ const UrKalam = () => {
           </div>
           <div className="uk-nav-right">
             <Link to="/kalam" className="uk-btn-primary" style={{ display: "none" }}>+ New Kalam</Link>
-            <div className="uk-avatar">AK</div>
             <button className="uk-hamburger" onClick={() => setMobileMenuOpen((o) => !o)} aria-label="Menu">
               <span /><span /><span />
             </button>

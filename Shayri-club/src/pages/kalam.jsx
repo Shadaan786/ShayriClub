@@ -725,8 +725,8 @@
 
 //------------------------------------------------------------------------------------------------------------------------------->
 import axiosInstance from "../Apis/axiosInstance";
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
@@ -838,7 +838,7 @@ const Kalam = () => {
   const [content, setContent] = useState("");
   const [message, setMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  const navigate = useNavigate();
+  const Navigate = useNavigate();
   const { setStreak, setStreak2 } = useContext(MyContext);
 
   const audioChunk = useRef([]);
@@ -1095,6 +1095,8 @@ const Kalam = () => {
   const [showFullPreview, setShowFullPreview] = useState(false);
   const [titleSize, setTitleSize] = useState("md")
   const [contentSize, setContentSize] = useState("md")
+  const [userId, setUserId] = useState("");
+  const [profilePic, setProfilePic] = useState(null);
 
   // NEW: font & text-color state
   const [selectedTitleFont, setSelectedTitleFont] = useState("cormorant");
@@ -1208,6 +1210,23 @@ const Kalam = () => {
   const PREVIEW_LIMIT = 160;
   const previewIsTruncated = content.length > PREVIEW_LIMIT;
   const previewText = showFullPreview ? content : content.slice(0, PREVIEW_LIMIT);
+
+  const getUserId=()=>{
+    axiosInstance
+    .get('/api/userId',{
+      withCredentials: true
+    })
+    .then((response)=>{
+      setUserId(response.data._id);
+      setProfilePic(response.data.profilePic);
+    })
+  }
+
+  useEffect(()=>{
+getUserId()
+  },[])
+
+  
 
   return (
     <>
@@ -2003,6 +2022,7 @@ const Kalam = () => {
           <button className="k-global-bell" aria-label="Notifications">
             🔔
           </button>
+          <div className="k-avatar"><img onClick={()=>Navigate(`/profile?userId=${userId}`)} className="rounded-full h-full" src={profilePic} alt="profilePic" /></div>
         </nav>
         <nav className="k-nav">
           <div className="k-brand">
@@ -2011,13 +2031,13 @@ const Kalam = () => {
           </div>
           <div className="k-nav-links">
             {["Compose","Collection"].map(n => (
-              <button key={n} className={`k-nl${activeNav === n ? " active" : ""}`} onClick={() => setActiveNav(n)}>
+              <button key={n} className={`k-nl${activeNav === n ? " active" : ""}`} onClick={() => {setActiveNav(n);if(n==='Collection')Navigate('/urKalam')}}>
                 {n}
               </button>
             ))}
           </div>
           <div className="k-nav-right">
-            {/* <div className="k-avatar">AK</div> */}
+            
             <button className="k-hamburger" onClick={() => setMobileMenuOpen(o => !o)} aria-label="Menu">
               <span /><span /><span />
             </button>

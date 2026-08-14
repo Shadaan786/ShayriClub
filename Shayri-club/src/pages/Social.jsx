@@ -1462,6 +1462,47 @@ import { type } from "firebase/firestore/lite/pipelines";
 import { Footer } from "@/Bg";
 
 
+// ── Poetry-aesthetic font options ──────────────────────────────────────────
+const TITLE_FONTS = [
+  { id: "cormorant",       label: "Cormorant Garamond", sample: "یاد کا لمحہ",  family: "'Cormorant Garamond', serif",      googleParam: "Cormorant+Garamond:ital,wght@1,300;1,400;1,600" },
+  { id: "playfair",        label: "Playfair Display",   sample: "Shaam-e-Ghazal", family: "'Playfair Display', serif",          googleParam: "Playfair+Display:ital,wght@1,400;1,700" },
+  { id: "im_fell",         label: "IM Fell English",    sample: "Dil ki Baat",    family: "'IM Fell English', serif",            googleParam: "IM+Fell+English:ital@1" },
+  { id: "sorts_mill",      label: "Sorts Mill Goudy",   sample: "Raat Ka Sitara", family: "'Sorts Mill Goudy', serif",           googleParam: "Sorts+Mill+Goudy:ital@1" },
+  { id: "spectral",        label: "Spectral",            sample: "Aashiqui",       family: "'Spectral', serif",                   googleParam: "Spectral:ital,wght@1,300;1,400;1,600" },
+  { id: "eb_garamond",     label: "EB Garamond",         sample: "Dard-e-Dil",     family: "'EB Garamond', serif",                googleParam: "EB+Garamond:ital,wght@1,400;1,700" },
+  { id: "libre_baskerville",label: "Libre Baskerville",  sample: "Tanhai",         family: "'Libre Baskerville', serif",          googleParam: "Libre+Baskerville:ital@1" },
+  { id: "gfs_didot",       label: "GFS Didot",           sample: "Mohabbat",       family: "'GFS Didot', serif",                  googleParam: "GFS+Didot" },
+  { id: "dm_serif",        label: "DM Serif Display",    sample: "Khwab",          family: "'DM Serif Display', serif",           googleParam: "DM+Serif+Display:ital@1" },
+  { id: "cinzel",          label: "Cinzel",              sample: "KALAM",          family: "'Cinzel', serif",                     googleParam: "Cinzel:wght@400;700" },
+  { id: "della_respira",   label: "Della Respira",       sample: "Ruh ki Awaaz",   family: "'Della Respira', serif",              googleParam: "Della+Respira" },
+  { id: "alice",           label: "Alice",               sample: "Teri Yaad",      family: "'Alice', serif",                      googleParam: "Alice" },
+];
+
+
+const CONTENT_FONTS = [
+  { id: "cormorant_body",  label: "Cormorant Garamond", sample: "Har saans mein teri khushbu hai…", family: "'Cormorant Garamond', serif",   googleParam: "Cormorant+Garamond:ital,wght@1,300;1,400" },
+  { id: "eb_garamond_body",label: "EB Garamond",         sample: "Main woh sitara hoon jo doob gaya…", family: "'EB Garamond', serif",        googleParam: "EB+Garamond:ital,wght@1,400" },
+  { id: "spectral_body",   label: "Spectral Light",      sample: "Zindagi ek ghazal thi, adhoori rahi…", family: "'Spectral', serif",         googleParam: "Spectral:ital,wght@1,300;1,400" },
+  { id: "im_fell_body",    label: "IM Fell English",     sample: "Raaton ko taaron se baatein karta hoon…", family: "'IM Fell English', serif", googleParam: "IM+Fell+English:ital@1" },
+  { id: "lora",            label: "Lora",                sample: "Tere bina yeh chaand bhi suna lagta hai…", family: "'Lora', serif",          googleParam: "Lora:ital,wght@1,400;1,500" },
+  { id: "merriweather",    label: "Merriweather Light",  sample: "Dil ke dareecha se teri jhalak aati hai…", family: "'Merriweather', serif",  googleParam: "Merriweather:ital,wght@1,300" },
+  { id: "crimson",         label: "Crimson Pro",         sample: "Aankhon mein teri sirf teri tasveer hai…", family: "'Crimson Pro', serif",   googleParam: "Crimson+Pro:ital,wght@1,300;1,400" },
+  { id: "libre_bask_body", label: "Libre Baskerville",   sample: "Tu hai toh sab kuch hai, tu nahi toh kuch bhi nahi…", family: "'Libre Baskerville', serif", googleParam: "Libre+Baskerville:ital@1" },
+  { id: "noto_serif",      label: "Noto Serif",          sample: "یہ عشق نہیں آسان بس اتنا سمجھ لیجے", family: "'Noto Serif', serif",         googleParam: "Noto+Serif:ital,wght@1,300;1,400" },
+  { id: "noto_nastaliq",   label: "Noto Nastaliq Urdu",  sample: "دل کے آئینے میں تیری تصویر ہے",         family: "'Noto Nastaliq Urdu', serif", googleParam: "Noto+Nastaliq+Urdu:wght@400;600" },
+];
+
+// Build Google Fonts URL dynamically from all fonts
+const buildGoogleFontsUrl = () => {
+  const all = [...TITLE_FONTS, ...CONTENT_FONTS];
+  const seen = new Set();
+  const params = all
+    .filter(f => { if (seen.has(f.googleParam)) return false; seen.add(f.googleParam); return true; })
+    .map(f => `family=${f.googleParam}`)
+    .join("&");
+  return `https://fonts.googleapis.com/css2?${params}&family=DM+Mono:wght@300;400&display=swap`;
+};
+
 export const Social = () => {
   const [kalamDat, setKalamDat] = useState([]);
   const [uid, setUid] = useState("");
@@ -1654,6 +1695,8 @@ export const Social = () => {
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+        @import url('${buildGoogleFontsUrl()}');
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap');
         .material-symbols-outlined {
           font-family: 'Material Symbols Outlined';
           font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -1687,6 +1730,45 @@ export const Social = () => {
         }
         .s-tabs-row::-webkit-scrollbar { display: none; }
 
+        .k-global-brand { display: flex; align-items: center; gap: 10px; }
+
+        .k-global-logo-wrap { position: relative; display: flex; align-items: center; }
+        .k-global-logo-glow {
+          position: absolute; inset: 0;
+          background: linear-gradient(135deg, #f0c060, #f0a080, #f0d890);
+          border-radius: 50%; filter: blur(10px); opacity: 0.35;
+          transition: opacity 0.4s;
+        }
+        .k-global-brand:hover .k-global-logo-glow { opacity: 0.6; }
+        .k-global-logo-img {
+          position: relative; height: 34px; width: auto;
+          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+          transition: transform 0.3s ease;
+        }
+        .k-global-brand:hover .k-global-logo-img { transform: scale(1.05); }
+
+        .k-global-wordmark {
+          position: relative; display: inline-block;
+          font-size: 22px; line-height: 1; font-weight: 900; letter-spacing: 0.02em;
+        }
+        .k-global-wordmark-glow {
+          position: absolute; inset: 0; filter: blur(10px); opacity: 0.4;
+          background: linear-gradient(90deg, #f0c060, #e8a0b0, #f0a080);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+          font-family: 'Playfair Display', serif;
+        }
+        .k-global-wordmark-text { position: relative; }
+        .k-global-wm-a {
+          font-family: 'Dancing Script', cursive;
+          background: linear-gradient(90deg, #f0d890, #f0c060);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .k-global-wm-ur {
+          font-family: 'Noto Nastaliq Urdu', serif;
+          display: inline-block; margin: 0 -1px; transform: translateY(2px);
+          background: linear-gradient(90deg, #e8a0b0, #d4a0c0, #f0a080);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
         @media (max-width: 768px) {
           .s-nav-search, .s-nav-links { display: none !important; }
           .s-nav-publish-inline { display: none !important; }
@@ -1718,7 +1800,7 @@ export const Social = () => {
           >
             {/* Left: brand + primary nav links */}
             <div className="flex items-center gap-8">
-              <h1
+              {/* <h1
                 onClick={() => setIsOpen(true)}
                 style={{
                   fontFamily: "'EB Garamond', serif",
@@ -1731,10 +1813,24 @@ export const Social = () => {
                 }}
               >
                 Kalams
-              </h1>
+              </h1> */}
+              <div className="k-global-brand">
+          <div className="k-global-logo-wrap">
+            <div className="k-global-logo-glow" />
+            <img src="/logo2.svg" alt="Alfaz Logo" className="k-global-logo-img" />
+          </div>
+          <h1 className="k-global-wordmark">
+            <span aria-hidden="true" className="k-global-wordmark-glow">Alfaz</span>
+            <span className="k-global-wordmark-text">
+              <span className="k-global-wm-a">A</span>
+              <bdi className="k-global-wm-ur">لف</bdi>
+              <span className="k-global-wm-a">az</span>
+            </span>
+          </h1>
+        </div>
 
               <div className="s-nav-links hidden md:flex items-center gap-10">
-                <a
+                <a href="/kalam"
                   style={{
                     fontFamily: "'Inter', sans-serif",
                     fontSize: 12,
@@ -1747,8 +1843,42 @@ export const Social = () => {
                     textTransform: "uppercase",
                   }}
                 >
-                  Explore
+                  Kalam
                 </a>
+                <button onClick={()=>Navigate('/spaces')}>
+                <a
+                  className="nav-link-transition"
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12,
+                    letterSpacing: "0.1em",
+                    fontWeight: 500,
+                    color: "#d1c5b4",
+                    cursor: "pointer",
+                    textTransform: "uppercase",
+                    position: "relative",
+                  }}
+                >
+                  Community
+                </a>
+                </button>
+                <button>
+                <a
+                  className="nav-link-transition"
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12,
+                    letterSpacing: "0.1em",
+                    fontWeight: 500,
+                    color: "#d1c5b4",
+                    cursor: "pointer",
+                    textTransform: "uppercase",
+                    position: "relative",
+                  }}
+                >
+                  Browse
+                </a>
+                </button>
                 <button onClick={()=>Navigate('/albumsLive')}>
                 <a
                   className="nav-link-transition"

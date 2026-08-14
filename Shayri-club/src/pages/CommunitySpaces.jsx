@@ -12,6 +12,7 @@ import NewKalam from "./components/NewKalam";
 
 const styles = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap');
 
 .cs-root, .cs-root *, .cs-root *::before, .cs-root *::after {
   box-sizing: border-box;
@@ -99,9 +100,70 @@ const styles = `
   border-bottom: 1px solid rgba(212,175,55,0.2);
 }
 @media (min-width: 768px) { .cs-header { padding: 0 40px; } }
-.cs-header-left { display: flex; align-items: center; gap: 16px; }
+.cs-header-left { display: flex; align-items: center; gap: 20px; }
 .cs-menu-btn { color: var(--primary-container); cursor: pointer; display: flex; }
 @media (min-width: 1024px) { .cs-menu-btn { display: none; } }
+
+/* ── Global nav brand (gold theme) ─────────────────────────── */
+.cs-gnav-brand { display: flex; align-items: center; gap: 10px; }
+.cs-gnav-logo-wrap { position: relative; display: flex; align-items: center; }
+.cs-gnav-logo-glow {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, #f2ca50, #d4af37, #f5e6c0);
+  border-radius: 50%; filter: blur(10px); opacity: 0.35;
+  transition: opacity 0.4s;
+}
+.cs-gnav-brand:hover .cs-gnav-logo-glow { opacity: 0.65; }
+.cs-gnav-logo-img {
+  position: relative; height: 30px; width: auto;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+  transition: transform 0.3s ease;
+}
+.cs-gnav-brand:hover .cs-gnav-logo-img { transform: scale(1.05); }
+.cs-gnav-wordmark {
+  position: relative; display: inline-block;
+  font-size: 21px; line-height: 1; font-weight: 900; letter-spacing: 0.02em;
+}
+.cs-gnav-wordmark-glow {
+  position: absolute; inset: 0; filter: blur(10px); opacity: 0.4;
+  background: linear-gradient(90deg, #f2ca50, #d4af37, #f5e6c0);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  font-family: 'Playfair Display', serif;
+}
+.cs-gnav-wordmark-text { position: relative; }
+.cs-gnav-wm-a {
+  font-family: 'Dancing Script', cursive;
+  background: linear-gradient(90deg, #f5e6c0, #d4af37);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.cs-gnav-wm-ur {
+  font-family: 'Noto Nastaliq Urdu', serif;
+  display: inline-block; margin: 0 -1px; transform: translateY(2px);
+  background: linear-gradient(90deg, #f2ca50, #e8c473, #d4af37);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+/* ── Global nav links ──────────────────────────────────────── */
+.cs-gnav-links { display: flex; align-items: center; gap: 26px; height: 100%; margin-left: 8px; }
+.cs-gnav-link {
+  position: relative;
+  font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--on-surface-variant); text-decoration: none;
+  font-family: 'DM Sans', sans-serif; font-weight: 700;
+  height: 64px; display: flex; align-items: center;
+  transition: color 0.15s; cursor: pointer;
+}
+.cs-gnav-link:hover { color: var(--on-surface); }
+.cs-gnav-link.active { color: var(--primary-container); }
+.cs-gnav-link.active::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 2px; background: linear-gradient(90deg, rgba(212,175,55,0.9), rgba(212,175,55,0.3));
+  box-shadow: 0 0 8px rgba(212,175,55,0.4);
+}
+@media (max-width: 1024px) {
+  .cs-gnav-links { display: none; }
+}
+
 .cs-brand { display: flex; align-items: center; gap: 12px; }
 .cs-brand-icon {
   width: 32px; height: 32px; border-radius: 9999px;
@@ -645,6 +707,13 @@ const styles = `
 
 /* ---------------------------------------------------------------------------- */
 
+const GLOBAL_NAV_LINKS = [
+  { text: "Kalam", href: "/kalam" },
+  { text: "Community", href: "/spaces", active: true },
+  { text: "Browse", href: "/Social" },
+  { text: "Library", href: "/albumsLive" },
+];
+
 const NAV_SECTIONS = [
   {
     label: "Network",
@@ -827,18 +896,36 @@ export default function CommunitySPaces({
         <span className="cs-menu-btn">
           <Icon name="menu" />
         </span>
-        <div className="cs-brand">
-          <div className="cs-brand-icon">
-            <Icon name="sparkle" size={18} />
+
+        {/* ── Global nav (Alfaz brand + site-wide links, gold theme) ── */}
+        <div className="cs-gnav-brand">
+          <div className="cs-gnav-logo-wrap">
+            <div className="cs-gnav-logo-glow" />
+            <img src="/logo2.svg" alt="Alfaz Logo" className="cs-gnav-logo-img" />
           </div>
-          <h1 className="cs-brand-title">Aura Poetry</h1>
+          <h1 className="cs-gnav-wordmark">
+            <span aria-hidden="true" className="cs-gnav-wordmark-glow">Alfaz</span>
+            <span className="cs-gnav-wordmark-text">
+              <span className="cs-gnav-wm-a">A</span>
+              <bdi className="cs-gnav-wm-ur">لف</bdi>
+              <span className="cs-gnav-wm-a">az</span>
+            </span>
+          </h1>
         </div>
+
+        <nav className="cs-gnav-links">
+          {GLOBAL_NAV_LINKS.map((link) => (
+            
+             <a key={link.text}
+              href={link.href}
+              className={`cs-gnav-link${link.active ? " active" : ""}`}
+            >
+              {link.text}
+            </a>
+          ))}
+        </nav>
       </div>
       <div className="cs-header-right">
-        {/* <div className="cs-live-pill">
-          <div className="cs-live-dot cs-pulse-dot" />
-          <span className="cs-live-label">Live</span>
-        </div> */}
         <div className="cs-header-icons">
           <button aria-label="Search">
             <Icon name="search" size={20} />
@@ -872,7 +959,6 @@ export default function CommunitySPaces({
   );
 
   const Composer = ({ userAvatarUrl, placeholder = "Pen your verses for the world...", onPublish }) => {
-  
     return (
       <div className="cs-composer">
         <div className="cs-composer-row">
@@ -887,16 +973,6 @@ export default function CommunitySPaces({
             />
             <div className="cs-composer-toolbar">
               <div className="cs-toolbar-icons">
-                {/* <button className="cs-tool-btn" title="Add quote">
-                  <Icon name="quote" size={18} />
-                </button>
-                <button onClick={()=>{setIsSelectionModalOpen(true); fetchUserAlbums(); fetchUserKalams();}} className="cs-tool-btn" title="Add image">
-                  <Icon name="image" size={18} />
-                </button>
-                <div className="cs-toolbar-divider" />
-                <button className="cs-tool-btn" title="Add Kalam">
-                  <Icon name="book" size={18} />
-                </button> */}
                 {!isAttached && <button onClick={()=>{setIsSelectionModalOpen(true); fetchUserAlbums(); fetchUserKalams();}} >Attach</button>}
                 {isAttached && <button onClick={handleDeAttach}>remove</button>}
               </div>
@@ -914,37 +990,6 @@ export default function CommunitySPaces({
     <aside className="cs-sidebar-right">
       <div className="cs-sidebar-right-content">
         <div className="cs-sidebar-right-top">
-          {/* <div className="cs-widget">
-            <h3 className="cs-widget-title">Network Status</h3>
-            <div className="cs-status-row">
-              <div className="cs-status-icon">
-                <Icon name="shield" size={16} />
-              </div>
-              <div>
-                <p className="cs-status-title">Protocol Alpha Confirmed</p>
-                <p className="cs-status-sub">Verified by Concierge at 10:50 AM</p>
-              </div>
-            </div>
-          </div> */}
-          {/* <div className="cs-widget">
-            <h3 className="cs-widget-title">Live Metrics</h3>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div className="cs-metric-row">
-                <span className="cs-metric-label">Active Poets</span>
-                <span className="cs-metric-value">1,042</span>
-              </div>
-              <div className="cs-metric-divider" />
-              <div className="cs-metric-row">
-                <span className="cs-metric-label">Encryption</span>
-                <span className="cs-metric-value">AES-256</span>
-              </div>
-              <div className="cs-metric-divider" />
-              <div className="cs-metric-row">
-                <span className="cs-metric-label">Uptime</span>
-                <span className="cs-metric-value">99.99%</span>
-              </div>
-            </div>
-          </div> */}
         </div>
       </div>
     </aside>
@@ -962,7 +1007,6 @@ export default function CommunitySPaces({
   );
 
   const handleDeAttach=()=>{
-
     console.log("deAttach function ran!!!");
     (album)?setAlbum(null):setKalam(null);
     setIsAttached(false);
@@ -972,7 +1016,7 @@ export default function CommunitySPaces({
     <div className="cs-root">
       <style>{styles}</style>
 
-      {TopAppBar({ userAvatarUrl })}
+      <TopAppBar userAvatarUrl={userAvatarUrl} />
 
       <div className="cs-layout">
         <LeftSidebar />
@@ -995,11 +1039,8 @@ export default function CommunitySPaces({
               <div className="cs-diamond" />
             </div>
 
-            {/* Composer, placed right below "Today's Gatherings".
-                Hidden on wide screens where the right sidebar's own
-                composer is already visible, so it never shows twice. */}
             <div className="cs-main-composer">
-              {Composer({ userAvatarUrl, onPublish })}
+              <Composer userAvatarUrl={userAvatarUrl} onPublish={onPublish} />
             </div>
 
             <div className="cs-posts">
@@ -1008,8 +1049,6 @@ export default function CommunitySPaces({
                 <PostCard key={item._id} albumId={item.featuredAlbum._id} postText={"He yaaaa from album!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}   onShare={onShare} isAlbumAvailable={true} isKalamAvailable={false} embed={{title: item.featuredAlbum.name, imageUrl:  "https://lh3.googleusercontent.com/aida-public/AB6AXuC4PS-qi6gnp_PNKrnxCkocGWy3gWcR_d68oTzb1hkAUc-2oatuSV1L11_4FSkXlX79mMcBo4d8XjStPMd5AmIqmzYOIiTSFWtkiCyuv9YEOQQhazV5Xqzqr58bLNtuMbIartDk7HH5VpwLxS92nxfw5iYgJkUWv3ZMdo_AwL7yBZzUu65_3MVN2pbS5HtYsLumkSV-YqJjU7Q-RuwQBMWoLW4vtlhN_TSo_NAuTsIYL9K_v-9MY-ZT", description:"This is description", ctaLabel: "Listen Now"}} />
              : (item.featurdKalam)?                <PostCard key={item._id}  postText={"He yaaaa from kalam!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}  onShare={onShare} isAlbumAvailable={false} isKalamAvailable={true} title={item.featurdKalam.name} content={item.featurdKalam.content} muid={"939297973293783902"} kalId={item.featurdKalam._id} isLiked2={true} isSaved={true} customStyles={item.featurdKalam.customStyles} embed={null} />
              :                 <PostCard key={item._id}  postText={"He yaaaa from text!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}  onShare={onShare} isAlbumAvailable={false} isKalamAvailable={false} embed={"no "} />
-
-
               ))}
             </div>
 
@@ -1119,10 +1158,10 @@ export default function CommunitySPaces({
           </div>
         </MyVerticallyCenteredModal>
 
-        {RightSidebar({ userAvatarUrl, onPublish })}
+        <RightSidebar userAvatarUrl={userAvatarUrl} onPublish={onPublish} />
       </div>
 
-      {BottomNav()}
+      <BottomNav />
     </div>
   );
 }
