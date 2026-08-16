@@ -1,11 +1,21 @@
-import React from "react";
+import { useState } from "react";
 import NewKalam2 from "./NewKalam2";
 import { useNavigate } from "react-router-dom";
+import { KalamComment } from "../KalamComment";
 
 /**
  * PostCard — fully self-contained, no external CSS framework or icon font required.
  * All styling lives in the <style> block below (plain CSS) and all icons are inline SVG,
  * so this drops into any React project with zero setup.
+ *
+ * Comments now live directly on the card instead of a global modal:
+ *  - Desktop (>=768px): clicking "Comments" expands an inline panel below the card
+ *    (accordion), pushing the rest of the feed down.
+ *  - Mobile (<768px): the same panel renders as a bottom sheet that slides up over
+ *    a dimmed backdrop.
+ * Both layouts share one markup tree — a single CSS media query switches the
+ * backdrop/panel from "fixed overlay" to "static inline block", so there's no
+ * JS breakpoint detection and no duplicated comment logic.
  */
 
 const styles = `
@@ -239,11 +249,100 @@ const styles = `
 .pc-metric-btn:hover {
   color: #f2ca50;
 }
+.pc-metric-btn.pc-metric-active {
+  color: #f2ca50;
+}
 .pc-metric-btn svg {
   transition: transform 0.2s ease;
 }
 .pc-metric-btn:hover svg {
   transform: translateY(-2px);
+}
+
+/* ---------------- Comments: bottom sheet (mobile) / inline expand (desktop) ---------------- */
+
+.pc-comments-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.pc-comments-panel {
+  width: 100%;
+  max-width: 480px;
+  max-height: 75vh;
+  background: #1a1b1f;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: pc-sheet-up 0.25s ease-out;
+}
+@keyframes pc-sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.pc-comments-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(212, 175, 55, 0.3);
+  border-radius: 2px;
+  margin: 10px auto 2px;
+  flex-shrink: 0;
+}
+.pc-comments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px 12px 16px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.12);
+  flex-shrink: 0;
+}
+.pc-comments-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 16px;
+  color: #e3e2e7;
+  margin: 0;
+}
+.pc-comments-body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+@media (min-width: 768px) {
+  .pc-comments-backdrop {
+    position: static;
+    inset: auto;
+    z-index: auto;
+    background: transparent;
+    display: block;
+  }
+  .pc-comments-panel {
+    max-width: none;
+    width: 100%;
+    max-height: 480px;
+    margin-top: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    animation: pc-inline-expand 0.2s ease-out;
+  }
+  .pc-comments-handle {
+    display: none;
+  }
+  .pc-comments-header {
+    padding: 14px 20px;
+  }
+}
+@keyframes pc-inline-expand {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 `;
 
@@ -287,6 +386,13 @@ const ShareIcon = (props) => (
     <path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7" />
     <polyline points="16 6 12 2 8 6" />
     <line x1="12" y1="2" x2="12" y2="15" />
+  </svg>
+);
+
+const CloseIcon = (props) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
 
@@ -342,14 +448,24 @@ export default function PostCard({
   isLiked2,
   isSaved,
   albumId,
-  kalamId
+  kalamId,
+  index,
+  postId,
 }) {
   // Album embed fields (embed.imageUrl / embed.title / embed.description) are only
   // relevant — and only rendered — when isAlbumAvailable is true.
   const showAlbum = isAlbumAvailable && !!embed;
   // Kalam is rendered instead whenever it's available and there's no album to show.
   const showKalam = !isAlbumAvailable && isKalamAvailable;
-  const Navigate= useNavigate();
+  const Navigate = useNavigate();
+
+  // Comments now live on the card itself instead of a shared modal/context.
+  const [commentsOpen, setCommentsOpen] = useState(false);
+
+  const toggleComments = () => {
+    setCommentsOpen((open) => !open);
+    onCommentClick?.();
+  };
 
   return (
     <div className="pc-wrapper">
@@ -392,8 +508,7 @@ export default function PostCard({
                 className="pc-cta"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // embed?.onCtaClick?.();
-                  Navigate(`/album?albumId=${albumId}`)
+                  Navigate(`/album?albumId=${albumId}`);
                 }}
               >
                 <PlayIcon />
@@ -423,7 +538,11 @@ export default function PostCard({
               <HeartIcon />
               <span>{likeCount} Likes</span>
             </button>
-            <button className="pc-metric-btn" onClick={onCommentClick}>
+            <button
+              className={`pc-metric-btn${commentsOpen ? " pc-metric-active" : ""}`}
+              aria-expanded={commentsOpen}
+              onClick={toggleComments}
+            >
               <CommentIcon />
               <span>{commentCount} Comments</span>
             </button>
@@ -432,6 +551,28 @@ export default function PostCard({
             <ShareIcon />
           </button>
         </footer>
+
+        {/* Comments — bottom sheet on mobile, inline expand on desktop (see media query above) */}
+        {commentsOpen && (
+          <div className="pc-comments-backdrop" onClick={() => setCommentsOpen(false)}>
+            <div className="pc-comments-panel" onClick={(e) => e.stopPropagation()}>
+              <div className="pc-comments-handle" />
+              <div className="pc-comments-header">
+                {/* <h4 className="pc-comments-title">Comments</h4>
+                <button
+                  aria-label="Close comments"
+                  className="pc-icon-btn"
+                  onClick={() => setCommentsOpen(false)}
+                >
+                  <CloseIcon />
+                </button> */}
+              </div>
+              <div className="pc-comments-body">
+                <KalamComment postId={postId} commentType="postComment" kalamId={kalamId ?? null} />
+              </div>
+            </div>
+          </div>
+        )}
       </article>
     </div>
   );

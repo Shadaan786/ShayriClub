@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PostCard from "./components/PostCard";
 import Icon from "./components/icons/Icon";
 import axiosInstance from "@/Apis/axiosInstance";
@@ -8,6 +8,9 @@ import NewKalam from "./components/NewKalam";
  * CommunitySPaces — fully self-contained React port of the "Aura Poetry" global feed.
  * No Tailwind or icon-font dependency: all styling lives in the injected <style> block
  * and all icons are inline SVG, so this drops into any React project with zero setup.
+ *
+ * Comments are no longer a shared modal — each PostCard owns its own comment panel,
+ * which renders as an inline-expand accordion on desktop and a bottom sheet on mobile.
  */
 
 const styles = `
@@ -718,10 +721,10 @@ const NAV_SECTIONS = [
   {
     label: "Network",
     links: [
-      { icon: "book", text: "Home", navigate: '/'},
-      { icon: "group", text: "Spaces", active:true },
+      { icon: "book", text: "Home", navigate: '/' },
+      { icon: "group", text: "Spaces", active: true },
       { icon: "festival", text: "Kalam", navigate: '/kalam' },
-      { icon: "festival", text: "Library", navigate: '/albumsLive'},
+      { icon: "festival", text: "Library", navigate: '/albumsLive' },
     ],
   },
   {
@@ -736,27 +739,6 @@ const NAV_SECTIONS = [
     links: [{ icon: "settings", text: "Preferences" }],
   },
 ];
-// const NAV_SECTIONS = [
-//   {
-//     label: "Network",
-//     links: [
-//       { icon: "book", text: "Library", active: true },
-//       { icon: "group", text: "Poets" },
-//       { icon: "festival", text: "Mushaira" },
-//     ],
-//   },
-//   {
-//     label: "Creation",
-//     links: [
-//       { icon: "edit_document", text: "Drafts" },
-//       { icon: "book", text: "Publications" },
-//     ],
-//   },
-//   {
-//     label: "System",
-//     links: [{ icon: "settings", text: "Preferences" }],
-//   },
-// ];
 
 const BOTTOM_NAV_ITEMS = [
   { icon: "book", label: "Library" },
@@ -816,77 +798,76 @@ export default function CommunitySPaces({
   onComment,
   onShare,
 }) {
-          const[value, setValue] = useState("");
-          const [userAlbums, setUserAlbums] = useState([]);
-          const [userKalams, setUserKalams] = useState([]);
-          const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const [userAlbums, setUserAlbums] = useState([]);
+  const [userKalams, setUserKalams] = useState([]);
+  const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
 
-          // Which tab of the picker is active, and which item is currently selected.
-          const [modalTab, setModalTab] = useState("kalam"); // "kalam" | "album"
-          const [kalam, setKalam] = useState(null); // selected kalam _id
-          const [album, setAlbum] = useState(null); // selected album _id
-          const [isAttached, setIsAttached] = useState(false);
-          const [userPosts, setUserPosts] = useState([]);
+  // Which tab of the picker is active, and which item is currently selected.
+  const [modalTab, setModalTab] = useState("kalam"); // "kalam" | "album"
+  const [kalam, setKalam] = useState(null); // selected kalam _id
+  const [album, setAlbum] = useState(null); // selected album _id
+  const [isAttached, setIsAttached] = useState(false);
+  const [userPosts, setUserPosts] = useState([]);
 
-          const fetchPosts=()=>{
-            axiosInstance
-            .get('/api/userPosts',{
-              withCredentials: true
-            }).then((response)=>{
-              setUserPosts(response.data.content)
-              console.log("see fetched posts", response.data.content)
-            }).catch((error)=>{
-              console.error("Error while fetching user posts", error);
-            })
-          }
-
-          useEffect(()=>{
-            fetchPosts()
-          }, [])
-
-    const fetchUserKalams=()=>{
-        axiosInstance
-        .get('/api/urKalam',{
-            withCredentials: true
-        }).then((response)=>{
-            setUserKalams(response.data);
-            console.log("See user kalams response", response.data)
-        })
-    }
-
-    const fetchUserAlbums=()=>{
-        axiosInstance
-        .get('/api/displayAlbums',{
-            withCredentials: true
-        }).then((response)=>{
-            setUserAlbums(response.data)
-            console.log("see user albums", response.data)
-        })
-    }
-
-    const handlePublish=()=>{
-      console.log("see kalam", kalam);
-      console.log("see album", album);
-      axiosInstance
-      .post('/api/userPost',{
-          text: value,
-          kalam: kalam,
-          album: album
-
+  const fetchPosts = () => {
+    axiosInstance
+      .get('/api/userPosts', {
+        withCredentials: true,
       })
-    }
+      .then((response) => {
+        setUserPosts(response.data.content);
+        console.log("see fetched posts", response.data.content);
+      })
+      .catch((error) => {
+        console.error("Error while fetching user posts", error);
+      });
+  };
 
-    const handleSelectKalam = (id) => {
-      setKalam((current) => (current === id ? null : id));
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
-      console.log("see naa", id)
+  const fetchUserKalams = () => {
+    axiosInstance
+      .get('/api/urKalam', {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setUserKalams(response.data);
+        console.log("See user kalams response", response.data);
+      });
+  };
 
-    };
+  const fetchUserAlbums = () => {
+    axiosInstance
+      .get('/api/displayAlbums', {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setUserAlbums(response.data);
+        console.log("see user albums", response.data);
+      });
+  };
 
-    const handleSelectAlbum = (id) => {
-      setAlbum((current) => (current === id ? null : id));
-      
-    };
+  const handlePublish = () => {
+    console.log("see kalam", kalam);
+    console.log("see album", album);
+    axiosInstance.post('/api/userPost', {
+      text: value,
+      kalam: kalam,
+      album: album,
+    });
+  };
+
+  const handleSelectKalam = (id) => {
+    setKalam((current) => (current === id ? null : id));
+    console.log("see naa", id);
+  };
+
+  const handleSelectAlbum = (id) => {
+    setAlbum((current) => (current === id ? null : id));
+  };
 
   /* ---------------------- Sub components ---------------------- */
 
@@ -915,8 +896,8 @@ export default function CommunitySPaces({
 
         <nav className="cs-gnav-links">
           {GLOBAL_NAV_LINKS.map((link) => (
-            
-             <a key={link.text}
+            <a
+              key={link.text}
               href={link.href}
               className={`cs-gnav-link${link.active ? " active" : ""}`}
             >
@@ -973,10 +954,20 @@ export default function CommunitySPaces({
             />
             <div className="cs-composer-toolbar">
               <div className="cs-toolbar-icons">
-                {!isAttached && <button onClick={()=>{setIsSelectionModalOpen(true); fetchUserAlbums(); fetchUserKalams();}} >Attach</button>}
+                {!isAttached && (
+                  <button
+                    onClick={() => {
+                      setIsSelectionModalOpen(true);
+                      fetchUserAlbums();
+                      fetchUserKalams();
+                    }}
+                  >
+                    Attach
+                  </button>
+                )}
                 {isAttached && <button onClick={handleDeAttach}>remove</button>}
               </div>
-              <button className="cs-publish-btn" onClick={() => {onPublish?.(value); handlePublish()}}>
+              <button className="cs-publish-btn" onClick={() => { onPublish?.(value); handlePublish(); }}>
                 Publish
               </button>
             </div>
@@ -989,8 +980,7 @@ export default function CommunitySPaces({
   const RightSidebar = ({ userAvatarUrl, onPublish }) => (
     <aside className="cs-sidebar-right">
       <div className="cs-sidebar-right-content">
-        <div className="cs-sidebar-right-top">
-        </div>
+        <div className="cs-sidebar-right-top"></div>
       </div>
     </aside>
   );
@@ -1006,20 +996,28 @@ export default function CommunitySPaces({
     </nav>
   );
 
-  const handleDeAttach=()=>{
+  const handleDeAttach = () => {
     console.log("deAttach function ran!!!");
-    (album)?setAlbum(null):setKalam(null);
+    album ? setAlbum(null) : setKalam(null);
     setIsAttached(false);
-  }
+  };
 
   return (
     <div className="cs-root">
       <style>{styles}</style>
 
-      <TopAppBar userAvatarUrl={userAvatarUrl} />
+      {/* <TopAppBar userAvatarUrl={userAvatarUrl} /> */}
+      {
+        TopAppBar(userAvatarUrl)
+      }
 
       <div className="cs-layout">
-        <LeftSidebar />
+        {/* <LeftSidebar /> */}
+
+        {
+          LeftSidebar()
+        }
+
 
         <main className="cs-main">
           <div className="cs-feed">
@@ -1040,16 +1038,78 @@ export default function CommunitySPaces({
             </div>
 
             <div className="cs-main-composer">
-              <Composer userAvatarUrl={userAvatarUrl} onPublish={onPublish} />
+              {/* <Composer userAvatarUrl={userAvatarUrl} onPublish={onPublish} /> */}
+
+              {
+                Composer(userAvatarUrl, onPublish)
+              }
             </div>
 
+            {/* Each PostCard now owns its own comment panel (inline-expand on desktop,
+                bottom sheet on mobile) — no shared comment modal/context needed. */}
             <div className="cs-posts">
-              {userPosts.map((item) => (
-                (item.featuredAlbum)?
-                <PostCard key={item._id} albumId={item.featuredAlbum._id} postText={"He yaaaa from album!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}   onShare={onShare} isAlbumAvailable={true} isKalamAvailable={false} embed={{title: item.featuredAlbum.name, imageUrl:  "https://lh3.googleusercontent.com/aida-public/AB6AXuC4PS-qi6gnp_PNKrnxCkocGWy3gWcR_d68oTzb1hkAUc-2oatuSV1L11_4FSkXlX79mMcBo4d8XjStPMd5AmIqmzYOIiTSFWtkiCyuv9YEOQQhazV5Xqzqr58bLNtuMbIartDk7HH5VpwLxS92nxfw5iYgJkUWv3ZMdo_AwL7yBZzUu65_3MVN2pbS5HtYsLumkSV-YqJjU7Q-RuwQBMWoLW4vtlhN_TSo_NAuTsIYL9K_v-9MY-ZT", description:"This is description", ctaLabel: "Listen Now"}} />
-             : (item.featurdKalam)?                <PostCard key={item._id}  postText={"He yaaaa from kalam!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}  onShare={onShare} isAlbumAvailable={false} isKalamAvailable={true} title={item.featurdKalam.name} content={item.featurdKalam.content} muid={"939297973293783902"} kalId={item.featurdKalam._id} isLiked2={true} isSaved={true} customStyles={item.featurdKalam.customStyles} embed={null} />
-             :                 <PostCard key={item._id}  postText={"He yaaaa from text!!"} onLike={onLike} onComment={onComment} timestamp={item.createdAt} authorAvatarUrl={item.postBy.profilePic} authorName={item.postBy.name}  onShare={onShare} isAlbumAvailable={false} isKalamAvailable={false} embed={"no "} />
-              ))}
+              {userPosts.map((item) =>
+                item.featuredAlbum ? (
+                  <PostCard
+                    key={item._id}
+                    postId={item._id}
+                    albumId={item.featuredAlbum._id}
+                    postText={item.text}
+                    onLike={onLike}
+                    onComment={onComment}
+                    timestamp={item.createdAt}
+                    authorAvatarUrl={item.postBy.profilePic}
+                    authorName={item.postBy.name}
+                    onShare={onShare}
+                    isAlbumAvailable={true}
+                    isKalamAvailable={false}
+                    embed={{
+                      title: item.featuredAlbum.name,
+                      imageUrl:
+                        "https://lh3.googleusercontent.com/aida-public/AB6AXuC4PS-qi6gnp_PNKrnxCkocGWy3gWcR_d68oTzb1hkAUc-2oatuSV1L11_4FSkXlX79mMcBo4d8XjStPMd5AmIqmzYOIiTSFWtkiCyuv9YEOQQhazV5Xqzqr58bLNtuMbIartDk7HH5VpwLxS92nxfw5iYgJkUWv3ZMdo_AwL7yBZzUu65_3MVN2pbS5HtYsLumkSV-YqJjU7Q-RuwQBMWoLW4vtlhN_TSo_NAuTsIYL9K_v-9MY-ZT",
+                      description: "This is description",
+                      ctaLabel: "Listen Now",
+                    }}
+                  />
+                ) : item.featurdKalam ? (
+                  <PostCard
+                    key={item._id}
+                    postId={item._id}
+                    postText={item.text}
+                    onLike={onLike}
+                    onComment={onComment}
+                    timestamp={item.createdAt}
+                    authorAvatarUrl={item.postBy.profilePic}
+                    authorName={item.postBy.name}
+                    onShare={onShare}
+                    isAlbumAvailable={false}
+                    isKalamAvailable={true}
+                    title={item.featurdKalam.name}
+                    content={item.featurdKalam.content}
+                    muid={"939297973293783902"}
+                    kalId={item.featurdKalam._id}
+                    isLiked2={true}
+                    isSaved={true}
+                    customStyles={item.featurdKalam.customStyles}
+                    embed={null}
+                  />
+                ) : (
+                  <PostCard
+                    key={item._id}
+                    postText={item.text}
+                    postId={item._id}
+                    onLike={onLike}
+                    onComment={onComment}
+                    timestamp={item.createdAt}
+                    authorAvatarUrl={item.postBy.profilePic}
+                    authorName={item.postBy.name}
+                    onShare={onShare}
+                    isAlbumAvailable={false}
+                    isKalamAvailable={false}
+                    embed={"no "}
+                  />
+                )
+              )}
             </div>
 
             <div className="cs-ornament-line" style={{ margin: "48px 0" }}>
@@ -1150,7 +1210,7 @@ export default function CommunitySPaces({
               <button
                 className="cs-modal-confirm-btn"
                 disabled={!kalam && !album}
-                onClick={() => {setIsSelectionModalOpen(false); setIsAttached(true)}}
+                onClick={() => { setIsSelectionModalOpen(false); setIsAttached(true); }}
               >
                 Attach Selection
               </button>
@@ -1158,10 +1218,18 @@ export default function CommunitySPaces({
           </div>
         </MyVerticallyCenteredModal>
 
-        <RightSidebar userAvatarUrl={userAvatarUrl} onPublish={onPublish} />
+        {/* <RightSidebar userAvatarUrl={userAvatarUrl} onPublish={onPublish} /> */}
+
+        {
+          RightSidebar(userAvatarUrl, onPublish)
+        }
       </div>
 
-      <BottomNav />
+      {/* <BottomNav /> */}
+
+      {
+        BottomNav()
+      }
     </div>
   );
 }

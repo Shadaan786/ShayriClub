@@ -889,6 +889,14 @@ const COLORS = {
     borderSubtle: "rgba(255,255,255,0.10)",
 };
 
+// ── Global nav links (site-wide, same four everywhere) ──
+const GLOBAL_NAV_LINKS = [
+    { text: "Kalam", to: "/kalam" },
+    { text: "Community", to: "/spaces" },
+    { text: "Browse", to: "/Social" },
+    { text: "Library", to: "/albumsLive", active: true },
+];
+
 const AlbumsLive = () => {
     const [liveAlbums, setLiveAlbums] = useState([]);
     const [initialLoading, setInitialLoading] = useState(true);
@@ -1083,13 +1091,13 @@ const AlbumsLive = () => {
                 }
             `}</style>
 
-            {/* ── Top Navigation ── */}
+            {/* ── Top Navigation (global Alfaz nav, styled to this page's navy/amber theme) ── */}
             <header
                 className="fixed top-0 left-0 w-full z-50"
                 style={{ background: "rgba(5,20,36,0.7)", backdropFilter: "blur(40px)", borderBottom: `1px solid ${COLORS.borderSubtle}` }}
             >
                 <div className="flex justify-between items-center h-16 md:h-20 px-3 sm:px-6 w-full max-w-[1440px] mx-auto">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 sm:gap-4">
                         <button
                             onClick={() => setSidebarOpen(true)}
                             className="lg:hidden mr-1 sm:mr-2 w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
@@ -1098,16 +1106,52 @@ const AlbumsLive = () => {
                         >
                             <span className="material-symbols-outlined text-lg">menu</span>
                         </button>
-                        <span className="font-extrabold text-xl sm:text-2xl md:text-3xl tracking-tight">Library</span>
+
+                       {/* Alfaz logo + wordmark (same gradient/font treatment as the footer) */}
+                        <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
+                            <img src="/logo2.svg" alt="Alfaz Logo" className="h-7 sm:h-8 w-auto" />
+                            <span className="relative inline-block leading-none font-black tracking-wide">
+                                <span className="relative inline-block text-xl sm:text-2xl md:text-3xl">
+                                    <span
+                                        className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
+                                        style={{ fontFamily: "'Dancing Script', cursive" }}
+                                    >
+                                        A
+                                    </span>
+                                    <bdi
+                                        className="inline-block -mx-0.5 translate-y-[2px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
+                                        style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+                                    >
+                                        لف
+                                    </bdi>
+                                    <span
+                                        className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
+                                        style={{ fontFamily: "'Dancing Script', cursive" }}
+                                    >
+                                        az
+                                    </span>
+                                </span>
+                            </span>
+                        </Link>
                     </div>
 
                     <nav className="lib-nav-links hidden md:flex items-center gap-8">
-                        <Link to="/artists" className="lib-nav-link">Artists</Link>
-                        <Link to="/albums" className="font-bold pb-1" style={{ color: COLORS.primary, borderBottom: `2px solid ${COLORS.primary}` }}>
-                            Albums
-                        </Link>
-                        <Link to="/playlists" className="lib-nav-link">Playlists</Link>
-                        <Link to="/genres" className="lib-nav-link">Genres</Link>
+                        {GLOBAL_NAV_LINKS.map((link) =>
+                            link.active ? (
+                                <Link
+                                    key={link.text}
+                                    to={link.to}
+                                    className="font-bold pb-1"
+                                    style={{ color: COLORS.primary, borderBottom: `2px solid ${COLORS.primary}` }}
+                                >
+                                    {link.text}
+                                </Link>
+                            ) : (
+                                <Link key={link.text} to={link.to} className="lib-nav-link">
+                                    {link.text}
+                                </Link>
+                            )
+                        )}
                     </nav>
 
                     <div className="flex items-center gap-2 sm:gap-4">

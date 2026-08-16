@@ -1530,6 +1530,7 @@ export const Social = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [searchClear, setSearchClear] = useState(false);
   const searchType = useRef("feed_search")
+  const [profilePic, setProfilePic] = useState("");
   // const[searchType, setSearchType] = useState("feed_search");
   const [isSearchFocused, setIsSearchFocused] = useState(false); // UI-only: search bar focus/blur width animation
 
@@ -1541,7 +1542,7 @@ export const Social = () => {
         customStyles = response.data.allKalamsName.customStyles
         console.log(response.data);
         setLength(response.data.allKalamsName.length);
-        setUid(response.data.userId[0]._id);
+        // setUid(response.data.userId[0]._id);
         setTotalLength(response.data.totalLength);
         // likedKalams = new Set(response.data.likedKalams)
         // for (const items of likedKalams) {
@@ -1552,7 +1553,19 @@ export const Social = () => {
     page.current = page.current + 1;
   };
 
-  useEffect(() => { handle(); }, []);
+  const getUserId=()=>{
+
+    axiosInstance
+    .get('/api/userId',{
+      withCredentials: true
+    }).then((response)=>{
+      setUid(response.data._id)
+      setProfilePic(response.data.profilePic);
+    })
+    
+  }
+
+  useEffect(() => { handle(); getUserId()}, []);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -1971,7 +1984,7 @@ export const Social = () => {
                   Publish
                 </Link>
 
-                <button
+                {/* <button
                   onClick={() => setIsOpen(true)}
                   aria-label="Open sidebar"
                   style={{
@@ -1986,7 +1999,7 @@ export const Social = () => {
                   onMouseLeave={(e) => { e.currentTarget.style.color = "#d1c5b4"; }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: 24 }}>menu</span>
-                </button>
+                </button> */}
 
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold cursor-pointer"
@@ -1999,7 +2012,7 @@ export const Social = () => {
                   onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#e9c176"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(78,70,57,0.5)"; }}
                 >
-                  A
+                  <img onClick={()=>Navigate(`/profile?userId=${uid}`)} className="h-full rounded-full" src={profilePic} alt="" srcset="" />
                 </div>
               </div>
             </div>
