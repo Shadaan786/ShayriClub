@@ -245,23 +245,24 @@ const styles = `
 .cs-nav-section:first-child { margin-top: 0; }
 .cs-nav-link {
   display: flex; align-items: center; gap: 12px;
-  padding: 10px 12px; border-radius: 8px;
+  padding: 9px 12px 9px 14px;
   color: var(--on-surface-variant);
   text-decoration: none;
   font-size: 14px;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
-  border: 1px solid transparent;
+  border-left: 2px solid transparent;
   background: none;
 }
-.cs-nav-link:hover { background: rgba(26,27,31,0.5); color: var(--primary-container); }
-.cs-nav-link.active {
-  background: rgba(41,42,46,0.5);
+.cs-nav-link:hover {
   color: var(--primary-container);
-  border-color: rgba(212,175,55,0.2);
+}
+.cs-nav-link.active {
+  color: var(--primary-container);
+  border-left: 2px solid var(--primary-container);
   font-weight: 500;
 }
-
 /* Main — offset to make room for the fixed sidebars */
 .cs-main {
   flex: 1;
@@ -722,18 +723,22 @@ const NAV_SECTIONS = [
     label: "Network",
     links: [
       { icon: "book", text: "Home", navigate: '/' },
-      { icon: "group", text: "Spaces", active: true },
-      { icon: "festival", text: "Kalam", navigate: '/kalam' },
+      { icon: "group", text: "kalam", navigate: '/kalam' },
+      { icon: "festival", text: "Browse", navigate: '/social' },
+      { icon: "festival", text: "Kalam of the Week", navigate: '/kotw' },
+      { icon: "festival", text: "Community", active: true },
       { icon: "festival", text: "Library", navigate: '/albumsLive' },
     ],
   },
-  {
-    label: "Creation",
-    links: [
-      { icon: "edit_document", text: "Drafts" },
-      { icon: "book", text: "Publications" },
-    ],
-  },
+  // {
+  //   label: "Creation",
+  //   links: [
+  //     { icon: "edit_document", text: "Drafts" },
+  //     { icon: "book", text: "Publications" },
+  //   ],
+  // },
+
+  
   {
     label: "System",
     links: [{ icon: "settings", text: "Preferences" }],

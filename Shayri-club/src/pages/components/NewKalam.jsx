@@ -1990,6 +1990,47 @@ const buildGoogleFontsUrl = () => {
           max-width: calc(100vw - 2rem);
         }
 
+        .k-card-strip-wrap {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          width: 100%;
+          max-width: 460px;
+        }
+
+        .k-action-strip {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          flex-shrink: 0;
+        }
+
+        .k-action-btn {
+          display: flex; align-items: center; justify-content: center;
+          width: 42px; height: 42px; border-radius: 50%;
+          border: 0.5px solid rgba(255,255,255,0.14);
+          background: rgba(255,255,255,0.035);
+          cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+        }
+        .k-action-btn:hover { transform: scale(1.08); background: rgba(255,255,255,0.06); }
+        .k-action-btn.liked { border-color: rgba(226,75,74,0.45); background: rgba(226,75,74,0.14); }
+        .k-action-btn.saved { border-color: rgba(210,170,90,0.45); background: rgba(210,170,90,0.14); }
+
+        @media (max-width: 900px) {
+          .k-card-strip-wrap {
+            flex-direction: column;
+            max-width: 100%;
+          }
+          .k-action-strip {
+            flex-direction: row;
+            width: 100%;
+            justify-content: center;
+            margin-top: 10px;
+          }
+        }
+
         /* ── Responsive ── */
         @media (max-width: 900px) {
           .k-split {
@@ -2140,8 +2181,8 @@ const buildGoogleFontsUrl = () => {
         </button>
       </div>
 
-      {/* ── Preview Card + Action Strip Wrapper (position: relative anchor) ── */}
-      <div style={{ position: "relative", width: "100%", maxWidth: "400px" }}>
+      {/* ── Preview Card + Action Strip Wrapper ── */}
+      <div className="k-card-strip-wrap">
 
       {/* ── Preview Card ── */}
       <div ref={ref} className="k-preview-card">
@@ -2203,131 +2244,53 @@ const buildGoogleFontsUrl = () => {
       </div>
 
      {/* ── Action Strip ── */}
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "space-around",
-        padding: "10px 8px",
-        position: "absolute",
-        right: "0px",
-        top: "50%",
-        transform: "translateY(-50%)",
-        height: "auto",
-        gap: "8px",
-        zIndex: 20,
-      }}>
+      <div className="k-action-strip">
 
         {/* Like */}
-        <button onClick={()=>{handleLike(); (isLiked)?setIsLiked(false):setIsLiked(true)}} style={{
-          display: "flex", alignItems: "center", gap: "5px",
-          padding: "5px 10px", borderRadius: "20px", border: "none",
-          background: "transparent", color: "rgba(240,235,227,0.55)",
-          fontSize: "10px", fontFamily: "'DM Mono', monospace",
-          letterSpacing: "0.07em", cursor: "pointer", transition: "all 0.15s",
-          minHeight: "44px",
-        }}
-          onMouseEnter={e => { e.currentTarget.style.color = "rgba(255,140,140,0.9)"; e.currentTarget.style.background = "rgba(226,75,74,0.1)"; }}
-          onMouseLeave={e => { e.currentTarget.style.color = "rgba(240,235,227,0.55)"; e.currentTarget.style.background = "transparent"; }}
+        <button
+          onClick={()=>{handleLike(); (isLiked)?setIsLiked(false):setIsLiked(true)}}
+          className={`k-action-btn${isLiked ? " liked" : ""}`}
+          aria-label="Like"
         >
-          
-         <HeartIcon
-         
-  size={18}
-  duration={1}
-  color={(isLiked)?"#771818":"#ffffff"}
-/>
-          
+          <HeartIcon
+            size={18}
+            duration={1}
+            color={(isLiked)?"#e24b4a":"rgba(240,235,227,0.85)"}
+          />
         </button>
 
         {/* Comment */}
-        <button onClick={() => Navigate(`/comment?kalamId=${kalId}`)} style={{
-          display: "flex", alignItems: "center", gap: "5px",
-          padding: "5px 10px", borderRadius: "20px", border: "none",
-          background: "transparent", color: "rgba(240,235,227,0.55)",
-          fontSize: "10px", fontFamily: "'DM Mono', monospace",
-          letterSpacing: "0.07em", cursor: "pointer", transition: "all 0.15s",
-          minHeight: "44px",
-        }}
-          onMouseEnter={e => { e.currentTarget.style.color = "#AFA9EC"; e.currentTarget.style.background = "rgba(83,74,183,0.1)"; }}
-          onMouseLeave={e => { e.currentTarget.style.color = "rgba(240,235,227,0.55)"; e.currentTarget.style.background = "transparent"; }}
+        <button
+          onClick={() => Navigate(`/comment?kalamId=${kalId}`)}
+          className="k-action-btn"
+          aria-label="Comment"
         >
           <MessageCircleIcon
             size={18}
             duration={1}
-            color="#ffffff"
+            color="rgba(240,235,227,0.85)"
           />
-          
         </button>
 
         {/* Share */}
-        <button onClick={()=>{setIsShared(true);convert()}} style={{
-          display: "flex", alignItems: "center", gap: "5px",
-          padding: "5px 10px", borderRadius: "20px", border: "none",
-          background: "transparent", color: "rgba(240,235,227,0.55)",
-          fontSize: "10px", fontFamily: "'DM Mono', monospace",
-          letterSpacing: "0.07em", cursor: "pointer", transition: "all 0.15s",
-          minHeight: "44px",
-        }}
-          onMouseEnter={e => { e.currentTarget.style.color = "rgba(120,200,180,0.9)"; e.currentTarget.style.background = "rgba(120,200,180,0.08)"; }}
-          onMouseLeave={e => { e.currentTarget.style.color = "rgba(240,235,227,0.55)"; e.currentTarget.style.background = "transparent"; }}
+        <button
+          onClick={()=>{setIsShared(true);convert()}}
+          className="k-action-btn"
+          aria-label="Share"
         >
           <ShareIcon
             size={18}
             duration={1}
-            color="#ffffff"
+            color="rgba(240,235,227,0.85)"
           />
-          
         </button>
 
         {/* Save */}
-       {/* <button
-  onClick={savingKalam}
-  style={{
-    display: "flex",
-    alignItems: "center",
-    gap: "5px",
-    padding: "5px 10px",
-    borderRadius: "20px",
-    border: "none",
-    // background: isSaved ? "rgba(210,170,90,0.12)" : "transparent",
-    color: isSaved ? "rgba(210,170,90,1)" : "rgba(240,235,227,0.55)",
-    fontSize: "10px",
-    fontFamily: "'DM Mono', monospace",
-    letterSpacing: "0.07em",
-    cursor: "pointer",
-    transition: "all 0.15s",
-    minHeight: "0px",
-  }}
-  // onMouseEnter={(e) => {
-  //   e.currentTarget.style.color = "rgba(210,170,90,1)";
-  //   e.currentTarget.style.background = "rgba(210,170,90,0.12)";
-  // }}
-  // onMouseLeave={(e) => {
-  //   e.currentTarget.style.color = isSaved
-  //     ? "rgba(210,170,90,1)"
-  //     : "rgba(240,235,227,0.55)";
-  //   e.currentTarget.style.background = isSaved
-  //     ? "rgba(210,170,90,0.12)"
-  //     : "transparent";
-  // }}
-> */}
-  {/* <BookmarkIcon
-    size={15}
-    duration={1}
-    color={isSaved ? "#d2aa5a" : "#ffffff"}
-  /> */}
-  <BookmarkIcon isSaved={isSaved2} onClick={()=>{savingKalam();(isSaved)?setIsSaved2(false):setIsSaved2(true)}} />
-  
-{/* </button> */}
-        {/* {
-            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", customStyles?.imageSrc)
-        }
-{  
-console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", isImage.current)
-}         */}
-
-      
+        <div
+          className={`k-action-btn${isSaved2 ? " saved" : ""}`}
+        >
+          <BookmarkIcon isSaved={isSaved2} onClick={()=>{savingKalam();(isSaved2)?setIsSaved2(false):setIsSaved2(true)}} />
+        </div>
 
       </div>
 
