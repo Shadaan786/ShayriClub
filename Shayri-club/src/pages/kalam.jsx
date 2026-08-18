@@ -1226,7 +1226,38 @@ const Kalam = () => {
 getUserId()
   },[])
 
-  
+  // ── Sidebar (Kalam active, Compose/Collection sub-nav) ─────────────────────
+  const KalamSidebar = () => (
+    <aside className="k-sidebar">
+      <div className="k-sidebar-section">Navigate</div>
+      <a href="/kalam" className="k-sidebar-link active">
+         Kalam
+      </a>
+      <div className="k-sidebar-sub">
+        <button
+          className={`k-sidebar-link${activeNav === "Compose" ? " active2" : ""}`}
+          onClick={() => { setActiveNav("Compose"); Navigate("/urKalam"); }}
+        >
+          Compose
+        </button>
+        <button
+          className={`k-sidebar-link${activeNav === "Collection" ? " active" : ""}`}
+          onClick={() => { setActiveNav("Collection"); Navigate("/urKalam"); }}
+        >
+          Collection
+        </button>
+      </div>
+      <a href="/spaces" className="k-sidebar-link">
+        Community
+      </a>
+      <a href="/spaces" className="k-sidebar-link">
+        Browse
+      </a>
+      <a href="/spaces" className="k-sidebar-link">
+        Library
+      </a>
+    </aside>
+  );
 
   return (
     <>
@@ -1338,6 +1369,65 @@ getUserId()
 @media (max-width: 900px) {
   .k-global-links { display: none; }
 }
+
+/* ── Left sidebar (matches k-theme) ─────────────────── */
+.k-sidebar {
+  display: none;
+  flex-direction: column;
+  width: 220px;
+  padding: 28px 18px;
+  position: fixed;
+  top: 68px;
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+  border-right: 0.5px solid var(--border-sm);
+  background: rgba(10,10,14,0.5);
+  backdrop-filter: blur(10px);
+  z-index: 40;
+}
+@media (min-width: 1024px) { .k-sidebar { display: flex; } }
+
+.k-sidebar-section {
+  font-size: 9px; font-weight: 500; color: var(--text-ter);
+  letter-spacing: 0.3em; text-transform: uppercase;
+  margin: 0 0 10px 4px;
+}
+.k-sidebar-link {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; text-align: left;
+  padding: 9px 10px 9px 12px;
+  font-size: 13px; letter-spacing: 0.03em;
+  color: var(--text-sec); text-decoration: none;
+  border: none; border-left: 2px solid transparent;
+  cursor: pointer; background: none;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  font-family: 'DM Mono', monospace;
+}
+.k-sidebar-link:hover { color: var(--text-pri); }
+.k-sidebar-link.active {
+  color: rgba(210,170,90,0.95);
+  border-left-color: rgba(210,170,90,0.85);
+  font-weight: 500;
+}
+  .k-sidebar-link.active2 {
+  color: rgba(210,170,90);
+  border: 2px solid black;
+  }
+.k-sidebar-sub {
+  display: flex; flex-direction: column;
+  margin: 2px 0 4px 12px;
+  padding-left: 10px;
+  border-left: 0.5px solid var(--border-sm);
+  gap: 1px;
+}
+.k-sidebar-sub .k-sidebar-link { font-size: 12px; padding: 7px 8px; }
+
+/* Shifts page content right on desktop to make room for the sidebar */
+@media (min-width: 1024px) {
+  .k-page-body { margin-left: 220px; }
+}
+
   .k-nav {
           background: rgba(10,10,14,0.92);
           backdrop-filter: blur(18px);
@@ -2024,518 +2114,523 @@ getUserId()
           </button>
           <div className="k-avatar"><img onClick={()=>Navigate(`/profile?userId=${userId}`)} className="rounded-full h-full" src={profilePic} alt="profilePic" /></div>
         </nav>
-        <nav className="k-nav">
-          <div className="k-brand">
-            {/* <div className="k-logo">✦</div> */}
-            {/* <span className="k-wordmark">Kalam</span> */}
-          </div>
-          <div className="k-nav-links">
-            {["Compose","Collection"].map(n => (
-              <button key={n} className={`k-nl${activeNav === n ? " active" : ""}`} onClick={() => {setActiveNav(n);if(n==='Collection')Navigate('/urKalam')}}>
-                {n}
-              </button>
-            ))}
-          </div>
-          <div className="k-nav-right">
-            
-            <button className="k-hamburger" onClick={() => setMobileMenuOpen(o => !o)} aria-label="Menu">
-              <span /><span /><span />
-            </button>
-          </div>
-        </nav>
 
-        {/* Mobile menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div className="k-mobile-menu"
-              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.14 }}
-            >
-              {["Compose","Collection","Explore","Analytics"].map(n => (
-                <button key={n} className={`k-nl${activeNav === n ? " active" : ""}`}
-                  onClick={() => { setActiveNav(n); setMobileMenuOpen(false); }}>
+        <KalamSidebar />
+
+        <div className="k-page-body">
+          <nav className="k-nav">
+            <div className="k-brand">
+              {/* <div className="k-logo">✦</div> */}
+              {/* <span className="k-wordmark">Kalam</span> */}
+            </div>
+            <div className="k-nav-links">
+              {["Compose","Collection"].map(n => (
+                <button key={n} className={`k-nl${activeNav === n ? " active" : ""}`} onClick={() => {setActiveNav(n);if(n==='Collection')Navigate('/urKalam')}}>
                   {n}
                 </button>
               ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* ── Hero ─────────────────────────────────── */}
-        <div className="k-hero">
-          <div className="k-hero-inner">
-            <div>
-              <div className="k-greeting">Good evening, Arif</div>
-              <div>
-                <span className="k-hero-kalam">Kalam</span>
-                <span className="k-hero-kalam-urdu">کلام</span>
-              </div>
-              <div className="k-hero-ornament">
-                <div className="k-hero-ornament-line" />
-                <div className="k-hero-ornament-diamond" />
-                <div className="k-hero-ornament-line right" />
-              </div>
-              <div className="k-hero-sub">Har lafz ek jazbaat hai — ہر لفظ ایک جذبات ہے</div>
             </div>
-            <div className="k-stats">
-              <div className="k-stat"><div className="k-stat-num">24</div><div className="k-stat-label">Kalams</div></div>
-              <div className="k-stat-divider" />
-              <div className="k-stat"><div className="k-stat-num">142</div><div className="k-stat-label">Ashaar</div></div>
-              <div className="k-stat-divider" />
-              <div className="k-stat"><div className="k-stat-num">9</div><div className="k-stat-label">Ghazals</div></div>
+            <div className="k-nav-right">
+              
+              <button className="k-hamburger" onClick={() => setMobileMenuOpen(o => !o)} aria-label="Menu">
+                <span /><span /><span />
+              </button>
+            </div>
+          </nav>
+
+          {/* Mobile menu */}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div className="k-mobile-menu"
+                initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.14 }}
+              >
+                {["Compose","Collection","Explore","Analytics"].map(n => (
+                  <button key={n} className={`k-nl${activeNav === n ? " active" : ""}`}
+                    onClick={() => { setActiveNav(n); setMobileMenuOpen(false); }}>
+                    {n}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ── Hero ─────────────────────────────────── */}
+          <div className="k-hero">
+            <div className="k-hero-inner">
+              <div>
+                <div className="k-greeting">Good evening, Arif</div>
+                <div>
+                  <span className="k-hero-kalam">Kalam</span>
+                  <span className="k-hero-kalam-urdu">کلام</span>
+                </div>
+                <div className="k-hero-ornament">
+                  <div className="k-hero-ornament-line" />
+                  <div className="k-hero-ornament-diamond" />
+                  <div className="k-hero-ornament-line right" />
+                </div>
+                <div className="k-hero-sub">Har lafz ek jazbaat hai — ہر لفظ ایک جذبات ہے</div>
+              </div>
+              <div className="k-stats">
+                <div className="k-stat"><div className="k-stat-num">24</div><div className="k-stat-label">Kalams</div></div>
+                <div className="k-stat-divider" />
+                <div className="k-stat"><div className="k-stat-num">142</div><div className="k-stat-label">Ashaar</div></div>
+                <div className="k-stat-divider" />
+                <div className="k-stat"><div className="k-stat-num">9</div><div className="k-stat-label">Ghazals</div></div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* ── SPLIT LAYOUT ────────────────────────── */}
-        <div className="k-split k-body-wrap">
+          {/* ── SPLIT LAYOUT ────────────────────────── */}
+          <div className="k-split k-body-wrap">
 
-          {/* ── LEFT: Live Preview Pane ─────────────── */}
-          <div className="k-preview-pane">
-            {/* <div className="k-preview-label">● Live preview</div> */}
+            {/* ── LEFT: Live Preview Pane ─────────────── */}
+            <div className="k-preview-pane">
+              {/* <div className="k-preview-label">● Live preview</div> */}
 
-            <div className="k-preview-card">
-              {/* BG layer */}
-              <div
-                className="k-prev-bg"
-                style={
-                  isImage && imageSrc
-                    ? { backgroundImage: `url(${imageSrc})`, backgroundSize: "cover", backgroundPosition: "center", opacity: bgOpacity / 100 }
-                    : { backgroundColor: bgTab === "custom" ? customColor : selectedColor, opacity: bgOpacity / 100 }
-                }
-              />
-              {/* Scrim */}
-              <div className="k-prev-scrim" style={{ background: `rgba(0,0,0,${scrim / 100})` }} />
+              <div className="k-preview-card">
+                {/* BG layer */}
+                <div
+                  className="k-prev-bg"
+                  style={
+                    isImage && imageSrc
+                      ? { backgroundImage: `url(${imageSrc})`, backgroundSize: "cover", backgroundPosition: "center", opacity: bgOpacity / 100 }
+                      : { backgroundColor: bgTab === "custom" ? customColor : selectedColor, opacity: bgOpacity / 100 }
+                  }
+                />
+                {/* Scrim */}
+                <div className="k-prev-scrim" style={{ background: `rgba(0,0,0,${scrim / 100})` }} />
 
-              {/* Empty state */}
-              {!content && !title && (
-                <div className="k-prev-empty">
-                  <div className="k-prev-empty-glyph">✦</div>
-                  <div className="k-prev-empty-text">Start writing to see preview</div>
-                </div>
-              )}
-
-              {/* Text content */}
-              {(content || title) && (
-                <div className="k-prev-content" style={previewWrapStyle}>
-                  <div
-                    className="k-prev-badge"
-                    style={{ background: badgeBg, border: `0.5px solid ${badgeBorder}`, color: autoMainColor }}
-                  >
-                    {previewFormLabel}
+                {/* Empty state */}
+                {!content && !title && (
+                  <div className="k-prev-empty">
+                    <div className="k-prev-empty-glyph">✦</div>
+                    <div className="k-prev-empty-text">Start writing to see preview</div>
                   </div>
-                  {title && (
+                )}
+
+                {/* Text content */}
+                {(content || title) && (
+                  <div className="k-prev-content" style={previewWrapStyle}>
                     <div
-                      className="k-prev-title"
-                      style={{
-                        color: resolvedTitleColor,
-                        fontSize: titleFs,
-                        fontFamily: resolvedTitleFamily,
-                      }}
+                      className="k-prev-badge"
+                      style={{ background: badgeBg, border: `0.5px solid ${badgeBorder}`, color: autoMainColor }}
                     >
-                      {title}
+                      {previewFormLabel}
                     </div>
-                  )}
-                  {content && (
-                    <div>
+                    {title && (
                       <div
-                        className="k-prev-text"
+                        className="k-prev-title"
                         style={{
-                          color: resolvedContentColor,
-                          fontSize: contentFs,
-                          fontFamily: resolvedContentFamily,
+                          color: resolvedTitleColor,
+                          fontSize: titleFs,
+                          fontFamily: resolvedTitleFamily,
                         }}
                       >
-                        {previewText}{!showFullPreview && previewIsTruncated ? "…" : ""}
+                        {title}
                       </div>
-                      {previewIsTruncated && (
-                        <button
-                          className="k-prev-read-more"
-                          onClick={() => setShowFullPreview(v => !v)}
+                    )}
+                    {content && (
+                      <div>
+                        <div
+                          className="k-prev-text"
+                          style={{
+                            color: resolvedContentColor,
+                            fontSize: contentFs,
+                            fontFamily: resolvedContentFamily,
+                          }}
                         >
-                          {showFullPreview ? "↑ Show less" : "↓ Read more"}
-                        </button>
-                      )}
-                    </div>
-                  )}
-                  <div className="k-prev-author" style={{ color: subColor }}>— Arif Karimi</div>
-                </div>
-              )}
-            </div>
-
-            {/* Status bar */}
-            <div className="k-preview-status">
-              <div className="k-preview-status-text">
-                <span className="k-preview-status-dot" />
-                Updates live
-              </div>
-              <div className="k-preview-mood-pills">
-                {activeMoods.slice(0, 3).map(m => (
-                  <span key={m} className="k-preview-mood-pill">{m}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* ── RIGHT: Compose Form ─────────────────── */}
-          <div className="k-form-pane">
-            <div className="k-section-label">New composition</div>
-
-            <div className="k-card">
-              <div className="k-card-head">
-                <div>
-                  <div className="k-card-title">Compose</div>
-                  <div className="k-card-sub">Fill in the details and begin writing</div>
-                </div>
-                <button className="k-btn-ghost" style={{ fontSize: "10px" }}>
-                  📋 Use template
-                </button>
-              </div>
-
-              <div className="k-card-body">
-
-                {/* Sinf + Title */}
-                <div className="k-field-grid">
-                  <div className="k-field">
-                    <div className="k-label">Form <span className="k-label-urdu">— صنف</span></div>
-                    <select className="k-select" value={type} onChange={(e) => setType(e.target.value)}>
-                      <option value="" disabled>Select a form…</option>
-                      {SINF_OPTIONS.map(o => (
-                        <option key={o.value} value={o.value}>{o.value} — {o.ur}</option>
-                      ))}
-                    </select>
+                          {previewText}{!showFullPreview && previewIsTruncated ? "…" : ""}
+                        </div>
+                        {previewIsTruncated && (
+                          <button
+                            className="k-prev-read-more"
+                            onClick={() => setShowFullPreview(v => !v)}
+                          >
+                            {showFullPreview ? "↑ Show less" : "↓ Read more"}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    <div className="k-prev-author" style={{ color: subColor }}>— Arif Karimi</div>
                   </div>
-                  <div className="k-field">
-                    <div className="k-label">Title <span className="k-label-urdu">— عنوان</span></div>
-                    <input
-                      className="k-input" type="text" placeholder="Name your kalam…"
-                      value={title} onChange={(e) => setTitle(e.target.value)}
-                    />
-                  </div>
-                </div>
+                )}
+              </div>
 
-                <div className="k-sep" />
-
-                {/* Moods */}
-                <div className="k-mood-label">
-                  Mood <span className="k-label-urdu" style={{ fontSize: "10px" }}>— کیفیت</span>
+              {/* Status bar */}
+              <div className="k-preview-status">
+                <div className="k-preview-status-text">
+                  <span className="k-preview-status-dot" />
+                  Updates live
                 </div>
-                <div className="k-moods">
-                  {MOODS.map(m => (
-                    <button key={m.en} className={`k-mood${activeMoods.includes(m.en) ? " on" : ""}`} onClick={() => toggleMood(m.en)}>
-                      {m.en} — {m.ur}
-                    </button>
+                <div className="k-preview-mood-pills">
+                  {activeMoods.slice(0, 3).map(m => (
+                    <span key={m} className="k-preview-mood-pill">{m}</span>
                   ))}
                 </div>
+              </div>
+            </div>
 
-                <div className="k-sep" />
+            {/* ── RIGHT: Compose Form ─────────────────── */}
+            <div className="k-form-pane">
+              <div className="k-section-label">New composition</div>
 
-                {/* Content textarea */}
-                <div className="k-mood-label" style={{ marginBottom: "8px" }}>
-                  Content <span className="k-label-urdu" style={{ fontSize: "10px" }}>— متن</span>
-                </div>
-                <div className="k-textarea-wrap">
-                  <textarea
-                    className="k-textarea"
-                    placeholder="Apna kalam yahan likhein… اپنا کلام یہاں لکھیں"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                  />
-                  <div className="k-toolbar">
-                    <button className={`k-mic${streamRecording ? " rec" : ""}`} onClick={handleRecording} aria-label="Voice input">
-                      🎙 <span>{streamRecording ? "Recording…" : "Speak"}</span>
-                      <span className="k-mic-dot" />
-                    </button>
-                    <span className="k-charcount">{content.length} chars</span>
+              <div className="k-card">
+                <div className="k-card-head">
+                  <div>
+                    <div className="k-card-title">Compose</div>
+                    <div className="k-card-sub">Fill in the details and begin writing</div>
                   </div>
-                </div>
-
-                {/* Audio playback */}
-                {recording.map((recUrl, i) => (
-                  <div className="k-audio-row" key={i}>
-                    <audio controls src={recUrl} />
-                    <a href={recUrl} download={`kalam-recording-${i}.wav`}
-                      style={{ fontSize: "10px", letterSpacing: "0.1em", color: "rgba(120,200,180,0.7)", textDecoration: "none", flexShrink: 0 }}>
-                      ↓ Save
-                    </a>
-                  </div>
-                ))}
-
-                <div className="k-sep" style={{ marginTop: "1.1rem" }} />
-
-                {/* Background picker */}
-                <div className="k-mood-label" style={{ marginBottom: "10px" }}>
-                  🎨 Background <span className="k-label-urdu" style={{ fontSize: "10px" }}>— پس منظر</span>
-                </div>
-                <div className="bp-tabs">
-                  {["colors","custom","image"].map(t => (
-                    <button key={t} className={`bp-tab${bgTab === t ? " on" : ""}`} onClick={() => setBgTab(t)}>
-                      {t === "colors" ? "Preset colors" : t === "custom" ? "Custom color" : "Upload image"}
-                    </button>
-                  ))}
-                </div>
-
-                {bgTab === "colors" && (
-                  <div className="bp-colors">
-                    {PRESET_COLORS.map(c => (
-                      <div key={c.hex}
-                        className={`bp-swatch${selectedColor === c.hex && !isImage ? " selected" : ""}`}
-                        style={{ background: c.hex }} title={c.label}
-                        onClick={() => { setSelectedColor(c.hex); setIsImage(false); }}
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {bgTab === "custom" && (
-                  <div className="bp-custom-row">
-                    <div className="bp-color-thumb" style={{ background: customColor }}>
-                      <input type="color" value={customColor}
-                        onChange={(e) => { setCustomColor(e.target.value); setIsImage(false); }} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-pri)" }}>{customColor.toUpperCase()}</div>
-                      <div style={{ fontSize: "10px", color: "var(--text-ter)", marginTop: "2px" }}>Click swatch to open picker</div>
-                    </div>
-                  </div>
-                )}
-
-                {bgTab === "image" && (
-                  <>
-                    <div className="bp-upload-zone">
-                      <input type="file" accept="image/*" onChange={handleImageUpload} />
-                      <div style={{ fontSize: "20px", color: "var(--text-ter)", marginBottom: "5px" }}>🖼</div>
-                      <div style={{ fontSize: "11px", color: "var(--text-sec)", marginBottom: "2px" }}>Drop an image or click to browse</div>
-                      <div style={{ fontSize: "10px", color: "var(--text-ter)" }}>JPG, PNG, WEBP</div>
-                    </div>
-                    {imageSrc && <img src={imageSrc} alt="Uploaded background" className="bp-img-thumb" />}
-                  </>
-                )}
-
-                <div className="bp-opacity-row">
-                  <span className="bp-opacity-label">☀ Brightness</span>
-                  <input type="range" min="20" max="100" step="1" value={bgOpacity}
-                    onChange={(e) => setBgOpacity(Number(e.target.value))} />
-                  <span className="bp-opacity-val">{bgOpacity}%</span>
-                </div>
-
-                {/* Text readability */}
-                <div className="text-protect">
-                  <div className="tp-head">Aa Text readability</div>
-                  <div className="tp-row">
-                    <span className="tp-label">Text color</span>
-                    <div className="tp-toggle-group">
-                      {["light","dark","auto"].map(v => (
-                        <button key={v} className={`tp-opt${textColor === v ? " on" : ""}`} onClick={() => setTextColor(v)}>
-                          {v.charAt(0).toUpperCase() + v.slice(1)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="tp-row">
-                    <span className="tp-label">Text backdrop</span>
-                    <div className="tp-toggle-group">
-                      {[["none","None"],["soft","Soft blur"],["solid","Solid panel"]].map(([v,l]) => (
-                        <button key={v} className={`tp-opt${backdrop === v ? " on" : ""}`} onClick={() => setBackdrop(v)}>{l}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="tp-row">
-                    <span className="tp-label">Scrim overlay</span>
-                    <input type="range" min="0" max="80" step="1" value={scrim}
-                      onChange={(e) => setScrim(Number(e.target.value))} />
-                    <span className="tp-val">{scrim}%</span>
-                  </div>
-
-                  {/* ── Title Font ─────────────────────────────── */}
-                  <div className="tp-row" style={{ alignItems: "flex-start", flexDirection: "column", gap: "7px" }}>
-                    <span className="tp-label" style={{ marginBottom: "2px" }}>
-                      Title font <span style={{ color: "var(--text-ter)", fontSize: "9px", fontFamily: "'DM Mono', monospace", letterSpacing: "0.05em" }}>— عنوان کا خط</span>
-                    </span>
-                    <div className="font-picker-scroll" style={{ width: "100%" }}>
-                      {TITLE_FONTS.map(f => (
-                        <div
-                          key={f.id}
-                          className={`font-option${selectedTitleFont === f.id ? " selected" : ""}`}
-                          onClick={() => setSelectedTitleFont(f.id)}
-                        >
-                          <span
-                            className="font-option-sample"
-                            style={{ fontFamily: f.family }}
-                          >
-                            {f.sample}
-                          </span>
-                          <span className="font-option-name">{f.label}</span>
-                          {selectedTitleFont === f.id && (
-                            <span className="font-option-check">✓</span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* ── Title Color ────────────────────────────── */}
-                  <div className="tp-row" style={{ alignItems: "flex-start", flexDirection: "column", gap: "6px" }}>
-                    <span className="tp-label">
-                      Title color <span style={{ color: "var(--text-ter)", fontSize: "9px", fontFamily: "'DM Mono', monospace", letterSpacing: "0.05em" }}>— عنوان رنگ</span>
-                    </span>
-                    <div className="tc-row">
-
-                        <button
-                          className={`tc-auto-btn${titleColorMode === "auto" ? " on" : ""}`}
-                          onClick={() => setTitleColorMode("auto")}
-                        >
-                          Auto
-                        </button>
-
-                        <div
-                          className="bp-color-thumb"
-                          style={{ background: selectedTitleColor }}
-                        >
-                          <input
-                            type="color"
-                            value={selectedTitleColor}
-                            onChange={(e) => {
-                              setSelectedTitleColor(e.target.value);
-                              setTitleColorMode("custom");
-                            }}
-                          />
-                        </div>
-
-                      </div>
-                    <div className="tc-palette">
-                      {TEXT_COLOR_PALETTE.map(c => (
-                        <div
-                          key={c.hex}
-                          className={`tc-swatch${titleColorMode !== "auto" && selectedTitleColor === c.hex ? " selected" : ""}`}
-                          style={{ background: c.hex }}
-                          title={c.label}
-                          onClick={() => { setSelectedTitleColor(c.hex); setTitleColorMode("custom"); }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* ── Content Font ───────────────────────────── */}
-                  <div className="tp-row" style={{ alignItems: "flex-start", flexDirection: "column", gap: "7px" }}>
-                    <span className="tp-label" style={{ marginBottom: "2px" }}>
-                      Content font <span style={{ color: "var(--text-ter)", fontSize: "9px", fontFamily: "'DM Mono', monospace", letterSpacing: "0.05em" }}>— متن کا خط</span>
-                    </span>
-                    <div className="font-picker-scroll" style={{ width: "100%" }}>
-                      {CONTENT_FONTS.map(f => (
-                        <div
-                          key={f.id}
-                          className={`font-option${selectedContentFont === f.id ? " selected" : ""}`}
-                          onClick={() => setSelectedContentFont(f.id)}
-                        >
-                          <span
-                            className="font-option-sample"
-                            style={{ fontFamily: f.family, fontSize: "12px" }}
-                          >
-                            {f.sample}
-                          </span>
-                          <span className="font-option-name">{f.label}</span>
-                          {selectedContentFont === f.id && (
-                            <span className="font-option-check">✓</span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* ── Content Color ──────────────────────────── */}
-                  <div className="tp-row" style={{ alignItems: "flex-start", flexDirection: "column", gap: "6px" }}>
-                    <span className="tp-label">
-                      Content color <span style={{ color: "var(--text-ter)", fontSize: "9px", fontFamily: "'DM Mono', monospace", letterSpacing: "0.05em" }}>— متن رنگ</span>
-                    </span>
-                    <div className="tc-row">
-
-                        <button
-                          className={`tc-auto-btn${titleColorMode === "auto" ? " on" : ""}`}
-                          onClick={() => setTitleColorMode("auto")}
-                        >
-                          Auto
-                        </button>
-
-                        <div
-                          className="bp-color-thumb"
-                          style={{ background: selectedTitleColor }}
-                        >
-                          <input
-                            type="color"
-                            value={selectedTitleColor}
-                            onChange={(e) => {
-                              setSelectedTitleColor(e.target.value);
-                              setTitleColorMode("custom");
-                            }}
-                          />
-                        </div>
-
-                      </div>
-                    <div className="tc-palette">
-                      {TEXT_COLOR_PALETTE.map(c => (
-                        <div
-                          key={c.hex}
-                          className={`tc-swatch${contentColorMode !== "auto" && selectedContentColor === c.hex ? " selected" : ""}`}
-                          style={{ background: c.hex }}
-                          title={c.label}
-                          onClick={() => { setSelectedContentColor(c.hex); setContentColorMode("custom"); }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* ── Title size ──────────────────────────────── */}
-                  <div className="tp-row">
-                    <span className="tp-label">Title Size</span>
-                    <div className="tp-toggle-group">
-                      {[["sm","Small"],["md","Medium"],["lg","Large"]].map(([v,l]) => (
-                        <button key={v} className={`tp-opt${titleSize === v ? " on" : ""}`} onClick={() => setTitleSize(v)}>{l}</button>
-                      ))}
-                    </div>
-                  </div>
-                   {/* ── Content size ──────────────────────────────── */}
-                  <div className="tp-row">
-                    <span className="tp-label">Content size</span>
-                    <div className="tp-toggle-group">
-                      {[["sm","Small"],["md","Medium"],["lg","Large"]].map(([v,l]) => (
-                        <button key={v} className={`tp-opt${contentSize === v ? " on" : ""}`} onClick={() => setContentSize(v)}>{l}</button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Submit message */}
-                {message && (
-                  <p style={{ fontSize: "11px", letterSpacing: "0.1em", color: "rgba(120,200,180,0.7)", textAlign: "center", margin: "1rem 0 0" }}>
-                    {message}
-                  </p>
-                )}
-
-                {/* Actions */}
-                <div className="k-actions">
-                  <div className="k-action-left">
-                    <button className="k-btn-ghost">💾 Save draft</button>
-                    <button className="k-btn-ghost">↗ Share</button>
-                    <button className="k-btn-ghost">🖨 Export</button>
-                  </div>
-                  <button  className="k-btn-primary" onClick={()=>{handleKalam()}}>
-                    ✦ Publish kalam
+                  <button className="k-btn-ghost" style={{ fontSize: "10px" }}>
+                    📋 Use template
                   </button>
                 </div>
 
+                <div className="k-card-body">
+
+                  {/* Sinf + Title */}
+                  <div className="k-field-grid">
+                    <div className="k-field">
+                      <div className="k-label">Form <span className="k-label-urdu">— صنف</span></div>
+                      <select className="k-select" value={type} onChange={(e) => setType(e.target.value)}>
+                        <option value="" disabled>Select a form…</option>
+                        {SINF_OPTIONS.map(o => (
+                          <option key={o.value} value={o.value}>{o.value} — {o.ur}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="k-field">
+                      <div className="k-label">Title <span className="k-label-urdu">— عنوان</span></div>
+                      <input
+                        className="k-input" type="text" placeholder="Name your kalam…"
+                        value={title} onChange={(e) => setTitle(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="k-sep" />
+
+                  {/* Moods */}
+                  <div className="k-mood-label">
+                    Mood <span className="k-label-urdu" style={{ fontSize: "10px" }}>— کیفیت</span>
+                  </div>
+                  <div className="k-moods">
+                    {MOODS.map(m => (
+                      <button key={m.en} className={`k-mood${activeMoods.includes(m.en) ? " on" : ""}`} onClick={() => toggleMood(m.en)}>
+                        {m.en} — {m.ur}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="k-sep" />
+
+                  {/* Content textarea */}
+                  <div className="k-mood-label" style={{ marginBottom: "8px" }}>
+                    Content <span className="k-label-urdu" style={{ fontSize: "10px" }}>— متن</span>
+                  </div>
+                  <div className="k-textarea-wrap">
+                    <textarea
+                      className="k-textarea"
+                      placeholder="Apna kalam yahan likhein… اپنا کلام یہاں لکھیں"
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                    />
+                    <div className="k-toolbar">
+                      <button className={`k-mic${streamRecording ? " rec" : ""}`} onClick={handleRecording} aria-label="Voice input">
+                        🎙 <span>{streamRecording ? "Recording…" : "Speak"}</span>
+                        <span className="k-mic-dot" />
+                      </button>
+                      <span className="k-charcount">{content.length} chars</span>
+                    </div>
+                  </div>
+
+                  {/* Audio playback */}
+                  {recording.map((recUrl, i) => (
+                    <div className="k-audio-row" key={i}>
+                      <audio controls src={recUrl} />
+                      <a href={recUrl} download={`kalam-recording-${i}.wav`}
+                        style={{ fontSize: "10px", letterSpacing: "0.1em", color: "rgba(120,200,180,0.7)", textDecoration: "none", flexShrink: 0 }}>
+                        ↓ Save
+                      </a>
+                    </div>
+                  ))}
+
+                  <div className="k-sep" style={{ marginTop: "1.1rem" }} />
+
+                  {/* Background picker */}
+                  <div className="k-mood-label" style={{ marginBottom: "10px" }}>
+                    🎨 Background <span className="k-label-urdu" style={{ fontSize: "10px" }}>— پس منظر</span>
+                  </div>
+                  <div className="bp-tabs">
+                    {["colors","custom","image"].map(t => (
+                      <button key={t} className={`bp-tab${bgTab === t ? " on" : ""}`} onClick={() => setBgTab(t)}>
+                        {t === "colors" ? "Preset colors" : t === "custom" ? "Custom color" : "Upload image"}
+                      </button>
+                    ))}
+                  </div>
+
+                  {bgTab === "colors" && (
+                    <div className="bp-colors">
+                      {PRESET_COLORS.map(c => (
+                        <div key={c.hex}
+                          className={`bp-swatch${selectedColor === c.hex && !isImage ? " selected" : ""}`}
+                          style={{ background: c.hex }} title={c.label}
+                          onClick={() => { setSelectedColor(c.hex); setIsImage(false); }}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {bgTab === "custom" && (
+                    <div className="bp-custom-row">
+                      <div className="bp-color-thumb" style={{ background: customColor }}>
+                        <input type="color" value={customColor}
+                          onChange={(e) => { setCustomColor(e.target.value); setIsImage(false); }} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-pri)" }}>{customColor.toUpperCase()}</div>
+                        <div style={{ fontSize: "10px", color: "var(--text-ter)", marginTop: "2px" }}>Click swatch to open picker</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {bgTab === "image" && (
+                    <>
+                      <div className="bp-upload-zone">
+                        <input type="file" accept="image/*" onChange={handleImageUpload} />
+                        <div style={{ fontSize: "20px", color: "var(--text-ter)", marginBottom: "5px" }}>🖼</div>
+                        <div style={{ fontSize: "11px", color: "var(--text-sec)", marginBottom: "2px" }}>Drop an image or click to browse</div>
+                        <div style={{ fontSize: "10px", color: "var(--text-ter)" }}>JPG, PNG, WEBP</div>
+                      </div>
+                      {imageSrc && <img src={imageSrc} alt="Uploaded background" className="bp-img-thumb" />}
+                    </>
+                  )}
+
+                  <div className="bp-opacity-row">
+                    <span className="bp-opacity-label">☀ Brightness</span>
+                    <input type="range" min="20" max="100" step="1" value={bgOpacity}
+                      onChange={(e) => setBgOpacity(Number(e.target.value))} />
+                    <span className="bp-opacity-val">{bgOpacity}%</span>
+                  </div>
+
+                  {/* Text readability */}
+                  <div className="text-protect">
+                    <div className="tp-head">Aa Text readability</div>
+                    <div className="tp-row">
+                      <span className="tp-label">Text color</span>
+                      <div className="tp-toggle-group">
+                        {["light","dark","auto"].map(v => (
+                          <button key={v} className={`tp-opt${textColor === v ? " on" : ""}`} onClick={() => setTextColor(v)}>
+                            {v.charAt(0).toUpperCase() + v.slice(1)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="tp-row">
+                      <span className="tp-label">Text backdrop</span>
+                      <div className="tp-toggle-group">
+                        {[["none","None"],["soft","Soft blur"],["solid","Solid panel"]].map(([v,l]) => (
+                          <button key={v} className={`tp-opt${backdrop === v ? " on" : ""}`} onClick={() => setBackdrop(v)}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="tp-row">
+                      <span className="tp-label">Scrim overlay</span>
+                      <input type="range" min="0" max="80" step="1" value={scrim}
+                        onChange={(e) => setScrim(Number(e.target.value))} />
+                      <span className="tp-val">{scrim}%</span>
+                    </div>
+
+                    {/* ── Title Font ─────────────────────────────── */}
+                    <div className="tp-row" style={{ alignItems: "flex-start", flexDirection: "column", gap: "7px" }}>
+                      <span className="tp-label" style={{ marginBottom: "2px" }}>
+                        Title font <span style={{ color: "var(--text-ter)", fontSize: "9px", fontFamily: "'DM Mono', monospace", letterSpacing: "0.05em" }}>— عنوان کا خط</span>
+                      </span>
+                      <div className="font-picker-scroll" style={{ width: "100%" }}>
+                        {TITLE_FONTS.map(f => (
+                          <div
+                            key={f.id}
+                            className={`font-option${selectedTitleFont === f.id ? " selected" : ""}`}
+                            onClick={() => setSelectedTitleFont(f.id)}
+                          >
+                            <span
+                              className="font-option-sample"
+                              style={{ fontFamily: f.family }}
+                            >
+                              {f.sample}
+                            </span>
+                            <span className="font-option-name">{f.label}</span>
+                            {selectedTitleFont === f.id && (
+                              <span className="font-option-check">✓</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* ── Title Color ────────────────────────────── */}
+                    <div className="tp-row" style={{ alignItems: "flex-start", flexDirection: "column", gap: "6px" }}>
+                      <span className="tp-label">
+                        Title color <span style={{ color: "var(--text-ter)", fontSize: "9px", fontFamily: "'DM Mono', monospace", letterSpacing: "0.05em" }}>— عنوان رنگ</span>
+                      </span>
+                      <div className="tc-row">
+
+                          <button
+                            className={`tc-auto-btn${titleColorMode === "auto" ? " on" : ""}`}
+                            onClick={() => setTitleColorMode("auto")}
+                          >
+                            Auto
+                          </button>
+
+                          <div
+                            className="bp-color-thumb"
+                            style={{ background: selectedTitleColor }}
+                          >
+                            <input
+                              type="color"
+                              value={selectedTitleColor}
+                              onChange={(e) => {
+                                setSelectedTitleColor(e.target.value);
+                                setTitleColorMode("custom");
+                              }}
+                            />
+                          </div>
+
+                        </div>
+                      <div className="tc-palette">
+                        {TEXT_COLOR_PALETTE.map(c => (
+                          <div
+                            key={c.hex}
+                            className={`tc-swatch${titleColorMode !== "auto" && selectedTitleColor === c.hex ? " selected" : ""}`}
+                            style={{ background: c.hex }}
+                            title={c.label}
+                            onClick={() => { setSelectedTitleColor(c.hex); setTitleColorMode("custom"); }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* ── Content Font ───────────────────────────── */}
+                    <div className="tp-row" style={{ alignItems: "flex-start", flexDirection: "column", gap: "7px" }}>
+                      <span className="tp-label" style={{ marginBottom: "2px" }}>
+                        Content font <span style={{ color: "var(--text-ter)", fontSize: "9px", fontFamily: "'DM Mono', monospace", letterSpacing: "0.05em" }}>— متن کا خط</span>
+                      </span>
+                      <div className="font-picker-scroll" style={{ width: "100%" }}>
+                        {CONTENT_FONTS.map(f => (
+                          <div
+                            key={f.id}
+                            className={`font-option${selectedContentFont === f.id ? " selected" : ""}`}
+                            onClick={() => setSelectedContentFont(f.id)}
+                          >
+                            <span
+                              className="font-option-sample"
+                              style={{ fontFamily: f.family, fontSize: "12px" }}
+                            >
+                              {f.sample}
+                            </span>
+                            <span className="font-option-name">{f.label}</span>
+                            {selectedContentFont === f.id && (
+                              <span className="font-option-check">✓</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* ── Content Color ──────────────────────────── */}
+                    <div className="tp-row" style={{ alignItems: "flex-start", flexDirection: "column", gap: "6px" }}>
+                      <span className="tp-label">
+                        Content color <span style={{ color: "var(--text-ter)", fontSize: "9px", fontFamily: "'DM Mono', monospace", letterSpacing: "0.05em" }}>— متن رنگ</span>
+                      </span>
+                      <div className="tc-row">
+
+                          <button
+                            className={`tc-auto-btn${titleColorMode === "auto" ? " on" : ""}`}
+                            onClick={() => setTitleColorMode("auto")}
+                          >
+                            Auto
+                          </button>
+
+                          <div
+                            className="bp-color-thumb"
+                            style={{ background: selectedTitleColor }}
+                          >
+                            <input
+                              type="color"
+                              value={selectedTitleColor}
+                              onChange={(e) => {
+                                setSelectedTitleColor(e.target.value);
+                                setTitleColorMode("custom");
+                              }}
+                            />
+                          </div>
+
+                        </div>
+                      <div className="tc-palette">
+                        {TEXT_COLOR_PALETTE.map(c => (
+                          <div
+                            key={c.hex}
+                            className={`tc-swatch${contentColorMode !== "auto" && selectedContentColor === c.hex ? " selected" : ""}`}
+                            style={{ background: c.hex }}
+                            title={c.label}
+                            onClick={() => { setSelectedContentColor(c.hex); setContentColorMode("custom"); }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* ── Title size ──────────────────────────────── */}
+                    <div className="tp-row">
+                      <span className="tp-label">Title Size</span>
+                      <div className="tp-toggle-group">
+                        {[["sm","Small"],["md","Medium"],["lg","Large"]].map(([v,l]) => (
+                          <button key={v} className={`tp-opt${titleSize === v ? " on" : ""}`} onClick={() => setTitleSize(v)}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+                     {/* ── Content size ──────────────────────────────── */}
+                    <div className="tp-row">
+                      <span className="tp-label">Content size</span>
+                      <div className="tp-toggle-group">
+                        {[["sm","Small"],["md","Medium"],["lg","Large"]].map(([v,l]) => (
+                          <button key={v} className={`tp-opt${contentSize === v ? " on" : ""}`} onClick={() => setContentSize(v)}>{l}</button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Submit message */}
+                  {message && (
+                    <p style={{ fontSize: "11px", letterSpacing: "0.1em", color: "rgba(120,200,180,0.7)", textAlign: "center", margin: "1rem 0 0" }}>
+                      {message}
+                    </p>
+                  )}
+
+                  {/* Actions */}
+                  <div className="k-actions">
+                    <div className="k-action-left">
+                      <button className="k-btn-ghost">💾 Save draft</button>
+                      <button className="k-btn-ghost">↗ Share</button>
+                      <button className="k-btn-ghost">🖨 Export</button>
+                    </div>
+                    <button  className="k-btn-primary" onClick={()=>{handleKalam()}}>
+                      ✦ Publish kalam
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "8px" }}>
+                <Link to="/UrKalam" className="k-btn-ghost" style={{ fontSize: "10px", letterSpacing: "0.12em" }}>
+                  View your kalams →
+                </Link>
               </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "8px" }}>
-              <Link to="/UrKalam" className="k-btn-ghost" style={{ fontSize: "10px", letterSpacing: "0.12em" }}>
-                View your kalams →
-              </Link>
-            </div>
           </div>
-
+          <Footer/>
         </div>
-        <Footer/>
       </div>
 
       {/* ── Success popup ── */}

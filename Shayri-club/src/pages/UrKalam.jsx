@@ -1244,6 +1244,39 @@ const UrKalam = () => {
       })
    }
 
+  // ── Sidebar (Kalam active, Compose/Collection sub-nav) ─────────────────────
+  const KalamSidebar = () => (
+    <aside className="k-sidebar">
+      <div className="k-sidebar-section">Navigate</div>
+      <a href="/kalam" className="k-sidebar-link active">
+         Kalam
+      </a>
+      <div className="k-sidebar-sub">
+        <button
+          className={`k-sidebar-link${activeNav === "Compose" ? " active2" : ""}`}
+          onClick={() => { setActiveNav("Compose"); navigate("/Kalam"); }}
+        >
+          Compose
+        </button>
+        <button
+          className={`k-sidebar-link${activeNav === "Collection" ? " active" : ""}`}
+          onClick={() => { setActiveNav("Collection"); navigate("/urKalam"); }}
+        >
+          Collection
+        </button>
+      </div>
+      <a href="/spaces" className="k-sidebar-link">
+        Community
+      </a>
+      <a href="/spaces" className="k-sidebar-link">
+        Browse
+      </a>
+      <a href="/spaces" className="k-sidebar-link">
+        Library
+      </a>
+    </aside>
+  );
+
   return (
     <>
       <style>{`
@@ -1348,6 +1381,64 @@ const UrKalam = () => {
 
         @media (max-width: 900px) {
           .k-global-links { display: none; }
+        }
+
+        /* ── Left sidebar (matches k-theme) ─────────────────── */
+        .k-sidebar {
+          display: none;
+          flex-direction: column;
+          width: 220px;
+          padding: 28px 18px;
+          position: fixed;
+          top: 68px;
+          bottom: 0;
+          left: 0;
+          overflow-y: auto;
+          border-right: 0.5px solid var(--border-sm);
+          background: rgba(10,10,14,0.5);
+          backdrop-filter: blur(10px);
+          z-index: 40;
+        }
+        @media (min-width: 1024px) { .k-sidebar { display: flex; } }
+
+        .k-sidebar-section {
+          font-size: 9px; font-weight: 500; color: var(--text-ter);
+          letter-spacing: 0.3em; text-transform: uppercase;
+          margin: 0 0 10px 4px;
+        }
+        .k-sidebar-link {
+          display: flex; align-items: center; gap: 10px;
+          width: 100%; text-align: left;
+          padding: 9px 10px 9px 12px;
+          font-size: 13px; letter-spacing: 0.03em;
+          color: var(--text-sec); text-decoration: none;
+          border: none; border-left: 2px solid transparent;
+          cursor: pointer; background: none;
+          transition: color 0.2s ease, border-color 0.2s ease;
+          font-family: 'DM Mono', monospace;
+        }
+        .k-sidebar-link:hover { color: var(--text-pri); }
+        .k-sidebar-link.active {
+          color: rgba(210,170,90,0.95);
+          border-left-color: rgba(210,170,90,0.85);
+          font-weight: 500;
+        }
+          .k-sidebar-link.active2 {
+        color: rgba(210,170,90);
+        
+        }
+        .k-sidebar-sub {
+          display: flex; flex-direction: column;
+          margin: 2px 0 4px 12px;
+          padding-left: 10px;
+          border-left: 0.5px solid var(--border-sm);
+          gap: 1px;
+        }
+        .k-sidebar-sub .k-sidebar-link { font-size: 12px; padding: 7px 8px; }
+
+        /* Shifts page content right on desktop to make room for the sidebar */
+        @media (min-width: 1024px) {
+          .k-page-body { margin-left: 220px; }
         }
 
         /* ── Page nav (matches Kalam.jsx) ───────────────── */
@@ -1719,199 +1810,204 @@ const UrKalam = () => {
           </div>
         </nav>
 
-        {/* ── Page-specific Navbar ── */}
-        <nav className="uk-nav">
-          <div className="uk-brand">
-            {/* <div className="uk-logo">✦</div> */}
-            {/* <span className="uk-wordmark">Kalam</span> */}
-          </div>
-          <div className="uk-nav-links">
-            {["Compose", "Collection"].map((n) => (
-              <button
-                key={n}
-                className={`uk-nl${activeNav === n ? " active" : ""}`}
-                onClick={() => {
-                  setActiveNav(n);
-                  if (n === "Compose") navigate("/kalam");
-                }}
-              >
-                {n}
+        <KalamSidebar />
+
+        <div className="k-page-body">
+
+          {/* ── Page-specific Navbar ── */}
+          <nav className="uk-nav">
+            <div className="uk-brand">
+              {/* <div className="uk-logo">✦</div> */}
+              {/* <span className="uk-wordmark">Kalam</span> */}
+            </div>
+            <div className="uk-nav-links">
+              {["Compose", "Collection"].map((n) => (
+                <button
+                  key={n}
+                  className={`uk-nl${activeNav === n ? " active" : ""}`}
+                  onClick={() => {
+                    setActiveNav(n);
+                    if (n === "Compose") navigate("/kalam");
+                  }}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+            <div className="uk-nav-right">
+              <Link to="/kalam" className="uk-btn-primary" style={{ display: "none" }}>+ New Kalam</Link>
+              <button className="uk-hamburger" onClick={() => setMobileMenuOpen((o) => !o)} aria-label="Menu">
+                <span /><span /><span />
               </button>
-            ))}
-          </div>
-          <div className="uk-nav-right">
-            <Link to="/kalam" className="uk-btn-primary" style={{ display: "none" }}>+ New Kalam</Link>
-            <button className="uk-hamburger" onClick={() => setMobileMenuOpen((o) => !o)} aria-label="Menu">
-              <span /><span /><span />
-            </button>
-          </div>
-        </nav>
-
-        {mobileMenuOpen && (
-          <div className="uk-mobile-menu">
-            {["Compose", "Collection", "Explore", "Analytics"].map((n) => (
-              <button
-                key={n}
-                className={`uk-nl${activeNav === n ? " active" : ""}`}
-                onClick={() => {
-                  setActiveNav(n);
-                  setMobileMenuOpen(false);
-                  if (n === "Compose") navigate("/kalam");
-                }}
-              >
-                {n}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* ── Hero ── */}
-        <div className="uk-hero">
-          <div className="uk-hero-inner">
-            <div>
-              <div className="uk-eyebrow">Collection</div>
-              <h1 className="uk-hero-title">Your Kalams</h1>
-              <p className="uk-hero-sub">Har lafz jo tumne likha — ہر لفظ جو تم نے لکھا</p>
             </div>
-            <div className="uk-stats">
-              <div className="uk-stat">
-                <div className="uk-stat-num">{showLoading ? "—" : kalams.length}</div>
-                <div className="uk-stat-label">Kalams</div>
+          </nav>
+
+          {mobileMenuOpen && (
+            <div className="uk-mobile-menu">
+              {["Compose", "Collection", "Explore", "Analytics"].map((n) => (
+                <button
+                  key={n}
+                  className={`uk-nl${activeNav === n ? " active" : ""}`}
+                  onClick={() => {
+                    setActiveNav(n);
+                    setMobileMenuOpen(false);
+                    if (n === "Compose") navigate("/kalam");
+                  }}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* ── Hero ── */}
+          <div className="uk-hero">
+            <div className="uk-hero-inner">
+              <div>
+                <div className="uk-eyebrow">Collection</div>
+                <h1 className="uk-hero-title">Your Kalams</h1>
+                <p className="uk-hero-sub">Har lafz jo tumne likha — ہر لفظ جو تم نے لکھا</p>
               </div>
-              <div className="uk-stat-divider" />
-              <div className="uk-stat">
-                <div className="uk-stat-num">{showLoading ? "—" : ghazalCount}</div>
-                <div className="uk-stat-label">Ghazals</div>
-              </div>
-              <div className="uk-stat-divider" />
-              <div className="uk-stat">
-                <div className="uk-stat-num">{showLoading ? "—" : nazmCount}</div>
-                <div className="uk-stat-label">Nazms</div>
+              <div className="uk-stats">
+                <div className="uk-stat">
+                  <div className="uk-stat-num">{showLoading ? "—" : kalams.length}</div>
+                  <div className="uk-stat-label">Kalams</div>
+                </div>
+                <div className="uk-stat-divider" />
+                <div className="uk-stat">
+                  <div className="uk-stat-num">{showLoading ? "—" : ghazalCount}</div>
+                  <div className="uk-stat-label">Ghazals</div>
+                </div>
+                <div className="uk-stat-divider" />
+                <div className="uk-stat">
+                  <div className="uk-stat-num">{showLoading ? "—" : nazmCount}</div>
+                  <div className="uk-stat-label">Nazms</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* ── Body ── */}
-        <div className="uk-body">
+          {/* ── Body ── */}
+          <div className="uk-body">
 
-          {showLoading ? (
-            <SkeletonGrid count={6} />
-          ) : kalams.length === 0 ? (
-            <div className="uk-empty">
-              <div className="uk-empty-glyph">✦</div>
-              <p className="uk-empty-text">No kalams yet — start writing</p>
-              <Link to="/kalam" className="uk-btn-primary">✦ Compose your first kalam</Link>
+            {showLoading ? (
+              <SkeletonGrid count={6} />
+            ) : kalams.length === 0 ? (
+              <div className="uk-empty">
+                <div className="uk-empty-glyph">✦</div>
+                <p className="uk-empty-text">No kalams yet — start writing</p>
+                <Link to="/kalam" className="uk-btn-primary">✦ Compose your first kalam</Link>
+              </div>
+            ) : (
+              <>
+                <div className="uk-section-row">
+                  <span className="uk-section-label">
+                    {kalams.length} {kalams.length === 1 ? "entry" : "entries"} in your collection
+                  </span>
+                  <Link to="/kalam" className="uk-btn-primary">✦ New Kalam</Link>
+                </div>
+
+                <div className="uk-grid">
+                  {kalams.map((item) => (
+                    <div key={item._id} className="uk-grid-item">
+                      <NewKalam
+                        title={item.name}
+                        content={item.content}
+                        type={item.type}
+                        imageSrc={item.customStyles?.imageSrc}
+                        mUid={item.createdBy}
+                        kalId={item._id}
+                        customStyles={item.customStyles}
+                        isSaved={savedKalams2.current.has(item._id)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            <div className="uk-footer">
+              <span className="uk-footer-note">
+                {!loading && kalams.length > 0 && "— Arif Karimi"}
+              </span>
             </div>
-          ) : (
+          </div>
+
+          {/* ── Anchored kalam action popover (replaces centered modal) ── */}
+          {isKalamMenuOpen && (
             <>
-              <div className="uk-section-row">
-                <span className="uk-section-label">
-                  {kalams.length} {kalams.length === 1 ? "entry" : "entries"} in your collection
-                </span>
-                <Link to="/kalam" className="uk-btn-primary">✦ New Kalam</Link>
-              </div>
+              {/* invisible backdrop to catch outside clicks and close the menu */}
+              <div
+                onClick={() => setIsKalamMenuOpen(false)}
+                style={{ position: "fixed", inset: 0, zIndex: 150 }}
+              />
 
-              <div className="uk-grid">
-                {kalams.map((item) => (
-                  <div key={item._id} className="uk-grid-item">
-                    <NewKalam
-                      title={item.name}
-                      content={item.content}
-                      type={item.type}
-                      imageSrc={item.customStyles?.imageSrc}
-                      mUid={item.createdBy}
-                      kalId={item._id}
-                      customStyles={item.customStyles}
-                      isSaved={savedKalams2.current.has(item._id)}
-                    />
-                  </div>
-                ))}
+              <div
+                style={{
+                  position: "fixed",
+                  top: menuPosition?.top ?? 0,
+                  right: menuPosition?.right ?? 0,
+                  zIndex: 151,
+                  minWidth: "140px",
+                  background: "rgba(14,13,20,0.98)",
+                  border: "0.5px solid rgba(210,170,90,0.25)",
+                  borderRadius: "10px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                  padding: "4px",
+                  animation: "popIn 0.12s ease",
+                }}
+              >
+                <button
+                  onClick={() => {setIsKalamMenuOpen(false); setConfirmModalOpen(true)}}
+                  style={{
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "10px 14px",
+                    background: "transparent",
+                    border: "none",
+                    borderRadius: "6px",
+                    color: "rgba(255,140,140,0.9)",
+                    fontSize: "12px",
+                    fontFamily: "'DM Mono', monospace",
+                    letterSpacing: "0.05em",
+                    cursor: "pointer",
+                    transition: "background 0.12s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(226,75,74,0.1)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+                >
+                  Delete
+                </button>
               </div>
             </>
           )}
 
-          <div className="uk-footer">
-            <span className="uk-footer-note">
-              {!loading && kalams.length > 0 && "— Arif Karimi"}
-            </span>
-          </div>
+          <MyVerticallyCenteredModal isOpen={confirmModalOpen} onClose={() => setConfirmModalOpen(false)}>
+            <div className="uk-confirm">
+              <div className="uk-confirm-icon">⚠</div>
+              <h2 className="uk-confirm-title">Delete this kalam?</h2>
+              <p className="uk-confirm-sub">
+                This kalam will be permanently removed from your collection. This action can't be undone.
+              </p>
+              <div className="uk-confirm-actions">
+                <button className="uk-btn-cancel" onClick={() => setConfirmModalOpen(false)}>
+                  Cancel
+                </button>
+                <button
+                  className="uk-btn-danger"
+                  onClick={() => {
+                    handleDelete();
+                    setConfirmModalOpen(false);
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </MyVerticallyCenteredModal>
         </div>
-
-        {/* ── Anchored kalam action popover (replaces centered modal) ── */}
-        {isKalamMenuOpen && (
-          <>
-            {/* invisible backdrop to catch outside clicks and close the menu */}
-            <div
-              onClick={() => setIsKalamMenuOpen(false)}
-              style={{ position: "fixed", inset: 0, zIndex: 150 }}
-            />
-
-            <div
-              style={{
-                position: "fixed",
-                top: menuPosition?.top ?? 0,
-                right: menuPosition?.right ?? 0,
-                zIndex: 151,
-                minWidth: "140px",
-                background: "rgba(14,13,20,0.98)",
-                border: "0.5px solid rgba(210,170,90,0.25)",
-                borderRadius: "10px",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                padding: "4px",
-                animation: "popIn 0.12s ease",
-              }}
-            >
-              <button
-                onClick={() => {setIsKalamMenuOpen(false); setConfirmModalOpen(true)}}
-                style={{
-                  width: "100%",
-                  textAlign: "left",
-                  padding: "10px 14px",
-                  background: "transparent",
-                  border: "none",
-                  borderRadius: "6px",
-                  color: "rgba(255,140,140,0.9)",
-                  fontSize: "12px",
-                  fontFamily: "'DM Mono', monospace",
-                  letterSpacing: "0.05em",
-                  cursor: "pointer",
-                  transition: "background 0.12s",
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = "rgba(226,75,74,0.1)"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
-              >
-                Delete
-              </button>
-            </div>
-          </>
-        )}
-
-        <MyVerticallyCenteredModal isOpen={confirmModalOpen} onClose={() => setConfirmModalOpen(false)}>
-          <div className="uk-confirm">
-            <div className="uk-confirm-icon">⚠</div>
-            <h2 className="uk-confirm-title">Delete this kalam?</h2>
-            <p className="uk-confirm-sub">
-              This kalam will be permanently removed from your collection. This action can't be undone.
-            </p>
-            <div className="uk-confirm-actions">
-              <button className="uk-btn-cancel" onClick={() => setConfirmModalOpen(false)}>
-                Cancel
-              </button>
-              <button
-                className="uk-btn-danger"
-                onClick={() => {
-                  handleDelete();
-                  setConfirmModalOpen(false);
-                }}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </MyVerticallyCenteredModal>
       </div>
     </>
   );
