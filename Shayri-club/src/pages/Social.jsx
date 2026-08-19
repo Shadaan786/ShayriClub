@@ -1668,6 +1668,21 @@ export const Social = () => {
     fetchMoreData()
   }
 
+  // ── Sidebar (Browse active) — matches Social.jsx's black/gold/violet theme ──
+  const SocialSidebar = () => (
+    <aside className="s-sidebar">
+      <div className="s-sidebar-links">
+        <div className="s-sidebar-section">Navigate</div>
+        <a href="/" className="s-sidebar-link">Home</a>
+        <a href="/kalam" className="s-sidebar-link">Kalam</a>
+        <a href="/Social" className="s-sidebar-link active">Browse</a>
+        <a href="/Kotw" className="s-sidebar-link">Kalam of the Week</a>
+        <button onClick={() => Navigate('/spaces')} className="s-sidebar-link">Community</button>
+        <a href="/albumsLive" className="s-sidebar-link">Library</a>
+      </div>
+    </aside>
+  );
+
   return (
     <div
       id="mainScroll"
@@ -1675,6 +1690,8 @@ export const Social = () => {
       style={{ height: "100svh", WebkitOverflowScrolling: "touch", background: "linear-gradient(to right, #000000, #1a0828, #000000)" }}
     >
       <SidebarExample isOpen={isOpen} onClose={() => setIsOpen(false)} />
+
+      <SocialSidebar />
 
       {/* ── Page-wide ambient glow (was previously scoped to hero only) ── */}
       <div
@@ -1782,6 +1799,60 @@ export const Social = () => {
           background: linear-gradient(90deg, #e8a0b0, #d4a0c0, #f0a080);
           -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
+
+        /* ── Left sidebar (matches Social.jsx black/gold theme) ─────────────── */
+        .s-sidebar {
+          display: none;
+          flex-direction: column;
+          width: 220px;
+          position: fixed;
+          top: 76px;
+          bottom: 0;
+          left: 0;
+          overflow-y: auto;
+          background: linear-gradient(180deg, #000000, #140620);
+          border-right: 1px solid rgba(78,70,57,0.3);
+          z-index: 25;
+        }
+        @media (min-width: 1024px) { .s-sidebar { display: flex; } }
+
+        .s-sidebar-links {
+          padding: 24px 20px;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .s-sidebar-section {
+          font-family: 'Inter', sans-serif;
+          font-size: 10px; font-weight: 600; color: rgba(209,197,180,0.4);
+          letter-spacing: 0.25em; text-transform: uppercase;
+          margin: 0 0 14px 4px;
+        }
+        .s-sidebar-link {
+          display: flex; align-items: center;
+          width: 100%; text-align: left;
+          padding: 10px 10px 10px 14px;
+          margin-bottom: 2px;
+          font-family: 'Inter', sans-serif;
+          font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: #d1c5b4; text-decoration: none;
+          border: none; border-left: 2px solid transparent;
+          cursor: pointer; background: none;
+          transition: color 0.2s ease, border-color 0.2s ease;
+        }
+        .s-sidebar-link:hover { color: #e9c176; }
+        .s-sidebar-link.active {
+          color: #e9c176;
+          border-left-color: #e9c176;
+          font-weight: 700;
+        }
+
+        /* Shifts page content right on desktop to make room for the sidebar */
+        @media (min-width: 1024px) {
+          .s-page-body { margin-left: 220px; }
+        }
+
         @media (max-width: 768px) {
           .s-nav-search, .s-nav-links { display: none !important; }
           .s-nav-publish-inline { display: none !important; }
@@ -1797,226 +1868,228 @@ export const Social = () => {
         }
       `}</style>
 
+      {/* ── Top Nav — full width, sits above sidebar & page body ── */}
+      <div className="max-w-[1600px] mx-auto relative z-30">
+        <nav
+          className="s-top-nav flex items-center justify-between px-10 py-4 sticky top-0"
+          style={{
+            background: "linear-gradient(to right, #000000, #1a0828, #000000)",
+            borderBottom: "1px solid rgba(78,70,57,0.3)",
+          }}
+        >
+          {/* Left: brand + primary nav links */}
+          <div className="flex items-center gap-8">
+            {/* <h1
+              onClick={() => setIsOpen(true)}
+              style={{
+                fontFamily: "'EB Garamond', serif",
+                fontSize: 26,
+                fontWeight: 600,
+                color: "#e9c176",
+                letterSpacing: "-0.02em",
+                cursor: "pointer",
+                margin: 0,
+              }}
+            >
+              Kalams
+            </h1> */}
+            <div className="k-global-brand">
+        <div className="k-global-logo-wrap">
+          <div className="k-global-logo-glow" />
+          <img src="/logo2.svg" alt="Alfaz Logo" className="k-global-logo-img" />
+        </div>
+        <h1 className="k-global-wordmark">
+          <span aria-hidden="true" className="k-global-wordmark-glow">Alfaz</span>
+          <span className="k-global-wordmark-text">
+            <span className="k-global-wm-a">A</span>
+            <bdi className="k-global-wm-ur">لف</bdi>
+            <span className="k-global-wm-a">az</span>
+          </span>
+        </h1>
+      </div>
+
+            <div className="s-nav-links hidden md:flex items-center gap-10">
+              <a href="/kalam"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12,
+                  letterSpacing: "0.1em",
+                  fontWeight: 700,
+                  color: "#e9c176",
+                  borderBottom: "2px solid #e9c176",
+                  paddingBottom: 4,
+                  cursor: "pointer",
+                  textTransform: "uppercase",
+                }}
+              >
+                Kalam
+              </a>
+              <button onClick={()=>Navigate('/spaces')}>
+              
+               <a className="nav-link-transition"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12,
+                  letterSpacing: "0.1em",
+                  fontWeight: 500,
+                  color: "#d1c5b4",
+                  cursor: "pointer",
+                  textTransform: "uppercase",
+                  position: "relative",
+                }}
+              >
+                Community
+              </a>
+              </button>
+              <button>
+              
+              <a  className="nav-link-transition"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12,
+                  letterSpacing: "0.1em",
+                  fontWeight: 500,
+                  color: "#d1c5b4",
+                  cursor: "pointer",
+                  textTransform: "uppercase",
+                  position: "relative",
+                }}
+              >
+                Browse
+              </a>
+              </button>
+              <button onClick={()=>Navigate('/albumsLive')}>
+              
+              <a  className="nav-link-transition"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12,
+                  letterSpacing: "0.1em",
+                  fontWeight: 500,
+                  color: "#d1c5b4",
+                  cursor: "pointer",
+                  textTransform: "uppercase",
+                  position: "relative",
+                }}
+              >
+                Library
+              </a>
+              </button>
+            </div>
+          </div>
+
+          {/* Right: search + publish + menu + avatar */}
+          <div className="flex items-center gap-6">
+            {/* Search */}
+            <div className="s-nav-search relative hidden lg:flex items-center">
+              <span
+                className="material-symbols-outlined absolute left-3"
+                style={{ color: "#9a8f80" }}
+              >
+                search
+              </span>
+              <input
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                onChange={(e) => { setSearchQuery(e.target.value); setIsSearch(true); (e.target.value.trim() === "") ? handle() : null }}
+                placeholder="Search archive..."
+                type="text"
+                className="s-nav-input outline-none"
+                style={{
+                  background: "#1a1c1c",
+                  borderBottom: `1px solid ${isSearchFocused ? "#e9c176" : "rgba(78,70,57,0.3)"}`,
+                  color: "#e2e2e2",
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12,
+                  letterSpacing: "0.05em",
+                  padding: "8px 16px 8px 40px",
+                  width: isSearchFocused ? 320 : 256,
+                  transition: "all 0.3s ease",
+                }}
+              />
+              <button
+                onClick={searchKalams}
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 11,
+                  letterSpacing: "0.1em",
+                  color: "#e9c176",
+                  marginLeft: 8,
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  textTransform: "uppercase",
+                }}
+              >
+                search
+              </button>
+            </div>
+
+            {/* Action group */}
+            <div className="flex items-center gap-4">
+              <Link
+                to="/kalam"
+                className="s-nav-publish-inline items-center"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12,
+                  letterSpacing: "0.1em",
+                  fontWeight: 600,
+                  padding: "8px 24px",
+                  border: "1px solid #e9c176",
+                  color: "#e9c176",
+                  background: "transparent",
+                  cursor: "pointer",
+                  textTransform: "uppercase",
+                  transition: "all 0.3s ease",
+                  textDecoration: "none",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(233,193,118,0.1)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+              >
+                Publish
+              </Link>
+
+              {/* <button
+                onClick={() => setIsOpen(true)}
+                aria-label="Open sidebar"
+                style={{
+                  color: "#d1c5b4",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "#e9c176"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "#d1c5b4"; }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 24 }}>menu</span>
+              </button> */}
+
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold cursor-pointer"
+                style={{
+                  border: "1px solid rgba(78,70,57,0.5)",
+                  color: "#e9c176",
+                  background: "#1a1c1c",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#e9c176"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(78,70,57,0.5)"; }}
+              >
+                <img onClick={()=>Navigate(`/profile?userId=${uid}`)} className="h-full rounded-full" src={profilePic} alt="" srcset="" />
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+
       <div
-        className="relative z-20"
+        className="relative z-20 s-page-body"
         style={{ paddingBottom: "max(80px, env(safe-area-inset-bottom))" }}
       >
         <div className="max-w-[1600px] mx-auto">
-
-          {/* ── Top Nav ── */}
-          <nav
-            className="s-top-nav flex items-center justify-between px-10 py-4 sticky top-0 z-30"
-            style={{
-              background: "linear-gradient(to right, #000000, #1a0828, #000000)",
-              borderBottom: "1px solid rgba(78,70,57,0.3)",
-            }}
-          >
-            {/* Left: brand + primary nav links */}
-            <div className="flex items-center gap-8">
-              {/* <h1
-                onClick={() => setIsOpen(true)}
-                style={{
-                  fontFamily: "'EB Garamond', serif",
-                  fontSize: 26,
-                  fontWeight: 600,
-                  color: "#e9c176",
-                  letterSpacing: "-0.02em",
-                  cursor: "pointer",
-                  margin: 0,
-                }}
-              >
-                Kalams
-              </h1> */}
-              <div className="k-global-brand">
-          <div className="k-global-logo-wrap">
-            <div className="k-global-logo-glow" />
-            <img src="/logo2.svg" alt="Alfaz Logo" className="k-global-logo-img" />
-          </div>
-          <h1 className="k-global-wordmark">
-            <span aria-hidden="true" className="k-global-wordmark-glow">Alfaz</span>
-            <span className="k-global-wordmark-text">
-              <span className="k-global-wm-a">A</span>
-              <bdi className="k-global-wm-ur">لف</bdi>
-              <span className="k-global-wm-a">az</span>
-            </span>
-          </h1>
-        </div>
-
-              <div className="s-nav-links hidden md:flex items-center gap-10">
-                <a href="/kalam"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12,
-                    letterSpacing: "0.1em",
-                    fontWeight: 700,
-                    color: "#e9c176",
-                    borderBottom: "2px solid #e9c176",
-                    paddingBottom: 4,
-                    cursor: "pointer",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  Kalam
-                </a>
-                <button onClick={()=>Navigate('/spaces')}>
-                <a
-                  className="nav-link-transition"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12,
-                    letterSpacing: "0.1em",
-                    fontWeight: 500,
-                    color: "#d1c5b4",
-                    cursor: "pointer",
-                    textTransform: "uppercase",
-                    position: "relative",
-                  }}
-                >
-                  Community
-                </a>
-                </button>
-                <button>
-                <a
-                  className="nav-link-transition"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12,
-                    letterSpacing: "0.1em",
-                    fontWeight: 500,
-                    color: "#d1c5b4",
-                    cursor: "pointer",
-                    textTransform: "uppercase",
-                    position: "relative",
-                  }}
-                >
-                  Browse
-                </a>
-                </button>
-                <button onClick={()=>Navigate('/albumsLive')}>
-                <a
-                  className="nav-link-transition"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12,
-                    letterSpacing: "0.1em",
-                    fontWeight: 500,
-                    color: "#d1c5b4",
-                    cursor: "pointer",
-                    textTransform: "uppercase",
-                    position: "relative",
-                  }}
-                >
-                  Library
-                </a>
-                </button>
-              </div>
-            </div>
-
-            {/* Right: search + publish + menu + avatar */}
-            <div className="flex items-center gap-6">
-              {/* Search */}
-              <div className="s-nav-search relative hidden lg:flex items-center">
-                <span
-                  className="material-symbols-outlined absolute left-3"
-                  style={{ color: "#9a8f80" }}
-                >
-                  search
-                </span>
-                <input
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setIsSearchFocused(false)}
-                  onChange={(e) => { setSearchQuery(e.target.value); setIsSearch(true); (e.target.value.trim() === "") ? handle() : null }}
-                  placeholder="Search archive..."
-                  type="text"
-                  className="s-nav-input outline-none"
-                  style={{
-                    background: "#1a1c1c",
-                    borderBottom: `1px solid ${isSearchFocused ? "#e9c176" : "rgba(78,70,57,0.3)"}`,
-                    color: "#e2e2e2",
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12,
-                    letterSpacing: "0.05em",
-                    padding: "8px 16px 8px 40px",
-                    width: isSearchFocused ? 320 : 256,
-                    transition: "all 0.3s ease",
-                  }}
-                />
-                <button
-                  onClick={searchKalams}
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 11,
-                    letterSpacing: "0.1em",
-                    color: "#e9c176",
-                    marginLeft: 8,
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  search
-                </button>
-              </div>
-
-              {/* Action group */}
-              <div className="flex items-center gap-4">
-                <Link
-                  to="/kalam"
-                  className="s-nav-publish-inline items-center"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12,
-                    letterSpacing: "0.1em",
-                    fontWeight: 600,
-                    padding: "8px 24px",
-                    border: "1px solid #e9c176",
-                    color: "#e9c176",
-                    background: "transparent",
-                    cursor: "pointer",
-                    textTransform: "uppercase",
-                    transition: "all 0.3s ease",
-                    textDecoration: "none",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(233,193,118,0.1)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-                >
-                  Publish
-                </Link>
-
-                {/* <button
-                  onClick={() => setIsOpen(true)}
-                  aria-label="Open sidebar"
-                  style={{
-                    color: "#d1c5b4",
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = "#e9c176"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = "#d1c5b4"; }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 24 }}>menu</span>
-                </button> */}
-
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold cursor-pointer"
-                  style={{
-                    border: "1px solid rgba(78,70,57,0.5)",
-                    color: "#e9c176",
-                    background: "#1a1c1c",
-                    transition: "all 0.3s ease",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#e9c176"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(78,70,57,0.5)"; }}
-                >
-                  <img onClick={()=>Navigate(`/profile?userId=${uid}`)} className="h-full rounded-full" src={profilePic} alt="" srcset="" />
-                </div>
-              </div>
-            </div>
-          </nav>
 
           {/* ── Hero Header ── */}
           <div
@@ -2200,9 +2273,7 @@ export const Social = () => {
 
               {kalamDat.map((item) => (
                 <div key={item._id} className="w-full max-w-[520px]">
-                  {
-                    (item.current.isImage)?setIsImage(true):setIsImage(false)
-                  }
+                  
                   {
 
                     console.log("likes!!!!!!!!!", likedKalams2.current.has(item._id))
