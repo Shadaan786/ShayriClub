@@ -1990,6 +1990,8 @@ import {
   Menu,
   X,
   SlidersHorizontal,
+  Image as ImageIcon,
+  Heart,
 } from "lucide-react";
 import axios from "axios";
 
@@ -2021,13 +2023,19 @@ export const Album = () => {
   const scrollRef = useRef(null);
   const [isPlayerOpen, setIsPlayerOpen]= useState(false)
   const [userId, setUserId] = useState("");
+  const [albumBgCover, setAlbumBgCover] = useState("");
+  const [albumBg, setAlbumBg] = useState("");
+  const [albumCover, setAlbumCover] = useState("");
+  const [bgUploading, setBgUploading] = useState(false);
 
-  const MAX_H = 220;
+  const MAX_H = 300;
   const MIN_H = 110;
   const [headerH, setHeaderH] = useState(MAX_H);
 
   const albumId = SearchParams.get("albumId");
   const currentAlbumName = albumName?.[0]?.name || "Album";
+  const bgCover = albumName?.[0]?.albumBgCover;
+  const isExpanded = headerH > MIN_H + 20;
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -2057,10 +2065,14 @@ export const Album = () => {
     axiosInstance
       .get(`/api/albumKalams?albumId=${albumId}`, { withCredentials: true })
       .then((response) => {
+        console.log("see respon", response.data)
+        setAlbumCover(response.data.albumKalams?.[0].albumCover);
+        setAlbumBg(response.data.albumKalams?.[0].albumBgCover)
         const kalamCollection = response.data.albumKalams?.[0]?.kalamCollection || [];
         setDataArrived(true);
         setKalamList(response.data.kalamList || []);
         setData(kalamCollection);
+        // setAlbumBgCover(response.data.)
         setAlbumStat(!!response.data.albumKalams?.[0]?.isLive);
         setAlbumName(response.data.albumKalams || []);
         setLength(response.data.length || kalamCollection.length || 0);
@@ -2103,6 +2115,33 @@ export const Album = () => {
       .then(() => {})
       .catch((error) => console.log("error while loading Album status", error));
   };
+
+  // Now takes the File directly and uploads immediately — no separate button/click needed.
+  const handleAlbumBgUpload = (bgFile) => {
+    if (!bgFile) return;
+
+    setAlbumBgCover(bgFile);
+    setAlbumBg(URL.createObjectURL(bgFile)); // instant local preview
+    setBgUploading(true);
+
+    const formData = new FormData();
+    formData.append("albumBgCover", bgFile);
+    formData.append("userId", userId._id);
+    formData.append("fileType", "albumBg");
+    formData.append("albumId", albumId);
+
+    axiosInstance
+      .post('/upload/albumBgCover', formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true
+      })
+      .then((response) => {
+        console.log("post request sent successfully");
+      }).catch((error) => {
+        console.error("Error while sending post request", error)
+      })
+      .finally(() => setBgUploading(false));
+  }
 
   // ── Shared Modals ──────────────────────────────────────────────
   const AddKalamModal = (
@@ -2500,28 +2539,89 @@ export const Album = () => {
           <div className="flex-1 space-y-8 max-w-5xl mx-auto w-full min-w-0">
             {/* Collapsing header */}
             <div
-              className="relative w-full rounded-3xl overflow-hidden bg-gradient-to-r from-black via-[#1a0828] to-black border border-amber-400/20 shadow-2xl flex flex-col justify-end p-6 md:p-10 transition-[height] duration-300 ease-out"
+              className="relative w-full rounded-3xl overflow-hidden bg-gradient-to-r from-black via-[#1a0828] to-black border border-amber-400/20 shadow-2xl p-6 md:p-10 transition-[height] duration-300 ease-out"
               style={{ height: `${headerH}px` }}
             >
-              <div className="relative z-10 flex flex-col gap-2">
-                <span
-                  className="text-[10px] font-semibold tracking-[0.2em] uppercase text-amber-400/70 transition-opacity duration-200"
-                  style={{ opacity: headerH > MIN_H + 20 ? 1 : 0 }}
-                >
-                  Featured Album
-                </span>
-                <h1
-                  className="font-semibold leading-none bg-clip-text text-transparent transition-all duration-200"
-                  style={{
-                    backgroundImage: "linear-gradient(to right, #f9bd22, #ffe1a7, #f9bd22)",
-                    fontSize: headerH > MIN_H + 20 ? "clamp(28px, 5vw, 48px)" : "24px",
-                  }}
-                >
-                  {currentAlbumName}
-                </h1>
+              {/* Background image — sits behind everything */}
+              {albumBg && (
+                <img
+                  src={albumBg}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-cover opacity-30"
+                />
+              )}
+
+              {/* Hidden input + small upload trigger, top-right corner */}
+              <input
+                id="album-bg-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleAlbumBgUpload(e.target.files[0])}
+              />
+              <label
+                htmlFor="album-bg-upload"
+                className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-black/40 border border-amber-400/25 backdrop-blur-md flex items-center justify-center text-amber-300 hover:bg-black/60 hover:border-amber-400/50 cursor-pointer transition"
+                title="Change background"
+              >
+                {bgUploading ? (
+                  <div className="w-3.5 h-3.5 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin" />
+                ) : (
+                  <ImageIcon className="w-4 h-4" />
+                )}
+              </label>
+
+              <div className="relative z-10 flex items-end justify-between h-full gap-6">
+                {/* Left: Album cover + name below it */}
+                <div className="flex flex-col items-start gap-3 min-w-0">
+                  <div
+                    className="rounded-2xl overflow-hidden border border-amber-400/20 shadow-xl shrink-0 bg-white/[0.04] flex items-center justify-center transition-all duration-200"
+                    style={{
+                      width: isExpanded ? "128px" : "48px",
+                      height: isExpanded ? "128px" : "48px",
+                    }}
+                  >
+                    {albumCover ? (
+                      <img
+                        src={albumCover}
+                        alt={currentAlbumName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <BookOpen className="w-6 h-6 text-white/20" />
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-1 min-w-0">
+                    {/* <span
+                      className="text-[10px] font-semibold tracking-[0.2em] uppercase text-amber-400/70 transition-opacity duration-200"
+                      style={{ opacity: isExpanded ? 1 : 0 }}
+                    >
+                      Featured Album
+                    </span> */}
+                    <h1
+                      className="font-semibold leading-tight bg-clip-text text-transparent transition-all duration-200 truncate max-w-[220px] sm:max-w-xs"
+                      style={{
+                        backgroundImage: "linear-gradient(to right, #f9bd22, #ffe1a7, #f9bd22)",
+                        fontSize: isExpanded ? "clamp(20px, 3vw, 30px)" : "18px",
+                      }}
+                    >
+                      {currentAlbumName}
+                    </h1>
+                    <button>
+                    <Heart/>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right: Verses + duration tags */}
                 <div
-                  className="flex items-center gap-3 transition-all duration-200"
-                  style={{ marginTop: headerH > MIN_H + 20 ? "1rem" : 0, opacity: headerH > MIN_H + 20 ? 1 : 0, height: headerH > MIN_H + 20 ? "auto" : 0, overflow: "hidden" }}
+                  className="flex items-center gap-3 transition-all duration-200 shrink-0"
+                  style={{
+                    opacity: isExpanded ? 1 : 0,
+                    height: isExpanded ? "auto" : 0,
+                    overflow: "hidden",
+                  }}
                 >
                   <div className="flex items-center gap-2 px-3 py-1 bg-amber-400/10 border border-amber-400/20 rounded-full">
                     <BookOpen className="w-3.5 h-3.5 text-amber-400" />
