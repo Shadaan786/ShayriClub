@@ -1230,6 +1230,9 @@ getUserId()
   const KalamSidebar = () => (
     <aside className="k-sidebar">
       <div className="k-sidebar-section">Navigate</div>
+      <a href="/" className="k-sidebar-link">
+         Home
+      </a>
       <a href="/kalam" className="k-sidebar-link active">
          Kalam
       </a>

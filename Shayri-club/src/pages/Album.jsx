@@ -2015,6 +2015,8 @@ export const Album = () => {
 
   const [openIndex, setOpenIndex] = useState(null);
   const [tracks, setTracks] = useState([]);
+  const [isLiked, setIsLiked] =  useState(false);
+  // const [justLiked, setJustLiked] = useState(true)
 
   const [navOpen, setNavOpen] = useState(false); // mobile left nav drawer
   const [visibilityOpen, setVisibilityOpen] = useState(false); // mobile right panel drawer
@@ -2141,6 +2143,15 @@ export const Album = () => {
         console.error("Error while sending post request", error)
       })
       .finally(() => setBgUploading(false));
+  }
+
+  const handleAlbumLike=()=>{
+    axiosInstance
+    .post('/api/likeAlbum',{
+      albumId: albumId
+    },{
+      withCredentials: true
+    })
   }
 
   // ── Shared Modals ──────────────────────────────────────────────
@@ -2577,8 +2588,8 @@ export const Album = () => {
                   <div
                     className="rounded-2xl overflow-hidden border border-amber-400/20 shadow-xl shrink-0 bg-white/[0.04] flex items-center justify-center transition-all duration-200"
                     style={{
-                      width: isExpanded ? "128px" : "48px",
-                      height: isExpanded ? "128px" : "48px",
+                      width: isExpanded ? "168px" : "56px",
+                      height: isExpanded ? "168px" : "56px",
                     }}
                   >
                     {albumCover ? (
@@ -2592,25 +2603,41 @@ export const Album = () => {
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-1 min-w-0">
+                  <div className="flex flex-col gap-1 min-w-0 mt-3">
                     {/* <span
                       className="text-[10px] font-semibold tracking-[0.2em] uppercase text-amber-400/70 transition-opacity duration-200"
                       style={{ opacity: isExpanded ? 1 : 0 }}
                     >
                       Featured Album
                     </span> */}
-                    <h1
-                      className="font-semibold leading-tight bg-clip-text text-transparent transition-all duration-200 truncate max-w-[220px] sm:max-w-xs"
-                      style={{
-                        backgroundImage: "linear-gradient(to right, #f9bd22, #ffe1a7, #f9bd22)",
-                        fontSize: isExpanded ? "clamp(20px, 3vw, 30px)" : "18px",
-                      }}
-                    >
-                      {currentAlbumName}
-                    </h1>
-                    <button>
-                    <Heart/>
-                    </button>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <h1
+                        className="font-semibold leading-tight bg-clip-text text-transparent transition-all duration-200 truncate max-w-[220px] sm:max-w-xs"
+                        style={{
+                          backgroundImage: "linear-gradient(to right, #f9bd22, #ffe1a7, #f9bd22)",
+                          fontSize: isExpanded ? "clamp(20px, 3vw, 30px)" : "18px",
+                        }}
+                      >
+                        {currentAlbumName}
+                      </h1>
+                      <button
+                        onClick={()=>{handleAlbumLike; setIsLiked(true)}}
+                        className={`shrink-0 w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-300 active:scale-90 ${
+                          isLiked
+                            ? "bg-rose-500/15 border-rose-400/50 text-rose-400 shadow-[0_0_14px_rgba(244,63,94,0.45)]"
+                            : "bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-rose-300 hover:border-rose-400/30 hover:bg-white/[0.07]"
+                        }`}
+                        title={isLiked ? "Unlike this album" : "Like this album"}
+                      >
+                        <Heart
+                          // className={`w-4 h-4 transition-transform duration-300 ease-out ${
+                          //   justLiked ? "scale-[1.4]" : "scale-100"
+                          // }`}
+                          strokeWidth={2}
+                          fill={isLiked ? "currentColor" : "none"}
+                        />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
