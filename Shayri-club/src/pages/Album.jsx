@@ -2029,6 +2029,8 @@ export const Album = () => {
   const [albumBg, setAlbumBg] = useState("");
   const [albumCover, setAlbumCover] = useState("");
   const [bgUploading, setBgUploading] = useState(false);
+  const [isSelf, setIsSelf] = useState(false);
+  const creatorId = useRef("");
 
   const MAX_H = 300;
   const MIN_H = 110;
@@ -2050,26 +2052,38 @@ export const Album = () => {
     el.addEventListener("scroll", handleScroll);
     return () => el.removeEventListener("scroll", handleScroll);
   }, []);
-  useEffect(()=>{
 
-    axiosInstance
+
+
+    const handleUserId=()=>{
+
+
+       axiosInstance
     .get('/api/userId')
     .then((response)=>{
             
-      setUserId(response.data)
+      setUserId(response.data._id);
+      console.log("See set it", creatorId.current)
+      if(response.data._id === creatorId.current){
+        setIsSelf(true);
+        console.log("This is a self created Album")
+      }
+      console.log("seeee id", response.data._id)
+      
     }).catch((error)=>{
       console.error("Error while fetching userId", error)
     })
+    }
 
-  }, [])
+    const fetchAlbums=async()=>{
 
-  useEffect(() => {
-    axiosInstance
-      .get(`/api/albumKalams?albumId=${albumId}`, { withCredentials: true })
-      .then((response) => {
-        console.log("see respon", response.data)
+      try{
+     const response = await  axiosInstance.get(`/api/albumKalams?albumId=${albumId}`, { withCredentials: true })
+
+      console.log("see respon", response.data)
         setAlbumCover(response.data.albumKalams?.[0].albumCover);
         setAlbumBg(response.data.albumKalams?.[0].albumBgCover)
+        creatorId.current = response.data.albumKalams?.[0].createdBy;
         const kalamCollection = response.data.albumKalams?.[0]?.kalamCollection || [];
         setDataArrived(true);
         setKalamList(response.data.kalamList || []);
@@ -2087,12 +2101,52 @@ export const Album = () => {
             waveformVideoUrl: x.kalam?.kalamAudio || "",
           }))
         );
-      })
-      .catch((error) => {
-        console.error("Error fetching request", error);
-      });
+      }catch(error){
+         console.error("Error fetching request", error);
+
+      }
+
+    // axiosInstance
+    //   .get(`/api/albumKalams?albumId=${albumId}`, { withCredentials: true })
+    //   .then((response) => {
+    //     console.log("see respon", response.data)
+    //     setAlbumCover(response.data.albumKalams?.[0].albumCover);
+    //     setAlbumBg(response.data.albumKalams?.[0].albumBgCover)
+    //     creatorId.current = response.data.albumKalams?.[0].createdBy;
+    //     const kalamCollection = response.data.albumKalams?.[0]?.kalamCollection || [];
+    //     setDataArrived(true);
+    //     setKalamList(response.data.kalamList || []);
+    //     setData(kalamCollection);
+    //     // setAlbumBgCover(response.data.)
+    //     setAlbumStat(!!response.data.albumKalams?.[0]?.isLive);
+    //     setAlbumName(response.data.albumKalams || []);
+    //     setLength(response.data.length || kalamCollection.length || 0);
+    //     setTracks(
+    //       kalamCollection.map((x) => ({
+    //         _id: x.kalam?._id,
+    //         title: x.kalam?.content || "Untitled",
+    //         artist: x.kalam?.name || "Unknown",
+    //         coverUrl: response.data.albumKalams?.[0]?.coverUrl || "",
+    //         waveformVideoUrl: x.kalam?.kalamAudio || "",
+    //       }))
+    //     );
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error fetching request", error);
+    //   });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    }
+
+  useEffect(()=>{
+
+   const fetch = async()=>{
+   await fetchAlbums();
+   handleUserId();
+   } 
+   fetch();
+    
+
+  }, [])
 
   const handleSelect = () => {
     const keysArray = Array.from(selectedList.current.keys());
@@ -2310,6 +2364,7 @@ export const Album = () => {
       </div>
     </div>
   );
+  
 
   // ── Right panel: Album Visibility ────────────────────────────────
   const otherAlbums = albumName.slice(1);
@@ -2363,6 +2418,7 @@ export const Album = () => {
         </div>
 
         {/* Actions */}
+        
         <div className="flex flex-col gap-3 mb-6">
           <p className="text-sm text-white/40">Configure how your seekers find this collection.</p>
           <button
@@ -2383,6 +2439,7 @@ export const Album = () => {
             <Share2 className="w-4.5 h-4.5" />
             <span className="truncate">{file ? file.name : "Set Cover Image"}</span>
           </label>
+        
           <input id="cover-upload" type="file" className="hidden" onChange={(e) => { setFile(e.target.files[0]); setImage(true); }} />
           {image && file && (
             <button onClick={handleImage} className="text-[11px] text-amber-400/80 hover:text-amber-300 text-left transition -mt-1">
@@ -2570,7 +2627,10 @@ export const Album = () => {
                 className="hidden"
                 onChange={(e) => handleAlbumBgUpload(e.target.files[0])}
               />
-              <label
+              {
+                console.log("isSelf",isSelf)
+              }
+              {isSelf && <label
                 htmlFor="album-bg-upload"
                 className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-black/40 border border-amber-400/25 backdrop-blur-md flex items-center justify-center text-amber-300 hover:bg-black/60 hover:border-amber-400/50 cursor-pointer transition"
                 title="Change background"
@@ -2580,7 +2640,7 @@ export const Album = () => {
                 ) : (
                   <ImageIcon className="w-4 h-4" />
                 )}
-              </label>
+              </label>}
 
               <div className="relative z-10 flex items-end justify-between h-full gap-6">
                 {/* Left: Album cover + name below it */}

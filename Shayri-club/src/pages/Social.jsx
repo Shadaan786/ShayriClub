@@ -1868,15 +1868,20 @@ export const Social = () => {
         }
       `}</style>
 
-      {/* ── Top Nav — full width, sits above sidebar & page body ── */}
-      <div className="max-w-[1600px] mx-auto relative z-30">
-        <nav
-          className="s-top-nav flex items-center justify-between px-10 py-4 sticky top-0"
-          style={{
-            background: "linear-gradient(to right, #000000, #1a0828, #000000)",
-            borderBottom: "1px solid rgba(78,70,57,0.3)",
-          }}
-        >
+      {/* ── Top Nav — full width, FIXED so it stays on screen while scrolling ── */}
+      <nav
+        className="s-top-nav flex items-center justify-between px-10 py-4"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 30,
+          background: "linear-gradient(to right, #000000, #1a0828, #000000)",
+          borderBottom: "1px solid rgba(78,70,57,0.3)",
+        }}
+      >
+        <div className="max-w-[1600px] mx-auto w-full flex items-center justify-between">
           {/* Left: brand + primary nav links */}
           <div className="flex items-center gap-8">
             {/* <h1
@@ -2082,12 +2087,12 @@ export const Social = () => {
               </div>
             </div>
           </div>
-        </nav>
-      </div>
+        </div>
+      </nav>
 
       <div
         className="relative z-20 s-page-body"
-        style={{ paddingBottom: "max(80px, env(safe-area-inset-bottom))" }}
+        style={{ paddingTop: 76, paddingBottom: "max(80px, env(safe-area-inset-bottom))" }}
       >
         <div className="max-w-[1600px] mx-auto">
 
