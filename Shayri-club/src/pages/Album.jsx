@@ -2160,9 +2160,15 @@ export const Album = () => {
       return;
     }
     const formData = new FormData();
-    formData.append("video", file);
-    formData.append("type", "Gallery-Cover");
-    axiosInstance.post("/api/GalleryCover", formData);
+    formData.append("albumCover", file);
+    formData.append("fileType", "albumCover");
+    // formData.append("type", "Gallery-Cover");
+    formData.append("albumId", albumId)
+    axiosInstance
+    .post("/api/GalleryCover", formData,{
+      headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true
+    });
   };
 
   const handlePublish = () => {
@@ -2681,7 +2687,7 @@ export const Album = () => {
                         {currentAlbumName}
                       </h1>
                       <button
-                        onClick={()=>{handleAlbumLike; setIsLiked(true)}}
+                        onClick={()=>{handleAlbumLike(); setIsLiked(true)}}
                         className={`shrink-0 w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-300 active:scale-90 ${
                           isLiked
                             ? "bg-rose-500/15 border-rose-400/50 text-rose-400 shadow-[0_0_14px_rgba(244,63,94,0.45)]"

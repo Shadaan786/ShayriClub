@@ -908,6 +908,7 @@ const AlbumsLive = () => {
     const [newCategory, setNewCategory] = useState("");
     const [isPlayerOpen, setIsPlayerOpen] = useState(false);
     const [featuredCurators, setFeaturedCurators] = useState([]);
+    const [featuredAlbum, setFeaturedAlbum] = useState("");
 
     const searchQuery = useRef("");
     const limit = 20;
@@ -1047,6 +1048,20 @@ const AlbumsLive = () => {
                 console.error("error while creating album", error);
             });
     };
+
+    const fetchFeaturedAlbum=()=>{
+        axiosInstance
+        .get('/api/featuredAlbum')
+        .then((response)=>{
+            setFeaturedAlbum(response.data.message.featuredAlbum);
+        }).catch((error)=>{
+            console.error("Error while fetching featured album", error);
+        })
+    }
+
+    useEffect(()=>{
+        fetchFeaturedAlbum();
+    }, [])
 
     return (
        <div
@@ -1237,109 +1252,45 @@ const AlbumsLive = () => {
 
                 {/* ── Main Content ── */}
                 <main className="flex-1 min-w-0 min-h-screen px-4 md:px-12 pt-6 md:pt-12 lg:ml-64 lg:w-[calc(100%-16rem)]">
-                   {/* Hero */}
+                {/* Hero */}
 <section className="mb-8 md:mb-16">
-    <div className="relative w-full h-56 sm:h-72 md:h-80 rounded-2xl sm:rounded-[32px] overflow-hidden shadow-2xl flex items-end p-4 sm:p-6 md:p-8">
-        <div className="lib-sunset-gradient absolute inset-0 z-0" />
-        <div className="relative z-10 w-full sm:w-auto">
-            <div className="flex items-center gap-2 mb-2.5 sm:mb-4 w-fit px-2.5 sm:px-3 py-1 rounded-full" style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(8px)" }}>
-                <span className="material-symbols-outlined text-xs sm:text-sm">star</span>
-                <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.15em] sm:tracking-[0.2em] font-semibold">Featured Curator</span>
-            </div>
+    <div className="relative w-full h-[260px] sm:h-[350px] md:h-[400px] rounded-2xl sm:rounded-[32px] overflow-hidden shadow-2xl">
+        {/* Side accents: blurred albumBgCover, spans full width */}
+        <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url('${featuredAlbum.albumBgCover}')`, filter: "blur(12px)" }}
+        />
 
-            <h1 className="font-extrabold text-xl sm:text-3xl md:text-5xl text-white mb-2 sm:mb-4 leading-tight sm:leading-normal">
-                Sunset Sessions
-            </h1>
+        {/* Center: sharp albumCover, narrower block sitting on top */}
+        <div
+            className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[60%] sm:w-[52%] md:w-[46%] bg-cover bg-center shadow-2xl"
+            style={{ backgroundImage: `url('${featuredAlbum.albumCover}')` }}
+        />
 
-            <p className="text-white/90 max-w-xl mb-3.5 sm:mb-6 text-xs sm:text-base line-clamp-2 sm:line-clamp-none">
-                Explore the warmest vibrations of the golden hour. A curated selection for deep listening and cinematic horizons.
-            </p>
+        {/* Readability gradient over everything */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 45%, rgba(0,0,0,0.3) 100%)" }} />
 
-            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2.5 sm:gap-4">
-                <button className="bg-white text-orange-500 font-bold px-5 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-full flex items-center justify-center sm:justify-start gap-2 hover:scale-105 active:scale-95 transition-transform shadow-lg w-full sm:w-auto">
-                    <span className="material-symbols-outlined">play_arrow</span>
-                    Listen Now
-                </button>
+        <div className="relative h-full flex items-end sm:items-center p-4 sm:p-8 md:p-12 max-w-2xl">
+            <div className="lib-glass-card p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-3xl" style={{ backdropFilter: "blur(12px)" }}>
+                <div className="flex items-center gap-2 mb-2 sm:mb-4" style={{ color: COLORS.primary }}>
+                    <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">Featured Curator</span>
+                </div>
+
+                <h3 className="font-extrabold text-lg sm:text-2xl md:text-4xl text-white mb-1 sm:mb-2 leading-tight">{featuredAlbum.name}</h3>
+                <p className="font-bold mb-2 sm:mb-4 text-xs sm:text-base" style={{ color: COLORS.primary }}>{featuredAlbum.curator}</p>
+
                 <button
-                    className="text-white font-bold px-5 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-full transition-all w-full sm:w-auto"
-                    style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.2)" }}
+                    className="font-bold px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-base rounded-full w-fit flex items-center gap-1.5 sm:gap-2 hover:scale-105 active:scale-95 transition-transform shadow-lg"
+                    style={{ background: COLORS.primary, color: COLORS.onPrimary }}
                 >
-                    Follow
+                    <span className="material-symbols-outlined text-base sm:text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
+                    Listen Now
                 </button>
             </div>
         </div>
     </div>
 </section>
-
-                    {/* Trending Now */}
-                    <section className="mb-10 md:mb-16">
-                        <div className="flex justify-between items-end mb-4 md:mb-8">
-                            <div className="min-w-0">
-                                <h2 className="text-lg sm:text-2xl font-bold mb-1 sm:mb-2">Trending Now</h2>
-                                <p className="text-xs sm:text-base truncate" style={{ color: COLORS.onSurfaceVariant }}>The hottest sounds in the digital underground.</p>
-                            </div>
-                        </div>
-
-                        <div className="relative group">
-                            <div
-                                ref={trendingRef}
-                                className="flex gap-3 sm:gap-6 overflow-x-auto pb-6 md:pb-8 min-w-0"
-                                style={{ scrollbarWidth: "none", scrollSnapType: "x mandatory" }}
-                            >
-                                {trendingItems.map((item) => (
-                                    <div
-                                        key={item.title}
-                                        className="relative min-w-[78%] sm:min-w-[80%] h-[260px] sm:h-[350px] md:h-[400px] rounded-2xl sm:rounded-[32px] overflow-hidden shadow-2xl flex-shrink-0 bg-cover bg-center"
-                                        style={{ backgroundImage: `url('${item.img}')`, scrollSnapAlign: "center" }}
-                                    >
-                                        <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.85), rgba(0,0,0,0.3), transparent)" }} />
-                                        <div className="relative h-full flex flex-col justify-end sm:justify-center p-4 sm:p-8 md:p-12 max-w-2xl">
-                                            <div className="lib-glass-card p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-3xl" style={{ backdropFilter: "blur(12px)" }}>
-                                                {item.badge && (
-                                                    <div className="hidden sm:flex items-center gap-2 mb-2 sm:mb-4" style={{ color: COLORS.primary }}>
-                                                        <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>trending_up</span>
-                                                        <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">{item.badge}</span>
-                                                    </div>
-                                                )}
-                                                <h3 className="font-extrabold text-lg sm:text-2xl md:text-4xl text-white mb-1 sm:mb-2 leading-tight">{item.title}</h3>
-                                                <p className="font-bold mb-2 sm:mb-4 text-xs sm:text-base" style={{ color: COLORS.primary }}>{item.artist}</p>
-                                                {item.desc && <p className="text-white/80 mb-4 sm:mb-8 text-xs sm:text-sm hidden sm:block">{item.desc}</p>}
-                                                <button
-                                                    className="font-bold px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-base rounded-full w-fit flex items-center gap-1.5 sm:gap-2 hover:scale-105 active:scale-95 transition-transform shadow-lg"
-                                                    style={{ background: COLORS.primary, color: COLORS.onPrimary }}
-                                                >
-                                                    <span className="material-symbols-outlined text-base sm:text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
-                                                    Listen Now
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <button
-                                onClick={() => scrollByAmount(trendingRef, -600)}
-                                className="hidden sm:flex absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                                style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", border: `1px solid ${COLORS.borderSubtle}` }}
-                            >
-                                <span className="material-symbols-outlined">chevron_left</span>
-                            </button>
-                            <button
-                                onClick={() => scrollByAmount(trendingRef, 600)}
-                                className="hidden sm:flex absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                                style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", border: `1px solid ${COLORS.borderSubtle}` }}
-                            >
-                                <span className="material-symbols-outlined">chevron_right</span>
-                            </button>
-
-                            <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2">
-                                {trendingItems.map((_, i) => (
-                                    <div key={i} className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full" style={{ background: i === 0 ? COLORS.primary : "rgba(255,255,255,0.2)" }} />
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
                     {/* Recently Added */}
                     <section className="mb-10 md:mb-16">
                         <div className="flex justify-between items-center gap-2 mb-4 md:mb-8 min-w-0">
