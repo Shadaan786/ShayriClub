@@ -2188,9 +2188,10 @@ export const Album = () => {
 
     const formData = new FormData();
     formData.append("albumBgCover", bgFile);
-    formData.append("userId", userId._id);
+    formData.append("userId", userId);
     formData.append("fileType", "albumBg");
     formData.append("albumId", albumId);
+    console.log("seeeee user Idddd", userId)
 
     axiosInstance
       .post('/upload/albumBgCover', formData, {

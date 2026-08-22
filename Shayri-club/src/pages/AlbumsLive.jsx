@@ -1282,6 +1282,7 @@ const AlbumsLive = () => {
 
                 <button
                     className="font-bold px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-base rounded-full w-fit flex items-center gap-1.5 sm:gap-2 hover:scale-105 active:scale-95 transition-transform shadow-lg"
+                    onClick={()=>Navigate(`/album?albumId=${featuredAlbum._id}`)}
                     style={{ background: COLORS.primary, color: COLORS.onPrimary }}
                 >
                     <span className="material-symbols-outlined text-base sm:text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
@@ -1399,6 +1400,7 @@ const AlbumsLive = () => {
                                                 <p className="font-bold mb-2 sm:mb-4 text-xs sm:text-base" style={{ color: COLORS.primary }}>{item.artist}</p>
                                                 <button
                                                     className="font-bold px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-base rounded-full w-fit flex items-center gap-1.5 sm:gap-2 hover:scale-105 transition-transform"
+                                                    onClick={()=>Navigate(`/album?albumId=${featuredAlbum._id}`)}
                                                     style={{ background: COLORS.primary, color: COLORS.onPrimary }}
                                                 >
                                                     <span className="material-symbols-outlined text-base sm:text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
