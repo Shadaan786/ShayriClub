@@ -1355,7 +1355,7 @@ const AlbumsLive = () => {
                                         onMouseEnter={(e) => (e.currentTarget.style.borderColor = COLORS.primary)}
                                         onMouseLeave={(e) => (e.currentTarget.style.borderColor = "transparent")}
                                     >
-                                        <img src={curator.profilePic} alt={curator.name} className="w-full h-full object-cover" />
+                                        <img onClick={()=>Navigate(`/profile?userId=${curator._id}`)} src={curator.profilePic} alt={curator.name} className="w-full h-full object-cover" />
                                     </div>
                                     <div className="text-center">
                                         <h3 className="font-bold text-xs sm:text-sm mb-1">{curator.name}</h3>
