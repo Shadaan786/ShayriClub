@@ -2097,119 +2097,10 @@ export const Social = () => {
         <div className="max-w-[1600px] mx-auto">
 
           {/* ── Hero Header ── */}
-          <div
-            className="s-hero-wrap relative overflow-hidden px-10 pt-16 pb-14"
-          >
-            {/* Decorative open book motif */}
-            <svg
-              className="s-hero-book"
-              viewBox="0 0 320 320"
-              style={{ position: "absolute", right: 30, bottom: -10, width: 320, height: 320, pointerEvents: "none" }}
-              aria-hidden="true"
-            >
-              <circle cx="190" cy="170" r="170" fill="#c5a059" opacity="0.08" />
-              <g transform="translate(0,60)" opacity="0.18" stroke="#c5a059" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M 130 10 C 90 0 40 5 0 25 L 0 150 C 40 130 90 125 130 135 Z" />
-                <path d="M 130 10 C 170 0 220 5 260 25 L 260 150 C 220 130 170 125 130 135 Z" />
-                <path d="M 130 10 L 130 135" />
-                <path d="M 18 40 L 100 28" />
-                <path d="M 18 58 L 100 46" />
-                <path d="M 18 76 L 100 64" />
-                <path d="M 18 94 L 80 84" />
-                <path d="M 160 28 L 242 40" />
-                <path d="M 160 46 L 242 58" />
-                <path d="M 160 64 L 242 76" />
-                <path d="M 180 84 L 242 94" />
-              </g>
-              <g opacity="0.15" stroke="#8b5cf6" strokeWidth="1.5" fill="none" strokeLinecap="round">
-                <path d="M 110 305 Q 130 290 150 303" strokeDasharray="2 4" />
-                <path d="M 90 320 Q 110 308 130 318" strokeDasharray="2 4" />
-              </g>
-            </svg>
-
-            <div className="max-w-[680px] relative">
-              {/* Eyebrow label */}
-              <span
-                className="s-a1"
-                style={{
-                  display: "block", fontSize: 10, fontWeight: 600,
-                  letterSpacing: "0.35em", textTransform: "uppercase",
-                  color: "#c5a059", marginBottom: 20,
-                }}
-              >
-                Archive No. 01 / Soulful Verses
-              </span>
-
-              {/* Title */}
-              <h1
-                className="s-a2"
-                style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  fontSize: "clamp(52px, 6vw, 84px)",
-                  fontWeight: 300, fontStyle: "italic",
-                  lineHeight: 0.92, marginBottom: 24, letterSpacing: "-1px",
-                  textShadow: "0 4px 24px rgba(0,0,0,0.6)",
-                }}
-              >
-                <span style={{ color: "rgba(255,255,255,0.4)", display: "block" }}>Browse</span>
-                <span
-                  style={{
-                    fontWeight: 800, fontStyle: "normal", color: "#c5a059",
-                    display: "block", position: "relative", width: "fit-content",
-                  }}
-                >
-                  Kalams
-                  <span
-                    style={{
-                      position: "absolute", bottom: -6, left: 0, right: 0, height: 3,
-                      background: "linear-gradient(90deg,#c5a059,#e2d9ff,transparent)",
-                      borderRadius: 2,
-                    }}
-                  />
-                </span>
-              </h1>
-
-              {/* Subtitle + CTA + stats */}
-              <div className="s-a3 s-hero-stats" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 32 }}>
-                <div style={{ maxWidth: 380 }}>
-                  <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: "0 0 20px", textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>
-                    A sanctuary of timeless wisdom — poetry and qawwali that transcends the mundane.
-                  </p>
-                  <button
-                    className="btn-premium"
-                    style={{
-                      padding: "14px 34px", border: "1px solid rgba(255,255,255,0.15)",
-                      fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase",
-                      fontWeight: 600, background: "transparent", color: "#fff",
-                      cursor: "pointer", transition: "all 0.5s ease",
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#c5a059"; e.currentTarget.style.color = "#c5a059"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "#fff"; }}
-                  >
-                    Enter Collection
-                  </button>
-                </div>
-
-                <div className="flex gap-5 flex-shrink-0 pl-6" style={{ borderLeft: "1px solid rgba(255,255,255,0.12)" }}>
-                  <div>
-                    <div style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#c5a059", marginBottom: 4 }}>
-                      Curated Edition
-                    </div>
-                    <div style={{ fontSize: 26, fontWeight: 300, color: "#e2d9ff", letterSpacing: "-0.5px" }}>
-                      {totalLength || "1,240"}
-                      <span style={{ fontSize: 12, verticalAlign: "top", marginLeft: 4, color: "#c5a059" }}>+</span>
-                    </div>
-                    <div style={{ fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
-                      Authenticated Works
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          
 
           {/* ── Tab Nav (below header) ── */}
-          <div
+          {/* <div
            className="s-a4 s-tabs-row flex items-center justify-center gap-1 px-10"
             style={{ borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)", background: "linear-gradient(to right, #000000, #1a0828, #000000)" }}
           >
@@ -2238,7 +2129,7 @@ export const Social = () => {
                 {label}
               </button>
             ))}
-          </div>
+          </div> */}
 
 {
   console.log("seeeeeeeee kalamDat", kalamDat)
@@ -2281,7 +2172,7 @@ export const Social = () => {
                   
                   {
 
-                    console.log("likes!!!!!!!!!", likedKalams2.current.has(item._id))
+                    console.log("likes!!!!!!!!!", item.createdBy.name)
                   }
                   <NewKalam
                     customStyles={item.customStyles}
@@ -2294,6 +2185,7 @@ export const Social = () => {
                     title={item.name}
                     isImage={item.customStyles.isImage}
                     imageSrc={item.customStyles.imageSrc}
+                    authorName={item.createdBy.name}
                   
                     isLiked2={likedKalams2.current.has(item._id)}
                   />

@@ -1165,7 +1165,8 @@ const NewKalam=({
       kalId,
       isLiked2,
       isSaved,
-      customStyles
+      customStyles,
+      authorName
 })=>{
 
   // console.log("checking_isLiked",isLiked2)
@@ -2130,7 +2131,7 @@ const buildGoogleFontsUrl = () => {
             letterSpacing: "0.02em",
             lineHeight: 1,
           }}>
-            Arif Karimi
+            {authorName}
           </span>
           </button>
           <span style={{

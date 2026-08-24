@@ -909,6 +909,7 @@ const AlbumsLive = () => {
     const [isPlayerOpen, setIsPlayerOpen] = useState(false);
     const [featuredCurators, setFeaturedCurators] = useState([]);
     const [featuredAlbum, setFeaturedAlbum] = useState("");
+    const [allTimeFavourite, setAllTimeFavourite] = useState([]);
 
     const searchQuery = useRef("");
     const limit = 20;
@@ -971,23 +972,23 @@ const AlbumsLive = () => {
         },
     ];
 
-    const allTimeFavorites = [
-        {
-            title: "Echoes of Silence",
-            artist: "Ethereal Sounds",
-            img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC0bwgdMd6USwL9jLtMAQBvJqm-nJm2k-KvrIiXM5AWLkPn5fFb4OSu7BdoYk5yx4kcWeqFZfL3xVHiRoRvs-kEG1ZFtsPHSys_TbtQFmdSztWup4GipC-IKeaR_vCQrqc8WpGeH4OBEbOrPHoD0SXSx1Ddm9H-KWq_hsU6GVQ20obAFUe6r0Ih3fmnuuNZYnek5dHZKH1iwpaXpNhtbG27edilPYiDU080Q48AZXbpz6_QXSt4K5bO",
-        },
-        {
-            title: "Crimson Horizon",
-            artist: "Aetheric Winds",
-            img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBQm8Bw556rmn-jrwm197oqVCISdApqC-zeO7QjSXsM7htkvtlOHfStE_zwkamYQ7gO1H6BSAyWnvNd9yqZeNQgT39_UkQFCVSrJy5q-wBFX1yGg39-RlzP9xbb2GYKO-bn8JAvkuFI2vqQjWCulVX9k8wEix43Ab5WNoBdaL_ma092_-Pz2Imy-efBc8Zso4MB142ITcR9L7pvOz9mTi6LycjSdjhpV8ikCXYb-qlfY5DdU47ugaOy",
-        },
-        {
-            title: "Golden Era",
-            artist: "Jazz Collective",
-            img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDM_ABHea2hfcFByc97CttzoOThOk0_t_tXh_EvWcKrNQ_yt6BmLQR8SC_rInudyYkZS2ovZTf62YcgYPY-9_HlTyikGCLw8onX-NxabikBNXBD1H1c-M_fhu3rZ_1RFLQH3mtKnwBFMq5M09jr3a-K3ad9pkd7IUDllgm7yZoAMllRzFOQZoP9buoflVt2TEYkTZ9rQYGlbgqR6LFT0GDB7Dy4mBW83eY1RcP7o-hZOvDraOyaOsm9",
-        },
-    ];
+    // const allTimeFavorites = [
+    //     {
+    //         title: "Echoes of Silence",
+    //         artist: "Ethereal Sounds",
+    //         img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC0bwgdMd6USwL9jLtMAQBvJqm-nJm2k-KvrIiXM5AWLkPn5fFb4OSu7BdoYk5yx4kcWeqFZfL3xVHiRoRvs-kEG1ZFtsPHSys_TbtQFmdSztWup4GipC-IKeaR_vCQrqc8WpGeH4OBEbOrPHoD0SXSx1Ddm9H-KWq_hsU6GVQ20obAFUe6r0Ih3fmnuuNZYnek5dHZKH1iwpaXpNhtbG27edilPYiDU080Q48AZXbpz6_QXSt4K5bO",
+    //     },
+    //     {
+    //         title: "Crimson Horizon",
+    //         artist: "Aetheric Winds",
+    //         img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBQm8Bw556rmn-jrwm197oqVCISdApqC-zeO7QjSXsM7htkvtlOHfStE_zwkamYQ7gO1H6BSAyWnvNd9yqZeNQgT39_UkQFCVSrJy5q-wBFX1yGg39-RlzP9xbb2GYKO-bn8JAvkuFI2vqQjWCulVX9k8wEix43Ab5WNoBdaL_ma092_-Pz2Imy-efBc8Zso4MB142ITcR9L7pvOz9mTi6LycjSdjhpV8ikCXYb-qlfY5DdU47ugaOy",
+    //     },
+    //     {
+    //         title: "Golden Era",
+    //         artist: "Jazz Collective",
+    //         img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDM_ABHea2hfcFByc97CttzoOThOk0_t_tXh_EvWcKrNQ_yt6BmLQR8SC_rInudyYkZS2ovZTf62YcgYPY-9_HlTyikGCLw8onX-NxabikBNXBD1H1c-M_fhu3rZ_1RFLQH3mtKnwBFMq5M09jr3a-K3ad9pkd7IUDllgm7yZoAMllRzFOQZoP9buoflVt2TEYkTZ9rQYGlbgqR6LFT0GDB7Dy4mBW83eY1RcP7o-hZOvDraOyaOsm9",
+    //     },
+    // ];
 
     const scrollByAmount = (ref, amount) => {
         if (ref.current) ref.current.scrollBy({ left: amount, behavior: "smooth" });
@@ -1049,6 +1050,18 @@ const AlbumsLive = () => {
             });
     };
 
+    const fetchAllTimeFavourite=()=>{
+        axiosInstance
+        .get('/api/AllTimeFavourite')
+        .then((response)=>{
+            setAllTimeFavourite(response.data.message)
+            console.log(response.data.message)
+
+        }).catch((error)=>{
+            console.error(error)
+        })
+    }
+
     const fetchFeaturedAlbum=()=>{
         axiosInstance
         .get('/api/featuredAlbum')
@@ -1061,6 +1074,7 @@ const AlbumsLive = () => {
 
     useEffect(()=>{
         fetchFeaturedAlbum();
+        fetchAllTimeFavourite();
     }, [])
 
     return (
@@ -1387,20 +1401,21 @@ const AlbumsLive = () => {
                                 className="flex gap-3 sm:gap-6 overflow-x-auto pb-6 md:pb-8"
                                 style={{ scrollbarWidth: "none", scrollSnapType: "x mandatory" }}
                             >
-                                {allTimeFavorites.map((item) => (
+                                {allTimeFavourite.map((item) => (
                                     <div
                                         key={item.title}
                                         className="relative min-w-[78%] sm:min-w-[80%] h-[260px] sm:h-[350px] md:h-[400px] rounded-2xl sm:rounded-[32px] overflow-hidden shadow-2xl flex-shrink-0 bg-cover bg-center"
-                                        style={{ backgroundImage: `url('${item.img}')`, scrollSnapAlign: "center" }}
+                                        style={{ backgroundImage: `url('${item.albumCover}')`, scrollSnapAlign: "center" }}
                                     >
                                         <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.85), rgba(0,0,0,0.3), transparent)" }} />
                                         <div className="relative h-full flex flex-col justify-end sm:justify-center p-4 sm:p-8 md:p-12 max-w-2xl">
                                             <div className="lib-glass-card p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-3xl" style={{ backdropFilter: "blur(12px)" }}>
-                                                <h3 className="font-extrabold text-lg sm:text-2xl md:text-4xl text-white mb-1 sm:mb-2 leading-tight">{item.title}</h3>
-                                                <p className="font-bold mb-2 sm:mb-4 text-xs sm:text-base" style={{ color: COLORS.primary }}>{item.artist}</p>
+                                                {console.log("seeeeee",item)}
+                                                <h3 className="font-extrabold text-lg sm:text-2xl md:text-4xl text-white mb-1 sm:mb-2 leading-tight">{item.name}</h3>
+                                                <p className="font-bold mb-2 sm:mb-4 text-xs sm:text-base" style={{ color: COLORS.primary }}>{item?.createdBy?.name}</p>
                                                 <button
                                                     className="font-bold px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-base rounded-full w-fit flex items-center gap-1.5 sm:gap-2 hover:scale-105 transition-transform"
-                                                    onClick={()=>Navigate(`/album?albumId=${featuredAlbum._id}`)}
+                                                    onClick={()=>Navigate(`/album?albumId=${item._id}`)}
                                                     style={{ background: COLORS.primary, color: COLORS.onPrimary }}
                                                 >
                                                     <span className="material-symbols-outlined text-base sm:text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
@@ -1428,7 +1443,7 @@ const AlbumsLive = () => {
                             </button>
 
                             <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2">
-                                {allTimeFavorites.map((_, i) => (
+                                {allTimeFavourite.map((_, i) => (
                                     <div key={i} className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full" style={{ background: i === 0 ? COLORS.primary : "rgba(255,255,255,0.2)" }} />
                                 ))}
                             </div>
