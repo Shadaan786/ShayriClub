@@ -1881,213 +1881,186 @@ export const Social = () => {
           borderBottom: "1px solid rgba(78,70,57,0.3)",
         }}
       >
-        <div className="max-w-[1600px] mx-auto w-full flex items-center justify-between">
-          {/* Left: brand + primary nav links */}
-          <div className="flex items-center gap-8">
-            {/* <h1
-              onClick={() => setIsOpen(true)}
+      <div
+        className="max-w-[1600px] mx-auto w-full"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr auto 1fr",
+          alignItems: "center",
+          columnGap: 24,
+        }}
+      >
+        {/* Left: brand only */}
+        <div className="flex items-center">
+          <div className="k-global-brand">
+            <div className="k-global-logo-wrap">
+              <div className="k-global-logo-glow" />
+              <img src="/logo2.svg" alt="Alfaz Logo" className="k-global-logo-img" />
+            </div>
+            <h1 className="k-global-wordmark">
+              <span aria-hidden="true" className="k-global-wordmark-glow">Alfaz</span>
+              <span className="k-global-wordmark-text">
+                <span className="k-global-wm-a">A</span>
+                <bdi className="k-global-wm-ur">لف</bdi>
+                <span className="k-global-wm-a">az</span>
+              </span>
+            </h1>
+          </div>
+        </div>
+
+        {/* Center: nav links */}
+        <div className="s-nav-links hidden md:flex items-center gap-10" style={{ justifySelf: "center" }}>
+          <a href="/kalam"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12,
+              letterSpacing: "0.1em",
+              fontWeight: 700,
+              color: "#e9c176",
+              borderBottom: "2px solid #e9c176",
+              paddingBottom: 4,
+              cursor: "pointer",
+              textTransform: "uppercase",
+            }}
+          >
+            Kalam
+          </a>
+          <button onClick={() => Navigate('/spaces')}>
+            <a className="nav-link-transition"
               style={{
-                fontFamily: "'EB Garamond', serif",
-                fontSize: 26,
-                fontWeight: 600,
-                color: "#e9c176",
-                letterSpacing: "-0.02em",
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12,
+                letterSpacing: "0.1em",
+                fontWeight: 500,
+                color: "#d1c5b4",
                 cursor: "pointer",
-                margin: 0,
+                textTransform: "uppercase",
+                position: "relative",
               }}
             >
-              Kalams
-            </h1> */}
-            <div className="k-global-brand">
-        <div className="k-global-logo-wrap">
-          <div className="k-global-logo-glow" />
-          <img src="/logo2.svg" alt="Alfaz Logo" className="k-global-logo-img" />
+              Community
+            </a>
+          </button>
+          <button>
+            <a className="nav-link-transition"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12,
+                letterSpacing: "0.1em",
+                fontWeight: 500,
+                color: "#d1c5b4",
+                cursor: "pointer",
+                textTransform: "uppercase",
+                position: "relative",
+              }}
+            >
+              Browse
+            </a>
+          </button>
+          <button onClick={() => Navigate('/albumsLive')}>
+            <a className="nav-link-transition"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12,
+                letterSpacing: "0.1em",
+                fontWeight: 500,
+                color: "#d1c5b4",
+                cursor: "pointer",
+                textTransform: "uppercase",
+                position: "relative",
+              }}
+            >
+              Library
+            </a>
+          </button>
         </div>
-        <h1 className="k-global-wordmark">
-          <span aria-hidden="true" className="k-global-wordmark-glow">Alfaz</span>
-          <span className="k-global-wordmark-text">
-            <span className="k-global-wm-a">A</span>
-            <bdi className="k-global-wm-ur">لف</bdi>
-            <span className="k-global-wm-a">az</span>
-          </span>
-        </h1>
+
+        {/* Right: search + publish + avatar */}
+        <div className="flex items-center gap-6" style={{ justifySelf: "end" }}>
+          <div className="s-nav-search relative hidden lg:flex items-center">
+      <span
+        className="material-symbols-outlined absolute left-3"
+        style={{ color: "#9a8f80", pointerEvents: "none" }}
+      >
+        search
+      </span>
+      <input
+        onFocus={() => setIsSearchFocused(true)}
+        onBlur={() => setIsSearchFocused(false)}
+        onChange={(e) => { setSearchQuery(e.target.value); setIsSearch(true); (e.target.value.trim() === "") ? handle() : null }}
+        placeholder="Search archive..."
+        type="text"
+        className="s-nav-input outline-none"
+        style={{
+          background: "#1a1c1c",
+          borderBottom: `1px solid ${isSearchFocused ? "#e9c176" : "rgba(78,70,57,0.3)"}`,
+          color: "#e2e2e2",
+          fontFamily: "'Inter', sans-serif",
+          fontSize: 12,
+          letterSpacing: "0.05em",
+          padding: "8px 40px 8px 40px",
+          width: isSearchFocused ? 320 : 256,
+          transition: "all 0.3s ease",
+        }}
+      />
+      <button
+        onClick={searchKalams}
+        aria-label="Search"
+        className="absolute right-2 flex items-center justify-center"
+        style={{
+          color: "#e9c176",
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+          padding: 4,
+        }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+          search
+        </span>
+      </button>
+    </div>
+
+          <div className="flex items-center gap-4">
+            <Link
+              to="/kalam"
+              className="s-nav-publish-inline items-center"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12,
+                letterSpacing: "0.1em",
+                fontWeight: 600,
+                padding: "8px 24px",
+                border: "1px solid #e9c176",
+                color: "#e9c176",
+                background: "transparent",
+                cursor: "pointer",
+                textTransform: "uppercase",
+                transition: "all 0.3s ease",
+                textDecoration: "none",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(233,193,118,0.1)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+            >
+              Publish
+            </Link>
+
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold cursor-pointer"
+              style={{
+                border: "1px solid rgba(78,70,57,0.5)",
+                color: "#e9c176",
+                background: "#1a1c1c",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#e9c176"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(78,70,57,0.5)"; }}
+            >
+              <img onClick={() => Navigate(`/profile?userId=${uid}`)} className="h-full rounded-full" src={profilePic} alt="" />
+            </div>
+          </div>
+        </div>
       </div>
-
-            <div className="s-nav-links hidden md:flex items-center gap-10">
-              <a href="/kalam"
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 12,
-                  letterSpacing: "0.1em",
-                  fontWeight: 700,
-                  color: "#e9c176",
-                  borderBottom: "2px solid #e9c176",
-                  paddingBottom: 4,
-                  cursor: "pointer",
-                  textTransform: "uppercase",
-                }}
-              >
-                Kalam
-              </a>
-              <button onClick={()=>Navigate('/spaces')}>
-              
-               <a className="nav-link-transition"
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 12,
-                  letterSpacing: "0.1em",
-                  fontWeight: 500,
-                  color: "#d1c5b4",
-                  cursor: "pointer",
-                  textTransform: "uppercase",
-                  position: "relative",
-                }}
-              >
-                Community
-              </a>
-              </button>
-              <button>
-              
-              <a  className="nav-link-transition"
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 12,
-                  letterSpacing: "0.1em",
-                  fontWeight: 500,
-                  color: "#d1c5b4",
-                  cursor: "pointer",
-                  textTransform: "uppercase",
-                  position: "relative",
-                }}
-              >
-                Browse
-              </a>
-              </button>
-              <button onClick={()=>Navigate('/albumsLive')}>
-              
-              <a  className="nav-link-transition"
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 12,
-                  letterSpacing: "0.1em",
-                  fontWeight: 500,
-                  color: "#d1c5b4",
-                  cursor: "pointer",
-                  textTransform: "uppercase",
-                  position: "relative",
-                }}
-              >
-                Library
-              </a>
-              </button>
-            </div>
-          </div>
-
-          {/* Right: search + publish + menu + avatar */}
-          <div className="flex items-center gap-6">
-            {/* Search */}
-            <div className="s-nav-search relative hidden lg:flex items-center">
-              <span
-                className="material-symbols-outlined absolute left-3"
-                style={{ color: "#9a8f80" }}
-              >
-                search
-              </span>
-              <input
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-                onChange={(e) => { setSearchQuery(e.target.value); setIsSearch(true); (e.target.value.trim() === "") ? handle() : null }}
-                placeholder="Search archive..."
-                type="text"
-                className="s-nav-input outline-none"
-                style={{
-                  background: "#1a1c1c",
-                  borderBottom: `1px solid ${isSearchFocused ? "#e9c176" : "rgba(78,70,57,0.3)"}`,
-                  color: "#e2e2e2",
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 12,
-                  letterSpacing: "0.05em",
-                  padding: "8px 16px 8px 40px",
-                  width: isSearchFocused ? 320 : 256,
-                  transition: "all 0.3s ease",
-                }}
-              />
-              <button
-                onClick={searchKalams}
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 11,
-                  letterSpacing: "0.1em",
-                  color: "#e9c176",
-                  marginLeft: 8,
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  textTransform: "uppercase",
-                }}
-              >
-                search
-              </button>
-            </div>
-
-            {/* Action group */}
-            <div className="flex items-center gap-4">
-              <Link
-                to="/kalam"
-                className="s-nav-publish-inline items-center"
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 12,
-                  letterSpacing: "0.1em",
-                  fontWeight: 600,
-                  padding: "8px 24px",
-                  border: "1px solid #e9c176",
-                  color: "#e9c176",
-                  background: "transparent",
-                  cursor: "pointer",
-                  textTransform: "uppercase",
-                  transition: "all 0.3s ease",
-                  textDecoration: "none",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(233,193,118,0.1)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-              >
-                Publish
-              </Link>
-
-              {/* <button
-                onClick={() => setIsOpen(true)}
-                aria-label="Open sidebar"
-                style={{
-                  color: "#d1c5b4",
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = "#e9c176"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "#d1c5b4"; }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 24 }}>menu</span>
-              </button> */}
-
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold cursor-pointer"
-                style={{
-                  border: "1px solid rgba(78,70,57,0.5)",
-                  color: "#e9c176",
-                  background: "#1a1c1c",
-                  transition: "all 0.3s ease",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#e9c176"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(78,70,57,0.5)"; }}
-              >
-                <img onClick={()=>Navigate(`/profile?userId=${uid}`)} className="h-full rounded-full" src={profilePic} alt="" srcset="" />
-              </div>
-            </div>
-          </div>
-        </div>
       </nav>
 
       <div

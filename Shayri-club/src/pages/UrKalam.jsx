@@ -1154,6 +1154,8 @@ const UrKalam = () => {
   // ── Global nav: user id / profile pic (same as Kalam.jsx) ──
   const [userId, setUserId] = useState("");
   const [profilePic, setProfilePic] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [isNotificationModalOpen, setIsNotificationmodalOpened] = useState(false);
 
   const getUserId = () => {
     axiosInstance
@@ -1165,9 +1167,18 @@ const UrKalam = () => {
         setProfilePic(response.data.profilePic);
       })
   }
+  const fetchUserNotifications=()=>{
+    axiosInstance
+    .get('/api/offlineNotifications', {
+      withCredentials: true
+    }).then((response)=>{
+      setNotifications(response.data.offlineNotifications)
+    })
+  }
 
   useEffect(() => {
     getUserId();
+    fetchUserNotifications();
   }, []);
 
   useEffect(() => {
@@ -1314,12 +1325,17 @@ const UrKalam = () => {
         .k-global-nav {
           background: #050408;
           padding: 0 max(1.5rem, env(safe-area-inset-left));
-          display: flex; align-items: center; justify-content: space-between;
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          align-items: center;
+          column-gap: 20px;
           height: 68px; width: 100%;
           box-shadow: 0 1px 0 rgba(210,170,90,0.1), 0 8px 20px -10px rgba(0,0,0,0.65);
           position: fixed; top: 0; left: 0; right: 0; z-index: 60;
         }
-        .k-global-brand { display: flex; align-items: center; gap: 10px; }
+        .k-global-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .k-global-links { display: flex; align-items: center; gap: 30px; height: 100%; justify-self: center; }
+        .k-global-right { display: flex; align-items: center; gap: 16px; justify-self: end; }
 
         .k-global-logo-wrap { position: relative; display: flex; align-items: center; }
         .k-global-logo-glow {
@@ -1795,21 +1811,23 @@ const UrKalam = () => {
               </span>
             </h1>
           </div>
+
           <div className="k-global-links">
             <a href="/kalam" className="k-global-link">Kalam</a>
             <a href="/spaces" className="k-global-link">Community</a>
             <a href="/Social" className="k-global-link">Browse</a>
             <a href="/albumsLive" className="k-global-link active">Library</a>
           </div>
-          <button className="k-global-bell" aria-label="Notifications">
-            🔔
-          </button>
-          <div className="uk-avatar" onClick={() => navigate(`/profile?userId=${userId}`)}>
-            {profilePic ? (
-              <img className="rounded-full h-full w-full" src={profilePic} alt="profilePic" />
-            ) : (
-              "AK"
-            )}
+
+          <div className="k-global-right">
+            <button onClick={()=>setIsNotificationmodalOpened(true)} className="k-global-bell" aria-label="Notifications">🔔</button>
+            <div className="uk-avatar" onClick={() => navigate(`/profile?userId=${userId}`)}>
+              {profilePic ? (
+                <img className="rounded-full h-full w-full" src={profilePic} alt="profilePic" />
+              ) : (
+                "AK"
+              )}
+            </div>
           </div>
         </nav>
 
@@ -2011,6 +2029,96 @@ const UrKalam = () => {
             </div>
           </MyVerticallyCenteredModal>
         </div>
+          <MyVerticallyCenteredModal isOpen={isNotificationModalOpen} onClose={() => setIsNotificationmodalOpened(false)}>
+                      <div
+                        className="rounded-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden border border-[#f59e0b]/15 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                        style={{ background: "rgba(29,13,33,0.45)", backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)" }}
+                      >
+                    
+                        {/* Header */}
+                        <div className="px-6 py-5 border-b border-[#f59e0b]/15 relative">
+                          <div className="flex justify-between items-center mb-1">
+                            <h2 className="flex items-center gap-3 text-[#f4daf7] text-xl font-semibold tracking-wide">
+                              Notifications
+                              {/* {notifications.length > 0 && (
+                                <span className="bg-[#f59e0b]/10 text-[#ffc174] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#f59e0b]/20">
+                                  {notifications.length} NEW
+                                </span>
+                              )} */}
+                            </h2>
+                            <button
+                              onClick={() => setNotificationOpened(false)}
+                              className="w-8 h-8 flex items-center justify-center rounded-full text-[#d8c3ad] hover:text-[#ffc174] transition-colors active:scale-90"
+                              aria-label="Close notifications"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <div className="w-12 h-1 bg-[#ffc174] rounded-full mt-2" />
+                        </div>
+                        
+                    
+                        {/* List */}
+                        <div className="flex-1 overflow-y-auto p-2 space-y-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#f59e0b]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+                          {notifications.length > 0 ? (
+                            notifications.map((item, i) => (
+                              
+                              <button
+                                key={item.id ?? i}
+                                onClick={() => {Navigate(item.toNavigate); handleNotificationSeen(item._id)}}
+                                className="w-full text-left flex gap-4 p-4 rounded-lg border border-transparent transition-all duration-300 hover:bg-[#f59e0b]/5 hover:border-[#f59e0b]/40 hover:-translate-y-0.5"
+                              >
+                                      {console.log("see status", item.isSeen)}
+                    
+                                {/* Status dot*/}
+                               {!item.isSeen && <div className="relative flex-shrink-0 mt-1">
+                                  <span
+                                    className="block w-2.5 h-2.5 rounded-full"
+                                    style={{
+                                      background: item.read ? "transparent" : "#f59e0b",
+                                      boxShadow: item.read ? "none" : "0 0 8px #f59e0b",
+                                    }}
+                                  />
+                                </div>}
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex justify-between items-start mb-1 gap-2">
+                                    <h3 className={`truncate text-sm ${item.read ? "font-medium text-[#f4daf7]/70" : "font-bold text-[#f4daf7]"}`}>
+                                      {item.notificationTitle}
+                                    </h3>
+                                    <span className="text-[10px] tracking-wider text-[#d8c3ad] opacity-60 whitespace-nowrap font-mono">
+                                      {item.createdAt ?? "Just now"}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm text-[#d8c3ad] leading-relaxed truncate">
+                                    {item.notificationBody}
+                                  </p>
+                                </div>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="flex flex-col items-center justify-center py-16 text-center px-8">
+                              <div className="w-20 h-20 rounded-full bg-[#f59e0b]/5 border border-[#f59e0b]/10 flex items-center justify-center mb-6">
+                                <span className="text-[#f59e0b] text-3xl opacity-40">🔔</span>
+                              </div>
+                              <h3 className="text-[#f4daf7] font-semibold text-lg mb-2">Your notifications will appear here</h3>
+                              <p className="text-[#d8c3ad] max-w-xs mx-auto text-sm">
+                                We'll let you know when something important happens in your elite ecosystem.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                    
+                        {/* Footer */}
+                        <div className="px-6 py-4 border-t border-[#f59e0b]/15 flex justify-between items-center" style={{ background: "rgba(23,8,28,0.5)" }}>
+                          {/* <button className="text-[#d8c3ad] hover:text-[#ffc174] transition-colors text-[10px] font-medium tracking-[0.15em] font-mono">
+                            MARK ALL AS READ
+                          </button> */}
+                          <button onClick={()=>setIsNotificationmodalOpened(false)} className="text-[#d8c3ad] text-right hover:text-[#ffc174] transition-colors text-[10px] font-medium tracking-[0.15em] font-mono flex items-center gap-1">
+                            close <span className="text-sm">›</span>
+                          </button>
+                        </div>
+                      </div>
+                    </MyVerticallyCenteredModal>
       </div>
     </>
   );

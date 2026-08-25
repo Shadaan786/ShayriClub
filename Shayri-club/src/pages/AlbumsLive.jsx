@@ -1125,8 +1125,15 @@ const AlbumsLive = () => {
                 className="fixed top-0 left-0 w-full z-50"
                 style={{ background: "rgba(5,20,36,0.7)", backdropFilter: "blur(40px)", borderBottom: `1px solid ${COLORS.borderSubtle}` }}
             >
-                <div className="flex justify-between items-center h-16 md:h-20 px-3 sm:px-6 w-full max-w-[1440px] mx-auto">
-                    <div className="flex items-center gap-2 sm:gap-4">
+                <div
+                    className="items-center h-16 md:h-20 px-3 sm:px-6 w-full max-w-[1440px] mx-auto"
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto 1fr",
+                        columnGap: 16,
+                    }}
+                >
+                    <div className="flex items-center gap-2 sm:gap-4" style={{ minWidth: 0 }}>
                         <button
                             onClick={() => setSidebarOpen(true)}
                             className="lg:hidden mr-1 sm:mr-2 w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
@@ -1136,7 +1143,6 @@ const AlbumsLive = () => {
                             <span className="material-symbols-outlined text-lg">menu</span>
                         </button>
 
-                       {/* Alfaz logo + wordmark (same gradient/font treatment as the footer) */}
                         <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
                             <img src="/logo2.svg" alt="Alfaz Logo" className="h-7 sm:h-8 w-auto" />
                             <span className="relative inline-block leading-none font-black tracking-wide">
@@ -1164,7 +1170,7 @@ const AlbumsLive = () => {
                         </Link>
                     </div>
 
-                    <nav className="lib-nav-links hidden md:flex items-center gap-8">
+                    <nav className="lib-nav-links hidden md:flex items-center gap-8" style={{ justifySelf: "center" }}>
                         {GLOBAL_NAV_LINKS.map((link) =>
                             link.active ? (
                                 <Link
@@ -1183,7 +1189,7 @@ const AlbumsLive = () => {
                         )}
                     </nav>
 
-                    <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4" style={{ justifySelf: "end" }}>
                         <button
                             className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
                             style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}

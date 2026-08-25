@@ -93,9 +93,10 @@ const styles = `
   top: 0; left: 0; right: 0;
   z-index: 50;
   height: 64px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
+  column-gap: 20px;
   padding: 0 20px;
   background: rgba(13,14,18,0.9);
   backdrop-filter: blur(20px);
@@ -103,8 +104,9 @@ const styles = `
   border-bottom: 1px solid rgba(212,175,55,0.2);
 }
 @media (min-width: 768px) { .cs-header { padding: 0 40px; } }
-.cs-header-left { display: flex; align-items: center; gap: 20px; }
-.cs-menu-btn { color: var(--primary-container); cursor: pointer; display: flex; }
+.cs-header-left { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.cs-header-center { display: flex; align-items: center; }
+.cs-header-right { display: flex; align-items: center; gap: 20px; justify-self: end; }
 @media (min-width: 1024px) { .cs-menu-btn { display: none; } }
 
 /* ── Global nav brand (gold theme) ─────────────────────────── */
@@ -807,7 +809,10 @@ export default function CommunitySPaces({
   const [userAlbums, setUserAlbums] = useState([]);
   const [userKalams, setUserKalams] = useState([]);
   const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
-
+  const [notifications, setNotifications] = useState([]);
+  const [isNotificationModalOpen, setIsNotificationmodalOpened] = useState(false);
+    
+  
   // Which tab of the picker is active, and which item is currently selected.
   const [modalTab, setModalTab] = useState("kalam"); // "kalam" | "album"
   const [kalam, setKalam] = useState(null); // selected kalam _id
@@ -828,9 +833,20 @@ export default function CommunitySPaces({
         console.error("Error while fetching user posts", error);
       });
   };
+  const fetchUserNotifications=()=>{
+    axiosInstance
+    .get('/api/offlineNotifications',{
+      withCredentials: true
+    }).then((response)=>{
+      setNotifications(response.data.offlineNotifications)
+    }).catch((error)=>{
+      console.error("Error while fetching user notifications", error)
+    })
+  }
 
   useEffect(() => {
     fetchPosts();
+    fetchUserNotifications();
   }, []);
 
   const fetchUserKalams = () => {
@@ -877,54 +893,55 @@ export default function CommunitySPaces({
   /* ---------------------- Sub components ---------------------- */
 
   const TopAppBar = ({ userAvatarUrl }) => (
-    <header className="cs-header">
-      <div className="cs-header-left">
-        <span className="cs-menu-btn">
-          <Icon name="menu" />
-        </span>
+  <header className="cs-header">
+    <div className="cs-header-left">
+      <span className="cs-menu-btn">
+        <Icon name="menu" />
+      </span>
 
-        {/* ── Global nav (Alfaz brand + site-wide links, gold theme) ── */}
-        <div className="cs-gnav-brand">
-          <div className="cs-gnav-logo-wrap">
-            <div className="cs-gnav-logo-glow" />
-            <img src="/logo2.svg" alt="Alfaz Logo" className="cs-gnav-logo-img" />
-          </div>
-          <h1 className="cs-gnav-wordmark">
-            <span aria-hidden="true" className="cs-gnav-wordmark-glow">Alfaz</span>
-            <span className="cs-gnav-wordmark-text">
-              <span className="cs-gnav-wm-a">A</span>
-              <bdi className="cs-gnav-wm-ur">لف</bdi>
-              <span className="cs-gnav-wm-a">az</span>
-            </span>
-          </h1>
+      <div className="cs-gnav-brand">
+        <div className="cs-gnav-logo-wrap">
+          <div className="cs-gnav-logo-glow" />
+          <img src="/logo2.svg" alt="Alfaz Logo" className="cs-gnav-logo-img" />
         </div>
+        <h1 className="cs-gnav-wordmark">
+          <span aria-hidden="true" className="cs-gnav-wordmark-glow">Alfaz</span>
+          <span className="cs-gnav-wordmark-text">
+            <span className="cs-gnav-wm-a">A</span>
+            <bdi className="cs-gnav-wm-ur">لف</bdi>
+            <span className="cs-gnav-wm-a">az</span>
+          </span>
+        </h1>
+      </div>
+    </div>
 
-        <nav className="cs-gnav-links">
-          {GLOBAL_NAV_LINKS.map((link) => (
-            <a
-              key={link.text}
-              href={link.href}
-              className={`cs-gnav-link${link.active ? " active" : ""}`}
-            >
-              {link.text}
-            </a>
-          ))}
-        </nav>
+    {/* ── Centered nav column ── */}
+    <nav className="cs-header-center cs-gnav-links">
+      {GLOBAL_NAV_LINKS.map((link) => (
+        
+          <a key={link.text}
+          href={link.href}
+          className={`cs-gnav-link${link.active ? " active" : ""}`}
+        >
+          {link.text}
+        </a>
+      ))}
+    </nav>
+
+    <div className="cs-header-right">
+      <div className="cs-header-icons">
+        <button aria-label="Search">
+          <Icon name="search" size={20} />
+        </button>
+        <button onClick={()=>setIsNotificationmodalOpened(true)} aria-label="Notifications">
+          <Icon name="bell" size={20} />
+        </button>
       </div>
-      <div className="cs-header-right">
-        <div className="cs-header-icons">
-          <button aria-label="Search">
-            <Icon name="search" size={20} />
-          </button>
-          <button aria-label="Notifications">
-            <Icon name="bell" size={20} />
-          </button>
-        </div>
-        <div className="cs-header-divider" />
-        <img className="cs-avatar-sm" src={userAvatarUrl} alt="User profile" />
-      </div>
-    </header>
-  );
+      <div className="cs-header-divider" />
+      <img className="cs-avatar-sm" src={userAvatarUrl} alt="User profile" />
+    </div>
+  </header>
+);
 
   const LeftSidebar = () => (
     <aside className="cs-sidebar-left">
@@ -1222,6 +1239,96 @@ export default function CommunitySPaces({
             </div>
           </div>
         </MyVerticallyCenteredModal>
+        <MyVerticallyCenteredModal isOpen={isNotificationModalOpen} onClose={() => setIsNotificationmodalOpened(false)}>
+                      <div
+                        className="rounded-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden border border-[#f59e0b]/15 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                        style={{ background: "rgba(29,13,33,0.45)", backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)" }}
+                      >
+                    
+                        {/* Header */}
+                        <div className="px-6 py-5 border-b border-[#f59e0b]/15 relative">
+                          <div className="flex justify-between items-center mb-1">
+                            <h2 className="flex items-center gap-3 text-[#f4daf7] text-xl font-semibold tracking-wide">
+                              Notifications
+                              {/* {notifications.length > 0 && (
+                                <span className="bg-[#f59e0b]/10 text-[#ffc174] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#f59e0b]/20">
+                                  {notifications.length} NEW
+                                </span>
+                              )} */}
+                            </h2>
+                            <button
+                              onClick={() => setNotificationOpened(false)}
+                              className="w-8 h-8 flex items-center justify-center rounded-full text-[#d8c3ad] hover:text-[#ffc174] transition-colors active:scale-90"
+                              aria-label="Close notifications"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <div className="w-12 h-1 bg-[#ffc174] rounded-full mt-2" />
+                        </div>
+                        
+                    
+                        {/* List */}
+                        <div className="flex-1 overflow-y-auto p-2 space-y-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#f59e0b]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+                          {notifications.length > 0 ? (
+                            notifications.map((item, i) => (
+                              
+                              <button
+                                key={item.id ?? i}
+                                onClick={() => {Navigate(item.toNavigate); handleNotificationSeen(item._id)}}
+                                className="w-full text-left flex gap-4 p-4 rounded-lg border border-transparent transition-all duration-300 hover:bg-[#f59e0b]/5 hover:border-[#f59e0b]/40 hover:-translate-y-0.5"
+                              >
+                                      {console.log("see status", item.isSeen)}
+                    
+                                {/* Status dot*/}
+                               {!item.isSeen && <div className="relative flex-shrink-0 mt-1">
+                                  <span
+                                    className="block w-2.5 h-2.5 rounded-full"
+                                    style={{
+                                      background: item.read ? "transparent" : "#f59e0b",
+                                      boxShadow: item.read ? "none" : "0 0 8px #f59e0b",
+                                    }}
+                                  />
+                                </div>}
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex justify-between items-start mb-1 gap-2">
+                                    <h3 className={`truncate text-sm ${item.read ? "font-medium text-[#f4daf7]/70" : "font-bold text-[#f4daf7]"}`}>
+                                      {item.notificationTitle}
+                                    </h3>
+                                    <span className="text-[10px] tracking-wider text-[#d8c3ad] opacity-60 whitespace-nowrap font-mono">
+                                      {item.createdAt ?? "Just now"}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm text-[#d8c3ad] leading-relaxed truncate">
+                                    {item.notificationBody}
+                                  </p>
+                                </div>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="flex flex-col items-center justify-center py-16 text-center px-8">
+                              <div className="w-20 h-20 rounded-full bg-[#f59e0b]/5 border border-[#f59e0b]/10 flex items-center justify-center mb-6">
+                                <span className="text-[#f59e0b] text-3xl opacity-40">🔔</span>
+                              </div>
+                              <h3 className="text-[#f4daf7] font-semibold text-lg mb-2">Your notifications will appear here</h3>
+                              <p className="text-[#d8c3ad] max-w-xs mx-auto text-sm">
+                                We'll let you know when something important happens in your elite ecosystem.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                    
+                        {/* Footer */}
+                        <div className="px-6 py-4 border-t border-[#f59e0b]/15 flex justify-between items-center" style={{ background: "rgba(23,8,28,0.5)" }}>
+                          {/* <button className="text-[#d8c3ad] hover:text-[#ffc174] transition-colors text-[10px] font-medium tracking-[0.15em] font-mono">
+                            MARK ALL AS READ
+                          </button> */}
+                          <button onClick={()=>setIsNotificationmodalOpened(false)} className="text-[#d8c3ad] text-right hover:text-[#ffc174] transition-colors text-[10px] font-medium tracking-[0.15em] font-mono flex items-center gap-1">
+                            close <span className="text-sm">›</span>
+                          </button>
+                        </div>
+                      </div>
+                    </MyVerticallyCenteredModal>
 
         {/* <RightSidebar userAvatarUrl={userAvatarUrl} onPublish={onPublish} /> */}
 

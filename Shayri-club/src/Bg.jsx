@@ -877,7 +877,7 @@ useEffect(() => {
                   {console.log("see status", item.isSeen)}
 
             {/* Status dot*/}
-           {!item.isSeen && <div className="relative flex-shrink-0 mt-1">
+           {item.isSeen && <div className="relative flex-shrink-0 mt-1">
               <span
                 className="block w-2.5 h-2.5 rounded-full"
                 style={{
