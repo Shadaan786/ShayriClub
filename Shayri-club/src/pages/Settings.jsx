@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   UserCog,
   Bell,
@@ -15,6 +15,9 @@ import {
   ExternalLink,
   Menu,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "@/Apis/axiosInstance";
+import { not } from "firebase/firestore/lite/pipelines";
 
 // ---- Design tokens (ported from the original Tailwind config) ----
 const colors = {
@@ -51,313 +54,397 @@ const NAV_ITEMS = [
   { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
 ];
 
-// ---- Small shared primitives ----
-
-function Field({ label, type = "text", defaultValue }) {
-  return (
-    <div className="space-y-2">
-      <label
-        className="block text-xs font-semibold tracking-wider"
-        style={{ color: colors.onSurface }}
-      >
-        {label}
-      </label>
-      <input
-        type={type}
-        defaultValue={defaultValue}
-        className="w-full px-4 py-2 text-sm focus:outline-none transition-colors"
-        style={{
-          backgroundColor: colors.surfaceMid,
-          border: `1px solid ${colors.borderStrong}`,
-          color: colors.onSurface,
-        }}
-        onFocus={(e) => (e.target.style.borderColor = colors.onSurface)}
-        onBlur={(e) => (e.target.style.borderColor = colors.borderStrong)}
-      />
-    </div>
-  );
-}
-
-function Row({ title, description, actionLabel, onAction }) {
-  return (
-    <div
-      className="flex justify-between items-center py-3"
-      style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}
-    >
-      <div>
-        <p className="text-sm font-semibold" style={{ color: colors.onSurface }}>
-          {title}
-        </p>
-        <p className="text-xs mt-0.5" style={{ color: colors.onSurfaceVariant }}>
-          {description}
-        </p>
-      </div>
-      <button
-        onClick={onAction}
-        className="px-4 py-2 text-xs font-semibold tracking-wide transition-colors shrink-0"
-        style={{
-          backgroundColor: colors.surfaceMid,
-          border: `1px solid ${colors.onSurface}`,
-          color: colors.onSurface,
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.surfaceHigh)}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = colors.surfaceMid)}
-      >
-        {actionLabel}
-      </button>
-    </div>
-  );
-}
-
-function LinkRow({ title, external }) {
-  return (
-    <div
-      className="flex justify-between items-center py-3 px-2 -mx-2 cursor-pointer transition-colors"
-      style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}
-      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.surfaceHigh)}
-      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
-    >
-      <p className="text-sm" style={{ color: colors.onSurface }}>
-        {title}
-      </p>
-      {external ? (
-        <ExternalLink size={18} style={{ color: colors.onSurfaceVariant }} />
-      ) : (
-        <ChevronRight size={18} style={{ color: colors.onSurfaceVariant }} />
-      )}
-    </div>
-  );
-}
-
-function Toggle({ label, defaultChecked = false }) {
-  const [checked, setChecked] = useState(defaultChecked);
-  return (
-    <div
-      className="flex justify-between items-center py-3"
-      style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}
-    >
-      <p className="text-sm" style={{ color: colors.onSurface }}>
-        {label}
-      </p>
-      <button
-        role="switch"
-        aria-checked={checked}
-        onClick={() => setChecked((c) => !c)}
-        className="w-10 h-6 flex items-center px-0.5 transition-colors"
-        style={{
-          backgroundColor: checked ? colors.primary : colors.surfaceContainerHighest,
-        }}
-      >
-        <span
-          className="w-5 h-5 transition-transform"
-          style={{
-            backgroundColor: checked ? colors.surfaceLow : colors.onSurfaceVariant,
-            transform: checked ? "translateX(16px)" : "translateX(0px)",
-          }}
-        />
-      </button>
-    </div>
-  );
-}
-
-function SectionHeader({ title, description }) {
-  return (
-    <div className="mb-6 pb-2" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
-      <h3 className="text-2xl font-semibold" style={{ color: colors.onSurface, fontFamily: "Geist, sans-serif" }}>
-        {title}
-      </h3>
-      <p className="text-xs mt-1" style={{ color: colors.onSurfaceVariant }}>
-        {description}
-      </p>
-    </div>
-  );
-}
-
-// ---- Section pages ----
-
-function AccountSection() {
-  return (
-    <div>
-      <SectionHeader
-        title="Account Settings"
-        description="Manage your personal information and preferences."
-      />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Field label="Full Name" defaultValue="Jane Doe" />
-        <Field label="Email Address" type="email" defaultValue="jane.doe@example.com" />
-      </div>
-      <div className="mb-6">
-        <label className="block text-xs font-semibold tracking-wider mb-2" style={{ color: colors.onSurface }}>
-          Profile Picture
-        </label>
-        <div className="flex items-center gap-6">
-          <div
-            className="w-16 h-16 flex items-center justify-center overflow-hidden shrink-0"
-            style={{ backgroundColor: colors.surfaceHigh, border: `1px solid ${colors.borderSubtle}` }}
-          >
-            <UserCog size={28} style={{ color: colors.onSurfaceVariant }} />
-          </div>
-          <button
-            className="px-4 py-2 text-xs font-semibold tracking-wide transition-colors"
-            style={{ backgroundColor: colors.surfaceMid, border: `1px solid ${colors.onSurface}`, color: colors.onSurface }}
-          >
-            Change Avatar
-          </button>
-          <button className="text-xs font-semibold underline" style={{ color: colors.onSurfaceVariant }}>
-            Remove
-          </button>
-        </div>
-      </div>
-      <div className="space-y-1 mt-6">
-        <Row title="Password" description="Update your current password." actionLabel="Change" />
-        <Row title="Active Session" description="Log out of this device." actionLabel="Log out" />
-        <Row title="Account Switching" description="Log into another account." actionLabel="Switch Account" />
-      </div>
-    </div>
-  );
-}
-
-function NotificationsSection() {
-  return (
-    <div>
-      <SectionHeader title="Notifications" description="Manage how you receive alerts and updates." />
-      <div className="space-y-8">
-        <div>
-          <h4 className="text-sm font-semibold mb-2" style={{ color: colors.onSurface }}>
-            Push Notifications
-          </h4>
-          <div>
-            <Toggle label="Likes" defaultChecked />
-            <Toggle label="Comments" defaultChecked />
-            <Toggle label="New Follower" defaultChecked />
-            <Toggle label="Kalam of the week" />
-            <Toggle label="Kalam upload notification" defaultChecked />
-          </div>
-        </div>
-        <div>
-          <h4 className="text-sm font-semibold mb-2" style={{ color: colors.onSurface }}>
-            Email Notifications
-          </h4>
-          <div>
-            <Toggle label="Security Alerts" defaultChecked />
-            <Toggle label="Weekly Digest" />
-            <Toggle label="Product Announcements" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PrivacySection() {
-  return (
-    <div>
-      <SectionHeader title="Privacy" description="Control your data and visibility." />
-      <div className="space-y-1">
-        <Row title="Data Export" description="Request a copy of your personal data." actionLabel="Request my data" />
-        <Row title="Blocked Users" description="Manage accounts you have blocked." actionLabel="Manage" />
-      </div>
-    </div>
-  );
-}
-
-function SecuritySection() {
-  return (
-    <div>
-      <SectionHeader title="Security" description="Protect your account and manage active sessions." />
-      <div className="space-y-1">
-        <Row title="Global Sign Out" description="Log out of all active sessions across all devices." actionLabel="Log out" />
-        <Row title="Authentication" description="Log into another account to manage security." actionLabel="Log into another account" />
-      </div>
-    </div>
-  );
-}
-
-function SupportSection() {
-  return (
-    <div>
-      <SectionHeader title="Support & Feedback" description="Get help and share your thoughts with us." />
-      <div>
-        <LinkRow title="Help & Support" />
-        <LinkRow title="Report a Problem" />
-        <LinkRow title="Suggest an Improvement" />
-        <LinkRow title="Report Content" />
-      </div>
-    </div>
-  );
-}
-
-function LegalSection() {
-  return (
-    <div>
-      <SectionHeader title="Legal" description="Review our policies and guidelines." />
-      <div>
-        <LinkRow title="Copyright & IP" external />
-        <LinkRow title="Community Guidelines" external />
-        <LinkRow title="Privacy Policy" external />
-        <LinkRow title="Terms of Service" external />
-      </div>
-    </div>
-  );
-}
-
-function DangerSection() {
-  return (
-    <div>
-      <SectionHeader title="Danger Zone" description="Irreversible actions related to your account and data." />
-      <div
-        className="p-6"
-        style={{ border: `1px solid ${colors.dangerAccent}`, backgroundColor: colors.dangerContainer }}
-      >
-        <div className="mb-4">
-          <h3
-            className="text-lg font-semibold flex items-center gap-2"
-            style={{ color: colors.dangerAccent }}
-          >
-            <AlertTriangle size={20} />
-            Danger Zone
-          </h3>
-          <p className="text-xs mt-2" style={{ color: colors.onSurface }}>
-            Irreversible actions related to your account and data.
-          </p>
-        </div>
-        <div
-          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4"
-          style={{ borderTop: `1px solid ${colors.dangerAccent}4d` }}
-        >
-          <div>
-            <p className="text-sm font-semibold" style={{ color: colors.onSurface }}>
-              Delete Account
-            </p>
-            <p className="text-xs" style={{ color: colors.onSurfaceVariant }}>
-              Permanently remove your account and all associated data.
-            </p>
-          </div>
-          <button
-            className="px-6 py-2 text-xs font-semibold tracking-wide whitespace-nowrap transition-opacity"
-            style={{ backgroundColor: colors.dangerAccent, color: colors.surface }}
-          >
-            Delete my account
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const SECTION_COMPONENTS = {
-  account: AccountSection,
-  notifications: NotificationsSection,
-  privacy: PrivacySection,
-  security: SecuritySection,
-  support: SupportSection,
-  legal: LegalSection,
-  danger: DangerSection,
-};
-
 export default function SystemSettings() {
   const [activeSection, setActiveSection] = useState("account");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  // ---- Small shared primitives ----
+
+  function Field({ label, type = "text", defaultValue }) {
+    return (
+      <div className="space-y-2">
+        <label
+          className="block text-xs font-semibold tracking-wider"
+          style={{ color: colors.onSurface }}
+        >
+          {label}
+        </label>
+        <input
+          type={type}
+          defaultValue={defaultValue}
+          disabled= {true}
+          className="w-full px-4 py-2 text-sm focus:outline-none transition-colors"
+          style={{
+            backgroundColor: colors.surfaceMid,
+            border: `1px solid ${colors.borderStrong}`,
+            color: colors.onSurface,
+          }}
+          onFocus={(e) => (e.target.style.borderColor = colors.onSurface)}
+          onBlur={(e) => (e.target.style.borderColor = colors.borderStrong)}
+        />
+      </div>
+    );
+  }
+
+  function Row({ title, description, actionLabel, onAction }) {
+    return (
+      <div
+        className="flex justify-between items-center py-3"
+        style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}
+      >
+        <div>
+          <p className="text-sm font-semibold" style={{ color: colors.onSurface }}>
+            {title}
+          </p>
+          <p className="text-xs mt-0.5" style={{ color: colors.onSurfaceVariant }}>
+            {description}
+          </p>
+        </div>
+        <button
+          onClick={onAction}
+          className="px-4 py-2 text-xs font-semibold tracking-wide transition-colors shrink-0"
+          style={{
+            backgroundColor: colors.surfaceMid,
+            border: `1px solid ${colors.onSurface}`,
+            color: colors.onSurface,
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.surfaceHigh)}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = colors.surfaceMid)}
+        >
+          {actionLabel}
+        </button>
+      </div>
+    );
+  }
+
+  function LinkRow({ title, external, link}) {
+    const Navigate = useNavigate();
+    return (
+      <div
+        className="flex justify-between items-center py-3 px-2 -mx-2 cursor-pointer transition-colors"
+        style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.surfaceHigh)}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+      >
+        <p className="text-sm" style={{ color: colors.onSurface }}>
+          {title}
+        </p>
+        {external ? (
+          <ExternalLink onClick={()=>Navigate(link)} size={18} style={{ color: colors.onSurfaceVariant }} />
+        ) : (
+          <ChevronRight size={18} style={{ color: colors.onSurfaceVariant }} />
+        )}
+      </div>
+    );
+  }
+
+
+
+  function SectionHeader({ title, description }) {
+    return (
+      <div className="mb-6 pb-2" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+        <h3 className="text-2xl font-semibold" style={{ color: colors.onSurface, fontFamily: "Geist, sans-serif" }}>
+          {title}
+        </h3>
+        <p className="text-xs mt-1" style={{ color: colors.onSurfaceVariant }}>
+          {description}
+        </p>
+      </div>
+    );
+  }
+
+  function SaveButton({ onClick, disabled }) {
+    return (
+      <div className="flex justify-end pt-8">
+        <button
+          className="px-8 py-2 text-xs font-semibold tracking-wide transition-opacity"
+          style={{ backgroundColor: colors.onSurface, color: colors.surface }}
+          onClick={onClick}
+          disabled={disabled}
+        >
+          Save Changes
+        </button>
+      </div>
+    );
+  }
+
+  // ---- Section pages ----
+
+  function AccountSection() {
+
+    const [user, setUser] = useState("");
+
+    const fetchUserDetails = ()=>{
+      axiosInstance
+      .get('/api/userId',{
+        withCredentials: true
+      }).then((response)=>{
+        setUser(response.data);
+      })
+
+    }
+
+    useEffect(()=>{
+
+      fetchUserDetails();
+    }, [])
+
+    const handleSaveAccount = () => {
+      // No editable account fields yet (Full Name / Email are disabled) —
+      // hook this up once those fields become editable.
+    };
+
+    return (
+      <div>
+        <SectionHeader
+          title="Account Settings"
+          description="Manage your personal information and preferences."
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <Field label="Full Name" defaultValue= {user.name} />
+          <Field label="Email Address" type="email" defaultValue={user.email} />
+        </div>
+        <div className="mb-6">
+          <label className="block text-xs font-semibold tracking-wider mb-2" style={{ color: colors.onSurface }}>
+            Profile Picture
+          </label>
+          <div className="flex items-center gap-6">
+            <div
+              className="w-16 h-16 flex items-center justify-center overflow-hidden shrink-0"
+              style={{ backgroundColor: colors.surfaceHigh, border: `1px solid ${colors.borderSubtle}` }}
+            >
+              {/* <UserCog size={28} style={{ color: colors.onSurfaceVariant }} /> */}
+              <img className="h-full" src={user.profilePic} alt="" srcset="" />
+            </div>
+            <button
+              className="px-4 py-2 text-xs font-semibold tracking-wide transition-colors"
+              style={{ backgroundColor: colors.surfaceMid, border: `1px solid ${colors.onSurface}`, color: colors.onSurface }}
+            >
+              Change Avatar
+            </button>
+            <button className="text-xs font-semibold underline" style={{ color: colors.onSurfaceVariant }}>
+              Remove
+            </button>
+          </div>
+        </div>
+        <div className="space-y-1 mt-6">
+          <Row title="Password" description="Update your current password." actionLabel="Change" />
+          <Row title="Active Session" description="Log out of this device." actionLabel="Log out" />
+          <Row title="Account Switching" description="Log into another account." actionLabel="Switch Account" />
+        </div>
+        <SaveButton onClick={handleSaveAccount} />
+      </div>
+    );
+  }
+
+  function NotificationsSection() {
+    const [notifications_allowed, setNotifications_allowed] = useState(new Set()); 
+    console.log("See naa", notifications_allowed.current)
+
+    const handleSaveNotifications = () => {
+      console.log("Saving notification changes for:", notifications_allowed);
+      axiosInstance
+      .post('/api/allowNotifications',{
+        notifications: Array.from(notifications_allowed)
+      })
+    };
+
+      function Toggle({ label, defaultChecked = false}) {
+    const [checked, setChecked] = useState(defaultChecked);
+
+    console.log("Seeeee", notifications_allowed)
+    console.log("see label", label)
+    
+    return (
+      <div
+        className="flex justify-between items-center py-3"
+        style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}
+      >
+        <p className="text-sm" style={{ color: colors.onSurface }}>
+          {label}
+        </p>
+        <button
+          role="switch"
+          aria-checked={checked}
+          onClick={() => {setChecked((currentValue) => !currentValue);(notifications_allowed.has(label))?setNotifications_allowed(prev=>{const updatedSet = new Set(prev); updatedSet.delete(label); return updatedSet}):setNotifications_allowed(prev=>{const updatedSet = new Set(prev); updatedSet.add(label); return updatedSet})}}
+          className="w-10 h-6 flex items-center px-0.5 transition-colors"
+          style={{
+            backgroundColor: checked ? colors.primary : colors.surfaceContainerHighest,
+          }}
+        >
+          <span
+            className="w-5 h-5 transition-transform"
+            style={{
+              backgroundColor: checked ? colors.surfaceLow : colors.onSurfaceVariant,
+              transform: checked ? "translateX(16px)" : "translateX(0px)",
+            }}
+          />
+        </button>
+      </div>
+    );
+  }
+
+    return (
+      <div>
+        <SectionHeader title="Notifications" description="Manage how you receive alerts and updates." />
+        <div className="space-y-8">
+          <div>
+            <h4 className="text-sm font-semibold mb-2" style={{ color: colors.onSurface }}>
+              Push Notifications
+            </h4>
+            <div>
+              <Toggle label="likeNotifications" defaultChecked  />
+              <Toggle label="commentNotification" defaultChecked  />
+              <Toggle label="newFollowerNotification" defaultChecked />
+              <Toggle label="kalamOfTheWeekNotification" defaultChecked />
+              <Toggle label="kalamUploadNotification" defaultChecked />
+            </div>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold mb-2" style={{ color: colors.onSurface }}>
+              Email Notifications
+            </h4>
+            <div>
+              <Toggle label="securityAlertEmailNotification" defaultChecked />
+              <Toggle label="weeklyDigestEmailNotification" defaultChecked />
+              <Toggle label="productAnouncementsEmailNotification" defaultChecked />
+            </div>
+          </div>
+        </div>
+        
+        <SaveButton disabled={(notifications_allowed.size ===0)? true: false} onClick={handleSaveNotifications} />
+      </div>
+    );
+  }
+
+  function PrivacySection() {
+    const handleSavePrivacy = () => {
+      // TODO: persist privacy preference changes
+    };
+
+    return (
+      <div>
+        <SectionHeader title="Privacy" description="Control your data and visibility." />
+        <div className="space-y-1">
+          <Row title="Data Export" description="Request a copy of your personal data." actionLabel="Request my data" />
+          <Row title="Blocked Users" description="Manage accounts you have blocked." actionLabel="Manage" />
+        </div>
+        <SaveButton onClick={handleSavePrivacy} />
+      </div>
+    );
+  }
+
+  function SecuritySection() {
+    const handleSaveSecurity = () => {
+      // TODO: persist security setting changes
+    };
+
+    return (
+      <div>
+        <SectionHeader title="Security" description="Protect your account and manage active sessions." />
+        <div className="space-y-1">
+          <Row title="Global Sign Out" description="Log out of all active sessions across all devices." actionLabel="Log out" />
+          <Row title="Authentication" description="Log into another account to manage security." actionLabel="Log into another account" />
+        </div>
+        <SaveButton onClick={handleSaveSecurity} />
+      </div>
+    );
+  }
+
+  function SupportSection() {
+    const handleSaveSupport = () => {
+      // TODO: persist support preference changes
+    };
+
+    return (
+      <div>
+        <SectionHeader title="Support & Feedback" description="Get help and share your thoughts with us." />
+        <div>
+          <LinkRow title="Help & Support" />
+          <LinkRow title="Report a Problem" />
+          <LinkRow title="Suggest an Improvement" />
+          <LinkRow title="Report Content" />
+        </div>
+        <SaveButton onClick={handleSaveSupport} />
+      </div>
+    );
+  }
+
+  function LegalSection() {
+    const Navigate = useNavigate()
+
+    const handleSaveLegal = () => {
+      // TODO: persist legal preference changes, if any become editable
+    };
+
+    return (
+      <div>
+        <SectionHeader title="Legal" description="Review our policies and guidelines." />
+        <div>
+          <LinkRow title="Copyright & IP" external />
+          <LinkRow title="Community Guidelines" external link={"/communityguidelines"} />
+          <LinkRow title="Privacy Policy" external />
+          <LinkRow title="Terms of Service" external link={"/termsofservices"} />
+        </div>
+        <SaveButton onClick={handleSaveLegal} />
+      </div>
+    );
+  }
+
+  function DangerSection() {
+    return (
+      <div>
+        <SectionHeader title="Danger Zone" description="Irreversible actions related to your account and data." />
+        <div
+          className="p-6"
+          style={{ border: `1px solid ${colors.dangerAccent}`, backgroundColor: colors.dangerContainer }}
+        >
+          <div className="mb-4">
+            <h3
+              className="text-lg font-semibold flex items-center gap-2"
+              style={{ color: colors.dangerAccent }}
+            >
+              <AlertTriangle size={20} />
+              Danger Zone
+            </h3>
+            <p className="text-xs mt-2" style={{ color: colors.onSurface }}>
+              Irreversible actions related to your account and data.
+            </p>
+          </div>
+          <div
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4"
+            style={{ borderTop: `1px solid ${colors.dangerAccent}4d` }}
+          >
+            <div>
+              <p className="text-sm font-semibold" style={{ color: colors.onSurface }}>
+                Delete Account
+              </p>
+              <p className="text-xs" style={{ color: colors.onSurfaceVariant }}>
+                Permanently remove your account and all associated data.
+              </p>
+            </div>
+            <button
+              className="px-6 py-2 text-xs font-semibold tracking-wide whitespace-nowrap transition-opacity"
+              style={{ backgroundColor: colors.dangerAccent, color: colors.surface }}
+            >
+              Delete my account
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const SECTION_COMPONENTS = {
+    account: AccountSection,
+    notifications: NotificationsSection,
+    privacy: PrivacySection,
+    security: SecuritySection,
+    support: SupportSection,
+    legal: LegalSection,
+    danger: DangerSection,
+  };
+
   const ActiveComponent = SECTION_COMPONENTS[activeSection];
   const activeMeta = NAV_ITEMS.find((n) => n.id === activeSection);
 
@@ -490,17 +577,6 @@ export default function SystemSettings() {
         <div className="flex-1 overflow-y-auto p-6 md:p-12">
           <div className="max-w-[800px] mx-auto pb-12">
             <ActiveComponent />
-
-            {activeSection !== "danger" && (
-              <div className="flex justify-end pt-8">
-                <button
-                  className="px-8 py-2 text-xs font-semibold tracking-wide transition-opacity"
-                  style={{ backgroundColor: colors.onSurface, color: colors.surface }}
-                >
-                  Save Changes
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </main>
