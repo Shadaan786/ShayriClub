@@ -58,6 +58,7 @@ import SystemSettings from './pages/Settings';
 import DataExport from './pages/ExportData';
 import BlockedUsers from './pages/BlockedUsers';
 import KalamSuggestPage from './pages/SuggestImprovement';
+import ReportProblem from './pages/ReportProblem';
 
 
 function App() {
@@ -153,6 +154,7 @@ onMessage(messaging, (data) => {
       <Route path='/export' element= {<DataExport/>}/>
       <Route path='/blockedUsers' element= {<BlockedUsers/>}/>
       <Route path='/suggestimprovement' element= {<KalamSuggestPage/>}/>
+      <Route path='/reportproblem' element= {<ReportProblem/>}/>
 
       {/* <ContextProvider>
         <Kalam/>
