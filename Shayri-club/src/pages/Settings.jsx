@@ -15,7 +15,7 @@ import {
   ExternalLink,
   Menu,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import axiosInstance from "@/Apis/axiosInstance";
 import { not } from "firebase/firestore/lite/pipelines";
 
@@ -117,36 +117,91 @@ export default function SystemSettings() {
     );
   }
 
-  function LinkRow({ title, external, link}) {
-    const Navigate = useNavigate();
+  function LinkRow({ title, external, link, link2}) {
+const navigate = useNavigate();
+
+return (
+  <button
+    type="button"
+    onClick={() => navigate(external ? link : link2)}
+    className="w-full text-left appearance-none bg-transparent border-0 p-0 m-0 block"
+  >
+    <div
+      className="flex justify-between items-center py-3 px-2 -mx-2 cursor-pointer transition-colors"
+      style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}
+      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.surfaceHigh)}
+      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+    >
+      <p className="text-sm" style={{ color: colors.onSurface }}>
+        {title}
+      </p>
+
+      {external ? (
+        <ExternalLink size={18} style={{ color: colors.onSurfaceVariant }} />
+      ) : (
+        <ChevronRight size={18} style={{ color: colors.onSurfaceVariant }} />
+      )}
+    </div>
+  </button>
+);
+  }
+
+  // NOTE: Toggle used to be declared *inside* NotificationsSection. That meant every
+  // click (which updates state and re-renders NotificationsSection) redefined Toggle
+  // as a brand new function/component type, so React unmounted + remounted every
+  // switch on each click, snapping `checked` back to `defaultChecked` instead of
+  // visually toggling. Moving it up here (declared once per SystemSettings render,
+  // not once per NotificationsSection re-render) keeps its identity stable across
+  // toggle clicks so the visual state persists. Logic is unchanged — the add/delete
+  // Set update now happens via the onToggle callback instead of a closure, but it
+  // does exactly the same thing.
+  function Toggle({ label, defaultChecked, notifications_allowed, onToggle }) {
+    const [checked, setChecked] = useState(defaultChecked);
+
+    console.log("see checked", defaultChecked)
+
+    console.log("Seeeee", notifications_allowed)
+    console.log("see label", label)
+
     return (
       <div
-        className="flex justify-between items-center py-3 px-2 -mx-2 cursor-pointer transition-colors"
+        className="flex justify-between items-center py-3"
         style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.surfaceHigh)}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
       >
         <p className="text-sm" style={{ color: colors.onSurface }}>
-          {title}
+          {label}
         </p>
-        {external ? (
-          <ExternalLink onClick={()=>Navigate(link)} size={18} style={{ color: colors.onSurfaceVariant }} />
-        ) : (
-          <ChevronRight size={18} style={{ color: colors.onSurfaceVariant }} />
-        )}
+        <button
+          role="switch"
+          aria-checked={checked}
+          onClick={() => {
+            setChecked((currentValue) => !currentValue);
+            onToggle(label);
+          }}
+          className="w-10 h-6 flex items-center px-0.5 transition-colors"
+          style={{
+            backgroundColor: checked ? colors.primary : colors.surfaceContainerHighest,
+          }}
+        >
+          <span
+            className="w-5 h-5 transition-transform"
+            style={{
+              backgroundColor: checked ? colors.surfaceLow : colors.onSurfaceVariant,
+              transform: checked ? "translateX(16px)" : "translateX(0px)",
+            }}
+          />
+        </button>
       </div>
     );
   }
 
-
-
   function SectionHeader({ title, description }) {
     return (
       <div className="mb-6 pb-2" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
-        <h3 className="text-2xl font-semibold" style={{ color: colors.onSurface, fontFamily: "Geist, sans-serif" }}>
+        <h3 className="text-2xl text-start font-semibold" style={{ color: colors.onSurface, fontFamily: "Geist, sans-serif" }}>
           {title}
         </h3>
-        <p className="text-xs mt-1" style={{ color: colors.onSurfaceVariant }}>
+        <p className="text-xs text-start mt-1" style={{ color: colors.onSurfaceVariant }}>
           {description}
         </p>
       </div>
@@ -239,6 +294,7 @@ export default function SystemSettings() {
 
   function NotificationsSection() {
     const [notifications_allowed, setNotifications_allowed] = useState(new Set()); 
+    const [userNotifications, setUserNotifications] = useState(null);
     console.log("See naa", notifications_allowed.current)
 
     const handleSaveNotifications = () => {
@@ -249,65 +305,67 @@ export default function SystemSettings() {
       })
     };
 
-      function Toggle({ label, defaultChecked = false}) {
-    const [checked, setChecked] = useState(defaultChecked);
+    const fetchUserNotifications=()=>{
+      axiosInstance
+      .get('/api/userId',{
+        withCredentials: true
+      }).then((response)=>{
+        setUserNotifications(response.data);
+      }).catch((error)=>{
+        console.error("Error while fetching user allowed notifications", error);
+      })
+    }
 
-    console.log("Seeeee", notifications_allowed)
-    console.log("see label", label)
-    
-    return (
-      <div
-        className="flex justify-between items-center py-3"
-        style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}
-      >
-        <p className="text-sm" style={{ color: colors.onSurface }}>
-          {label}
-        </p>
-        <button
-          role="switch"
-          aria-checked={checked}
-          onClick={() => {setChecked((currentValue) => !currentValue);(notifications_allowed.has(label))?setNotifications_allowed(prev=>{const updatedSet = new Set(prev); updatedSet.delete(label); return updatedSet}):setNotifications_allowed(prev=>{const updatedSet = new Set(prev); updatedSet.add(label); return updatedSet})}}
-          className="w-10 h-6 flex items-center px-0.5 transition-colors"
-          style={{
-            backgroundColor: checked ? colors.primary : colors.surfaceContainerHighest,
-          }}
-        >
-          <span
-            className="w-5 h-5 transition-transform"
-            style={{
-              backgroundColor: checked ? colors.surfaceLow : colors.onSurfaceVariant,
-              transform: checked ? "translateX(16px)" : "translateX(0px)",
-            }}
-          />
-        </button>
-      </div>
-    );
-  }
+    // Same add/delete-from-Set behavior as before, just exposed as a stable
+    // callback so it can be passed down to the now-hoisted Toggle component.
+    const handleToggle = (label) => {
+      setNotifications_allowed((prev) => {
+        const updatedSet = new Set(prev);
+        if (updatedSet.has(label)) {
+          updatedSet.delete(label);
+        } else {
+          updatedSet.add(label);
+        }
+        return updatedSet;
+      });
+    };
+
+    useEffect(()=>{
+      fetchUserNotifications();
+    },[])
+
+    if(!userNotifications){
+      return(
+        <>
+        <h1 className="text-9xl">Loading.....</h1>
+        </>
+      )
+    }
 
     return (
       <div>
         <SectionHeader title="Notifications" description="Manage how you receive alerts and updates." />
         <div className="space-y-8">
           <div>
-            <h4 className="text-sm font-semibold mb-2" style={{ color: colors.onSurface }}>
+            <h4 className="text-lg text-start font-semibold mb-2" style={{ color: colors.onSurface }}>
               Push Notifications
             </h4>
             <div>
-              <Toggle label="likeNotifications" defaultChecked  />
-              <Toggle label="commentNotification" defaultChecked  />
-              <Toggle label="newFollowerNotification" defaultChecked />
-              <Toggle label="kalamOfTheWeekNotification" defaultChecked />
-              <Toggle label="kalamUploadNotification" defaultChecked />
+              <Toggle label="likeNotifications" defaultChecked={(userNotifications.likeNotifications)?true:false} notifications_allowed={notifications_allowed} onToggle={handleToggle} />
+              <Toggle label="commentNotification" defaultChecked={(userNotifications.commentNotification)?true:false} notifications_allowed={notifications_allowed} onToggle={handleToggle} />
+              <Toggle label="newFollowerNotification" defaultChecked={(userNotifications.newFollowerNotification)?true: false} notifications_allowed={notifications_allowed} onToggle={handleToggle} />
+              <Toggle label="kalamOfTheWeekNotification" defaultChecked={(userNotifications.kalamOfTheWeekNotification)?true:false} notifications_allowed={notifications_allowed} onToggle={handleToggle} />
+              <Toggle label="kalamUploadNotification" defaultChecked={(userNotifications.kalamUploadNotification)?true:false} notifications_allowed={notifications_allowed} onToggle={handleToggle} />
             </div>
           </div>
           <div>
-            <h4 className="text-sm font-semibold mb-2" style={{ color: colors.onSurface }}>
+            <h4 className="text-lg text-start font-semibold mb-2" style={{ color: colors.onSurface }}>
               Email Notifications
             </h4>
             <div>
-              <Toggle label="securityAlertEmailNotification" defaultChecked />
-              <Toggle label="weeklyDigestEmailNotification" defaultChecked />
-              <Toggle label="productAnouncementsEmailNotification" defaultChecked />
+              <Toggle label="securityAlertEmailNotification" defaultChecked={(userNotifications.securityAlertEmailNotification)?true:false} notifications_allowed={notifications_allowed} onToggle={handleToggle} />
+              <Toggle label="weeklyDigestEmailNotification" defaultChecked={(userNotifications.weeklyDigestEmailNotification)?true:false} notifications_allowed={notifications_allowed} onToggle={handleToggle} />
+              <Toggle label="productAnouncementsEmailNotification" defaultChecked={(userNotifications.productAnouncementsEmailNotification)?true:false} notifications_allowed={notifications_allowed} onToggle={handleToggle} />
             </div>
           </div>
         </div>
@@ -318,6 +376,7 @@ export default function SystemSettings() {
   }
 
   function PrivacySection() {
+    const Navigate = useNavigate();
     const handleSavePrivacy = () => {
       // TODO: persist privacy preference changes
     };
@@ -326,8 +385,8 @@ export default function SystemSettings() {
       <div>
         <SectionHeader title="Privacy" description="Control your data and visibility." />
         <div className="space-y-1">
-          <Row title="Data Export" description="Request a copy of your personal data." actionLabel="Request my data" />
-          <Row title="Blocked Users" description="Manage accounts you have blocked." actionLabel="Manage" />
+          <Row onAction={()=>Navigate('/export')} title="Data Export" description="Request a copy of your personal data." actionLabel="Request my data" />
+          <Row onAction={()=>Navigate('/blockedusers')} title="Blocked Users" description="Manage accounts you have blocked." actionLabel="Manage" />
         </div>
         <SaveButton onClick={handleSavePrivacy} />
       </div>
@@ -362,7 +421,7 @@ export default function SystemSettings() {
         <div>
           <LinkRow title="Help & Support" />
           <LinkRow title="Report a Problem" />
-          <LinkRow title="Suggest an Improvement" />
+          <LinkRow link2={'/suggestimprovement'} title="Suggest an Improvement" />
           <LinkRow title="Report Content" />
         </div>
         <SaveButton onClick={handleSaveSupport} />

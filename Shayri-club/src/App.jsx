@@ -55,6 +55,9 @@ import CookiePolicy from './legal/CookiePolicy';
 import CommunityGuidelines from './legal/CommunityGuidelines';
 import CommunitySPaces from './pages/CommunitySpaces';
 import SystemSettings from './pages/Settings';
+import DataExport from './pages/ExportData';
+import BlockedUsers from './pages/BlockedUsers';
+import KalamSuggestPage from './pages/SuggestImprovement';
 
 
 function App() {
@@ -147,6 +150,9 @@ onMessage(messaging, (data) => {
       <Route path='/communityguidelines' element= {<CommunityGuidelines/>}/>
       <Route path='/spaces' element= {<CommunitySPaces/>}/>
       <Route path='/settings' element= {<SystemSettings/>}/>
+      <Route path='/export' element= {<DataExport/>}/>
+      <Route path='/blockedUsers' element= {<BlockedUsers/>}/>
+      <Route path='/suggestimprovement' element= {<KalamSuggestPage/>}/>
 
       {/* <ContextProvider>
         <Kalam/>
