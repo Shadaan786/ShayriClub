@@ -1,0 +1,25 @@
+// Design tokens (ported from the original Tailwind config).
+// Shared by SystemSettings.jsx and every *Section.jsx file.
+export const colors = {
+  surface: "#141313",
+  surfaceContainerHighest: "#353434",
+  dangerAccent: "#ff4d4d",
+  outline: "#8e9192",
+  onPrimary: "#313030",
+  surfaceLow: "#0a0a0a",
+  outlineVariant: "#444748",
+  surfaceContainerLowest: "#0e0e0e",
+  dangerContainer: "#2a0a0a",
+  surfaceHigh: "#1e1e1e",
+  background: "#141313",
+  primary: "#c9c6c5",
+  secondaryContainer: "#454747",
+  onBackground: "#e5e2e1",
+  onSurface: "#e5e2e1",
+  onSurfaceVariant: "#c4c7c7",
+  surfaceContainer: "#201f1f",
+  surfaceMid: "#121212",
+  surfaceContainerHigh: "#2b2a2a",
+  borderSubtle: "#262626",
+  borderStrong: "#404040",
+};

@@ -54,7 +54,7 @@ import TermsOfServices from './legal/TermsOfServices';
 import CookiePolicy from './legal/CookiePolicy';
 import CommunityGuidelines from './legal/CommunityGuidelines';
 import CommunitySPaces from './pages/CommunitySpaces';
-import SystemSettings from './pages/Settings';
+import SystemSettings from './pages/settings/SystemSetting';
 import DataExport from './pages/ExportData';
 import BlockedUsers from './pages/BlockedUsers';
 import KalamSuggestPage from './pages/SuggestImprovement';
@@ -150,11 +150,11 @@ onMessage(messaging, (data) => {
       <Route path='/cookiepolicy' element= {<CookiePolicy/>}/>
       <Route path='/communityguidelines' element= {<CommunityGuidelines/>}/>
       <Route path='/spaces' element= {<CommunitySPaces/>}/>
-      <Route path='/settings' element= {<SystemSettings/>}/>
-      <Route path='/export' element= {<DataExport/>}/>
-      <Route path='/blockedUsers' element= {<BlockedUsers/>}/>
-      <Route path='/suggestimprovement' element= {<KalamSuggestPage/>}/>
-      <Route path='/reportproblem' element= {<ReportProblem/>}/>
+      <Route path='/settings/*' element= {<SystemSettings/>}/>
+      <Route path='/settings/privacy/export' element= {<DataExport/>}/>
+      <Route path='/settings/privacy/blockedUsers' element= {<BlockedUsers/>}/>
+      <Route path='/settings/support/suggestimprovement' element= {<KalamSuggestPage/>}/>
+      <Route path='/settings/support/reportproblem' element= {<ReportProblem/>}/>
 
       {/* <ContextProvider>
         <Kalam/>

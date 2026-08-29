@@ -1,4 +1,50 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  UserCog,
+  Bell,
+  Lock,
+  Shield,
+  HelpCircle,
+  Gavel,
+  AlertTriangle,
+  FileText,
+  Menu,
+} from "lucide-react";
+
+// ---- Sidebar design tokens (ported 1:1 from SystemSettings.jsx) ----
+const colors = {
+  surface: "#141313",
+  surfaceContainerHighest: "#353434",
+  dangerAccent: "#ff4d4d",
+  outline: "#8e9192",
+  onPrimary: "#313030",
+  surfaceLow: "#0a0a0a",
+  outlineVariant: "#444748",
+  surfaceContainerLowest: "#0e0e0e",
+  dangerContainer: "#2a0a0a",
+  surfaceHigh: "#1e1e1e",
+  background: "#141313",
+  primary: "#c9c6c5",
+  secondaryContainer: "#454747",
+  onBackground: "#e5e2e1",
+  onSurface: "#e5e2e1",
+  onSurfaceVariant: "#c4c7c7",
+  surfaceContainer: "#201f1f",
+  surfaceMid: "#121212",
+  surfaceContainerHigh: "#2b2a2a",
+  borderSubtle: "#262626",
+  borderStrong: "#404040",
+};
+
+const NAV_ITEMS = [
+  { id: "account", label: "Account", icon: UserCog },
+  { id: "notifications", label: "Notifications", icon: Bell },
+  { id: "privacy", label: "Privacy", icon: Lock },
+  { id: "security", label: "Security", icon: Shield },
+  { id: "support", label: "Support & Feedback", icon: HelpCircle },
+  { id: "legal", label: "Legal", icon: Gavel },
+  { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
+];
 
 /**
  * Kalam - Report a Problem
@@ -11,6 +57,11 @@ import React, { useEffect } from "react";
  * into document.head on mount via the useEffect below, so the UI,
  * theme, icons, and fonts all match the original HTML file exactly
  * with no extra setup required.
+ *
+ * Sidebar header/footer content updated to match the exact sidebar used
+ * across the rest of the app (Settings / Technical Console v1.0 header,
+ * Docs + Support footer links) instead of the previous Kalam/Logout+avatar
+ * version — nav items and active-state styling are unchanged.
  */
 
 export const tailwindConfig = {
@@ -132,6 +183,37 @@ export const tailwindConfig = {
 
 export default function ReportProblem() {
   const [ready, setReady] = React.useState(false);
+  const [activeSection, setActiveSection] = useState("support");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  // Identical NavList used across the console (see SystemSettings.jsx)
+  const NavList = ({ onNavigate }) => (
+    <nav className="flex-1 overflow-y-auto px-4 space-y-1">
+      {NAV_ITEMS.map((item) => {
+        const Icon = item.icon;
+        const isActive = item.id === activeSection;
+        return (
+          <button
+            key={item.id}
+            onClick={() => {
+              setActiveSection(item.id);
+              onNavigate && onNavigate();
+            }}
+            className="w-full flex items-center gap-4 py-3 px-4 text-left transition-colors"
+            style={{
+              color: item.danger ? colors.dangerAccent : isActive ? colors.onSurface : colors.onSurfaceVariant,
+              backgroundColor: isActive ? colors.surfaceContainerHigh : "transparent",
+              borderLeft: isActive ? `2px solid ${colors.primary}` : "2px solid transparent",
+              fontWeight: isActive ? 700 : 400,
+            }}
+          >
+            <Icon size={20} />
+            <span className="text-xs font-semibold tracking-wider">{item.label}</span>
+          </button>
+        );
+      })}
+    </nav>
+  );
 
   useEffect(() => {
     const addedNodes = [];
@@ -387,175 +469,73 @@ export default function ReportProblem() {
         }
       `}</style>
 
-      <div className="kalam-content-ready font-body-md antialiased overflow-x-hidden min-h-screen flex">
-        {/* SideNavBar */}
-        <nav className="bg-surface-container-lowest dark:bg-surface-container-lowest fixed left-0 top-0 h-full flex flex-col h-screen w-64 border-r border-border-subtle z-20 hidden md:flex">
-          <div className="p-lg border-b border-border-subtle flex flex-col items-start w-full">
-            <h1 className="font-display text-headline-md font-bold text-on-surface mb-xs">
-              Kalam
+      <div
+        className="kalam-content-ready font-body-md antialiased overflow-hidden h-screen flex"
+        style={{ backgroundColor: colors.surface, color: colors.onSurface }}
+      >
+        {/* Sidebar - desktop (identical to SystemSettings.jsx) */}
+        <aside
+          className="hidden md:flex flex-col h-screen w-64 shrink-0 py-12"
+          style={{ borderRight: `1px solid ${colors.borderSubtle}`, backgroundColor: colors.surface }}
+        >
+          <div className="px-6 mb-12">
+            <h1 className="text-2xl font-bold" style={{ fontFamily: "Geist, sans-serif" }}>
+              Settings
             </h1>
-            <p className="font-body-sm text-body-sm text-on-tertiary-container">
-              Technical Console
+            <p className="text-xs mt-2" style={{ color: colors.onSurfaceVariant }}>
+              Technical Console v1.0
             </p>
           </div>
-          <div className="flex-1 overflow-y-auto py-md w-full">
-            <ul className="flex flex-col gap-xs w-full px-sm">
-              {/* Account */}
-              <li>
-                <a
-                  className="flex items-center gap-sm px-md py-sm w-full text-on-tertiary-container hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200"
-                  href="#"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="material-symbols-outlined text-xl"
-                    data-icon="account_circle"
-                  >
-                    account_circle
-                  </span>
-                  <span className="font-label-md text-label-md">Account</span>
-                </a>
-              </li>
-              {/* Notifications */}
-              <li>
-                <a
-                  className="flex items-center gap-sm px-md py-sm w-full text-on-tertiary-container hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200"
-                  href="#"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="material-symbols-outlined text-xl"
-                    data-icon="notifications"
-                  >
-                    notifications
-                  </span>
-                  <span className="font-label-md text-label-md">
-                    Notifications
-                  </span>
-                </a>
-              </li>
-              {/* Privacy */}
-              <li>
-                <a
-                  className="flex items-center gap-sm px-md py-sm w-full text-on-tertiary-container hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200"
-                  href="#"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="material-symbols-outlined text-xl"
-                    data-icon="privacy_tip"
-                  >
-                    privacy_tip
-                  </span>
-                  <span className="font-label-md text-label-md">Privacy</span>
-                </a>
-              </li>
-              {/* Security */}
-              <li>
-                <a
-                  className="flex items-center gap-sm px-md py-sm w-full text-on-tertiary-container hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200"
-                  href="#"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="material-symbols-outlined text-xl"
-                    data-icon="security"
-                  >
-                    security
-                  </span>
-                  <span className="font-label-md text-label-md">Security</span>
-                </a>
-              </li>
-              {/* Support & Feedback - ACTIVE */}
-              <li>
-                <a
-                  className="flex items-center gap-sm px-md py-sm w-full text-on-surface border-l-2 border-primary font-bold bg-surface-container opacity-80"
-                  href="#"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="material-symbols-outlined text-xl text-primary dark:text-primary"
-                    data-icon="contact_support"
-                    data-weight="fill"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                  >
-                    contact_support
-                  </span>
-                  <span className="font-headline-sm text-headline-sm text-primary dark:text-primary">
-                    Support &amp; Feedback
-                  </span>
-                </a>
-              </li>
-              {/* Legal */}
-              <li>
-                <a
-                  className="flex items-center gap-sm px-md py-sm w-full text-on-tertiary-container hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200"
-                  href="#"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="material-symbols-outlined text-xl"
-                    data-icon="gavel"
-                  >
-                    gavel
-                  </span>
-                  <span className="font-label-md text-label-md">Legal</span>
-                </a>
-              </li>
-              {/* Danger Zone */}
-              <li className="mt-md">
-                <a
-                  className="flex items-center gap-sm px-md py-sm w-full text-danger-accent hover:bg-danger-container transition-colors duration-200 border border-danger-accent/20 border-l-0 border-r-0"
-                  href="#"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="material-symbols-outlined text-xl"
-                    data-icon="report"
-                  >
-                    report
-                  </span>
-                  <span className="font-label-md text-label-md">
-                    Danger Zone
-                  </span>
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className="p-md border-t border-border-subtle w-full">
+          <NavList />
+          <div className="px-4 mt-auto pt-6" style={{ borderTop: `1px solid ${colors.borderSubtle}` }}>
             <a
-              className="flex items-center gap-sm px-md py-sm w-full text-on-tertiary-container hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200"
+              className="flex items-center gap-4 py-2 px-4 text-xs font-semibold tracking-wider transition-colors"
+              style={{ color: colors.onSurfaceVariant }}
               href="#"
             >
-              <span
-                aria-hidden="true"
-                className="material-symbols-outlined text-xl"
-                data-icon="logout"
-              >
-                logout
-              </span>
-              <span className="font-label-md text-label-md">Logout</span>
+              <FileText size={18} /> Docs
             </a>
-            <div className="mt-sm flex items-center gap-sm px-sm">
-              <img
-                alt="Kalam Admin Profile"
-                className="w-8 h-8 rounded-full border border-border-subtle object-cover"
-                data-alt="A detailed digital avatar portrait of a system administrator in a cyberpunk or high-tech setting. The lighting is moody with neon accents. Minimalist and sleek. High contrast."
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTjaE40QVyi3ZV8LK6pTo_Myse6cddml1fH8CJX50Jvc2gmg6fRERg9ZC5UE1E3cox8bM05HD595VBpzXcuoYlCtwWrIpo-Lvt653PyfG06bqgIUgevzviyQHUJixGVjEPuy_pQ760YG8aiJBmjOdxd4NXqVvIP-N5ilj0k0cTDTm-imo_nweoPy9BQ4Sn4y0dbxU_tvqgVGHXjs_hNrt4LZSwhXa0MqldUpc5K0PqmlGcjh1DPaOUOQ"
-              />
-            </div>
+            <a
+              className="flex items-center gap-4 py-2 px-4 text-xs font-semibold tracking-wider transition-colors"
+              style={{ color: colors.onSurfaceVariant }}
+              href="#"
+            >
+              <HelpCircle size={18} /> Support
+            </a>
           </div>
-        </nav>
+        </aside>
+
+        {/* Mobile sidebar drawer (identical to SystemSettings.jsx) */}
+        {mobileNavOpen && (
+          <div className="fixed inset-0 z-30 flex md:hidden">
+            <div
+              className="w-72 h-full flex flex-col py-8"
+              style={{ backgroundColor: colors.surface, borderRight: `1px solid ${colors.borderSubtle}` }}
+            >
+              <div className="px-6 mb-8 flex items-center justify-between">
+                <h1 className="text-xl font-bold" style={{ fontFamily: "Geist, sans-serif" }}>
+                  Settings
+                </h1>
+                <button onClick={() => setMobileNavOpen(false)} style={{ color: colors.onSurfaceVariant }}>
+                  ✕
+                </button>
+              </div>
+              <NavList onNavigate={() => setMobileNavOpen(false)} />
+            </div>
+            <div className="flex-1" onClick={() => setMobileNavOpen(false)} style={{ backgroundColor: "#000000aa" }} />
+          </div>
+        )}
 
         {/* Main Content Wrapper */}
-        <div className="flex-1 flex flex-col md:ml-64 w-full relative">
+        <div className="flex-1 flex flex-col w-full relative overflow-hidden">
           {/* TopNavBar */}
           <header className="bg-surface dark:bg-surface docked full-width top-0 z-10 border-b border-border-subtle flex justify-between items-center w-full px-lg py-sm sticky">
             <div className="flex items-center gap-md">
-              <button className="md:hidden text-on-surface hover:text-primary transition-opacity scale-95 duration-100 p-sm flex items-center justify-center">
-                <span className="material-symbols-outlined" data-icon="menu">
-                  menu
-                </span>
+              <button
+                className="md:hidden text-on-surface hover:text-primary transition-opacity scale-95 duration-100 p-sm flex items-center justify-center"
+                onClick={() => setMobileNavOpen(true)}
+              >
+                <Menu size={22} />
               </button>
               <div className="relative hidden sm:block">
                 <span
@@ -606,14 +586,14 @@ export default function ReportProblem() {
           </header>
 
           {/* Page Content */}
-          <main className="flex-1 overflow-y-auto p-margin-mobile md:p-gutter flex flex-col gap-xl">
+          <main className="flex-1 overflow-y-auto p-margin-mobile md:p-gutter flex flex-col gap-xl" style={{backgroundColor: "#141313"}}>
             <div className="max-w-container-max mx-auto w-full">
               {/* Header Section */}
               <div className="mb-lg border-b border-border-subtle pb-md">
-                <h2 className="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight mb-xs">
+                <h2 className="font-headline-lg text-start text-headline-lg text-on-surface font-bold tracking-tight mb-xs">
                   Report a Problem
                 </h2>
-                <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+                <p className="font-body-md text-start text-body-md text-on-surface-variant max-w-2xl">
                   Submit detailed information regarding bugs, technical
                   issues, or feature requests. Comprehensive reports enable
                   faster triage and resolution.

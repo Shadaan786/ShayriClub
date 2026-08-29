@@ -1,12 +1,26 @@
 import React from "react";
+import { useState, useEffect } from "react";
+import {
+  UserCog,
+  Bell,
+  Lock,
+  Shield,
+  HelpCircle,
+  Gavel,
+  AlertTriangle,
+  FileText,
+  Search,
+  Settings2,
+  RefreshCw,
+  ChevronRight,
+  ExternalLink,
+  Menu,
+} from "lucide-react";
 
 /**
  * Data Export admin panel
- * Converted from static HTML/Tailwind markup to a single-file React component.
- *
- * Uses inline styles for color so the EXACT hex tokens from the original
- * tailwind.config.js theme are preserved, without needing a project-level
- * Tailwind config extension.
+ * Sidebar (aside header, nav list, footer links) ported 1:1 from the
+ * SystemSettings component so both pages share the exact same sidebar.
  */
 
 // ---- Original theme tokens (kept 1:1 with the source HTML) ----
@@ -28,18 +42,38 @@ const COLORS = {
   primaryFixedDim: "#c9c6c5",
   error: "#ffb4ab",
 };
+const colors = {
+  surface: "#141313",
+  surfaceContainerHighest: "#353434",
+  dangerAccent: "#ff4d4d",
+  outline: "#8e9192",
+  onPrimary: "#313030",
+  surfaceLow: "#0a0a0a",
+  outlineVariant: "#444748",
+  surfaceContainerLowest: "#0e0e0e",
+  dangerContainer: "#2a0a0a",
+  surfaceHigh: "#1e1e1e",
+  background: "#141313",
+  primary: "#c9c6c5",
+  secondaryContainer: "#454747",
+  onBackground: "#e5e2e1",
+  onSurface: "#e5e2e1",
+  onSurfaceVariant: "#c4c7c7",
+  surfaceContainer: "#201f1f",
+  surfaceMid: "#121212",
+  surfaceContainerHigh: "#2b2a2a",
+  borderSubtle: "#262626",
+  borderStrong: "#404040",
+};
 
-const NAV_LINKS = [
-  { label: "Dashboard", icon: "dashboard" },
-  { label: "API Keys", icon: "vpn_key" },
-  { label: "Team", icon: "group" },
-  { label: "Data Export", icon: "import_export", active: true },
-  { label: "Security", icon: "security" },
-];
-
-const FOOTER_LINKS = [
-  { label: "Settings", icon: "settings" },
-  { label: "Support", icon: "contact_support" },
+const NAV_ITEMS = [
+  { id: "account", label: "Account", icon: UserCog },
+  { id: "notifications", label: "Notifications", icon: Bell },
+  { id: "privacy", label: "Privacy", icon: Lock },
+  { id: "security", label: "Security", icon: Shield },
+  { id: "support", label: "Support & Feedback", icon: HelpCircle },
+  { id: "legal", label: "Legal", icon: Gavel },
+  { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
 ];
 
 const DATE_RANGES = [
@@ -107,94 +141,6 @@ function StatusBadge({ status }) {
       </span>
       Expired
     </div>
-  );
-}
-
-function SideNav() {
-  return (
-    <nav
-      className="text-xs h-screen w-64 fixed left-0 top-0 border-r flex flex-col py-4 px-2 z-50"
-      style={{ backgroundColor: COLORS.background, color: COLORS.primary, borderColor: COLORS.borderSubtle }}
-    >
-      <div className="mb-12 px-2">
-        <h1 className="text-lg font-semibold" style={{ color: COLORS.onSurface }}>
-          Admin Panel
-        </h1>
-        <p className="opacity-70 mt-1" style={{ color: COLORS.onSurfaceVariant }}>
-          V1.2.0
-        </p>
-      </div>
-
-      <button
-        type="button"
-        className="w-full py-2 mb-6 flex items-center justify-center gap-2 bg-transparent"
-        style={{ border: "1px solid #ffffff", color: "#ffffff" }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>
-          add
-        </span>
-        New Project
-      </button>
-
-      <ul className="flex flex-col gap-2 flex-1">
-        {NAV_LINKS.map((link) => (
-          <li key={link.label}>
-            <a
-              href="#"
-              className="flex items-center gap-4 px-4 py-2 w-full transition-colors duration-200 ease-in-out"
-              style={
-                link.active
-                  ? {
-                      borderLeft: `2px solid ${COLORS.primary}`,
-                      color: COLORS.onSurface,
-                      fontWeight: 700,
-                      backgroundColor: COLORS.surfaceContainer,
-                    }
-                  : { color: COLORS.onSurfaceVariant, opacity: 0.7 }
-              }
-              onMouseEnter={(e) => {
-                if (!link.active) {
-                  e.currentTarget.style.backgroundColor = COLORS.surfaceVariant;
-                  e.currentTarget.style.color = COLORS.onSurface;
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!link.active) {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = COLORS.onSurfaceVariant;
-                }
-              }}
-            >
-              <span className="material-symbols-outlined">{link.icon}</span>
-              {link.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      <ul className="flex flex-col gap-2 mt-auto border-t pt-4" style={{ borderColor: COLORS.borderSubtle }}>
-        {FOOTER_LINKS.map((link) => (
-          <li key={link.label}>
-            <a
-              href="#"
-              className="flex items-center gap-4 px-4 py-2 w-full transition-colors duration-200 ease-in-out"
-              style={{ color: COLORS.onSurfaceVariant, opacity: 0.7 }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = COLORS.surfaceVariant;
-                e.currentTarget.style.color = COLORS.onSurface;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = COLORS.onSurfaceVariant;
-              }}
-            >
-              <span className="material-symbols-outlined">{link.icon}</span>
-              {link.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
   );
 }
 
@@ -479,37 +425,131 @@ function RecentExportsTable() {
 }
 
 export default function DataExport() {
+  const [activeSection, setActiveSection] = useState("privacy");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const NavList = ({ onNavigate }) => (
+    <nav className="flex-1 overflow-y-auto px-4 space-y-1">
+      {NAV_ITEMS.map((item) => {
+        const Icon = item.icon;
+        const isActive = item.id === activeSection;
+        return (
+          <button
+            key={item.id}
+            onClick={() => {
+              setActiveSection(item.id);
+              onNavigate && onNavigate();
+            }}
+            className="w-full flex items-center gap-4 py-3 px-4 text-left transition-colors"
+            style={{
+              color: item.danger ? colors.dangerAccent : isActive ? colors.onSurface : colors.onSurfaceVariant,
+              backgroundColor: isActive ? colors.surfaceContainerHigh : "transparent",
+              borderLeft: isActive ? `2px solid ${colors.primary}` : "2px solid transparent",
+              fontWeight: isActive ? 700 : 400,
+            }}
+          >
+            <Icon size={20} />
+            <span className="text-xs font-semibold tracking-wider">{item.label}</span>
+          </button>
+        );
+      })}
+    </nav>
+  );
+
   return (
-    <div className="flex h-screen overflow-hidden font-sans" style={{ backgroundColor: COLORS.background, color: COLORS.onSurface }}>
+    <div
+      className="flex h-screen w-full overflow-hidden font-sans"
+      style={{ backgroundColor: colors.surface, color: colors.onSurface, fontFamily: "Inter, sans-serif" }}
+    >
       <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
-      <SideNav />
+      {/* Sidebar - desktop */}
+      <aside
+        className="hidden md:flex flex-col h-screen w-64 shrink-0 py-12"
+        style={{ borderRight: `1px solid ${colors.borderSubtle}`, backgroundColor: colors.surface }}
+      >
+        <div className="px-6 mb-12">
+          <h1 className="text-2xl font-bold" style={{ fontFamily: "Geist, sans-serif" }}>
+            Settings
+          </h1>
+          <p className="text-xs mt-2" style={{ color: colors.onSurfaceVariant }}>
+            Technical Console v1.0
+          </p>
+        </div>
+        <NavList />
+        <div className="px-4 mt-auto pt-6" style={{ borderTop: `1px solid ${colors.borderSubtle}` }}>
+          <a
+            className="flex items-center gap-4 py-2 px-4 text-xs font-semibold tracking-wider transition-colors"
+            style={{ color: colors.onSurfaceVariant }}
+            href="#"
+          >
+            <FileText size={18} /> Docs
+          </a>
+          <a
+            className="flex items-center gap-4 py-2 px-4 text-xs font-semibold tracking-wider transition-colors"
+            style={{ color: colors.onSurfaceVariant }}
+            href="#"
+          >
+            <HelpCircle size={18} /> Support
+          </a>
+        </div>
+      </aside>
 
-      <main className="ml-64 flex-1 h-screen overflow-y-auto" style={{ backgroundColor: COLORS.background }}>
+      {/* Mobile sidebar drawer */}
+      {mobileNavOpen && (
+        <div className="fixed inset-0 z-20 flex md:hidden">
+          <div
+            className="w-72 h-full flex flex-col py-8"
+            style={{ backgroundColor: colors.surface, borderRight: `1px solid ${colors.borderSubtle}` }}
+          >
+            <div className="px-6 mb-8 flex items-center justify-between">
+              <h1 className="text-xl font-bold" style={{ fontFamily: "Geist, sans-serif" }}>
+                Settings
+              </h1>
+              <button onClick={() => setMobileNavOpen(false)} style={{ color: colors.onSurfaceVariant }}>
+                ✕
+              </button>
+            </div>
+            <NavList onNavigate={() => setMobileNavOpen(false)} />
+          </div>
+          <div className="flex-1" onClick={() => setMobileNavOpen(false)} style={{ backgroundColor: "#000000aa" }} />
+        </div>
+      )}
+
+      {/* Main content */}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
         <header
-          className="px-8 py-6 border-b flex justify-between items-center sticky top-0 z-40"
-          style={{ borderColor: COLORS.borderSubtle, backgroundColor: COLORS.background }}
+          className="flex justify-between items-center px-6 h-16 w-full shrink-0 z-10"
+          style={{ borderBottom: `1px solid ${colors.borderSubtle}`, backgroundColor: colors.surface }}
         >
-          <div>
-            <h2 className="text-2xl font-semibold mb-1" style={{ color: COLORS.onSurface }}>
-              Data Export
-            </h2>
-            <p className="text-sm" style={{ color: COLORS.onSurfaceVariant }}>
-              Request and manage data exports for compliance and backup.
-            </p>
+          <div className="flex items-center gap-4">
+            <button className="md:hidden" onClick={() => setMobileNavOpen(true)} style={{ color: colors.onSurface }}>
+              <Menu size={22} />
+            </button>
+            <div>
+              <h2 className="text-lg font-bold leading-tight" style={{ fontFamily: "Geist, sans-serif" }}>
+                Data Export
+              </h2>
+            </div>
           </div>
         </header>
 
-        <div className="max-w-6xl mx-auto p-8 flex flex-col gap-8">
-          <section className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <NewExportRequestForm />
-            <InfoSidebar />
-          </section>
+        <div className="flex-1 overflow-y-auto p-6 md:p-8">
+          <div className="max-w-6xl mx-auto flex flex-col gap-8">
+            <p className="text-sm -mt-2" style={{ color: colors.onSurfaceVariant }}>
+              Request and manage data exports for compliance and backup.
+            </p>
 
-          <RecentExportsTable />
+            <section className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <NewExportRequestForm />
+              <InfoSidebar />
+            </section>
 
-          <div className="h-12" />
+            <RecentExportsTable />
+
+            <div className="h-12" />
+          </div>
         </div>
       </main>
     </div>

@@ -1,4 +1,15 @@
 import React, { useState } from "react";
+import {
+  UserCog,
+  Bell,
+  Lock,
+  Shield,
+  HelpCircle,
+  Gavel,
+  AlertTriangle,
+  FileText,
+  Menu,
+} from "lucide-react";
 
 // Design tokens pulled from the original Tailwind config (translated to
 // arbitrary-value Tailwind classes since this environment doesn't support
@@ -30,13 +41,39 @@ const COLORS = {
   surfaceHigh: "#1e1e1e",
 };
 
+// ---- Sidebar design tokens (ported 1:1 from SystemSettings.jsx) ----
+const colors = {
+  surface: "#141313",
+  surfaceContainerHighest: "#353434",
+  dangerAccent: "#ff4d4d",
+  outline: "#8e9192",
+  onPrimary: "#313030",
+  surfaceLow: "#0a0a0a",
+  outlineVariant: "#444748",
+  surfaceContainerLowest: "#0e0e0e",
+  dangerContainer: "#2a0a0a",
+  surfaceHigh: "#1e1e1e",
+  background: "#141313",
+  primary: "#c9c6c5",
+  secondaryContainer: "#454747",
+  onBackground: "#e5e2e1",
+  onSurface: "#e5e2e1",
+  onSurfaceVariant: "#c4c7c7",
+  surfaceContainer: "#201f1f",
+  surfaceMid: "#121212",
+  surfaceContainerHigh: "#2b2a2a",
+  borderSubtle: "#262626",
+  borderStrong: "#404040",
+};
+
 const NAV_ITEMS = [
-  { icon: "account_circle", label: "Account" },
-  { icon: "notifications", label: "Notifications" },
-  { icon: "privacy_tip", label: "Privacy" },
-  { icon: "security", label: "Security" },
-  { icon: "contact_support", label: "Support & Feedback", active: true },
-  { icon: "gavel", label: "Legal" },
+  { id: "account", label: "Account", icon: UserCog },
+  { id: "notifications", label: "Notifications", icon: Bell },
+  { id: "privacy", label: "Privacy", icon: Lock },
+  { id: "security", label: "Security", icon: Shield },
+  { id: "support", label: "Support & Feedback", icon: HelpCircle },
+  { id: "legal", label: "Legal", icon: Gavel },
+  { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
 ];
 
 const CATEGORIES = [
@@ -103,6 +140,8 @@ export default function KalamSuggestPage() {
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
   const [fileName, setFileName] = useState("");
+  const [activeSection, setActiveSection] = useState("support");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const handleFileChange = (e) => {
     const files = e.target.files;
@@ -120,6 +159,35 @@ export default function KalamSuggestPage() {
     // Wire this up to your submission endpoint.
     console.log({ category, title, description, priority });
   };
+
+  // Identical NavList used across the console (see SystemSettings.jsx)
+  const NavList = ({ onNavigate }) => (
+    <nav className="flex-1 overflow-y-auto px-4 space-y-1">
+      {NAV_ITEMS.map((item) => {
+        const Icon = item.icon;
+        const isActive = item.id === activeSection;
+        return (
+          <button
+            key={item.id}
+            onClick={() => {
+              setActiveSection(item.id);
+              onNavigate && onNavigate();
+            }}
+            className="w-full flex items-center gap-4 py-3 px-4 text-left transition-colors"
+            style={{
+              color: item.danger ? colors.dangerAccent : isActive ? colors.onSurface : colors.onSurfaceVariant,
+              backgroundColor: isActive ? colors.surfaceContainerHigh : "transparent",
+              borderLeft: isActive ? `2px solid ${colors.primary}` : "2px solid transparent",
+              fontWeight: isActive ? 700 : 400,
+            }}
+          >
+            <Icon size={20} />
+            <span className="text-xs font-semibold tracking-wider">{item.label}</span>
+          </button>
+        );
+      })}
+    </nav>
+  );
 
   return (
     <div
@@ -149,12 +217,14 @@ export default function KalamSuggestPage() {
         style={{ backgroundColor: COLORS.surface, borderColor: COLORS.borderSubtle }}
       >
         <div className="flex items-center gap-4">
-          <MaterialIcon name="menu" className="text-[#c9c6c5]" />
+          <button onClick={() => setMobileNavOpen(true)} style={{ color: colors.primary }}>
+            <Menu size={22} />
+          </button>
           <span
             className="text-[18px] font-bold"
             style={{ fontFamily: "Geist, sans-serif", color: COLORS.onSurface }}
           >
-            Kalam
+            Settings
           </span>
         </div>
         <div className="flex items-center gap-4">
@@ -170,109 +240,58 @@ export default function KalamSuggestPage() {
         </div>
       </div>
 
-      {/* Side nav bar (desktop) */}
+      {/* Sidebar - desktop (identical to SystemSettings.jsx) */}
       <aside
-        className="hidden md:flex flex-col w-64 fixed inset-y-0 left-0 z-40 border-r"
-        style={{ backgroundColor: COLORS.surfaceContainerLowest, borderColor: COLORS.borderSubtle }}
+        className="hidden md:flex flex-col h-screen w-64 fixed inset-y-0 left-0 z-40 shrink-0 py-12"
+        style={{ borderRight: `1px solid ${colors.borderSubtle}`, backgroundColor: colors.surface }}
       >
-        <div
-          className="p-6 flex items-center gap-4 border-b"
-          style={{ borderColor: COLORS.borderSubtle }}
-        >
-          <div
-            className="w-10 h-10 rounded-full overflow-hidden border flex items-center justify-center shrink-0"
-            style={{ backgroundColor: COLORS.surfaceContainerHigh, borderColor: COLORS.borderSubtle }}
-          >
-            <img
-              alt="Kalam admin profile"
-              className="w-full h-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdJWbQvs2r-AHaf58SciaEUnoIXctI84peDgSi2yDzQTNneA4OZtfYScGWa_EQi7BQP8g-2luxbDYp6Gi1xYro1cPLtJ4UraQlwBhfv_Dls6ipRaes6Zkz4wU0nHQkQkRp5jZaYVjz7XHcm0Oe8nK8JZXnr5iBmNj4OIjSlI1hB0PHs2woZVfoWPelIyrTPxfozZ9Y8__fMqNGuCfHKIXv12DRISQAw-Y_ukm3zhgIXztDGNDodJFLwQ"
-            />
-          </div>
-          <div className="overflow-hidden">
-            <h1
-              className="text-[24px] font-bold truncate"
-              style={{ fontFamily: "Geist, sans-serif", color: COLORS.onSurface }}
-            >
-              Kalam
-            </h1>
-            <p
-              className="text-[12px] tracking-[0.08em] font-semibold truncate"
-              style={{ fontFamily: "Geist, sans-serif", color: COLORS.onSurfaceVariant }}
-            >
-              Technical Console
-            </p>
-          </div>
+        <div className="px-6 mb-12">
+          <h1 className="text-2xl font-bold" style={{ fontFamily: "Geist, sans-serif" }}>
+            Settings
+          </h1>
+          <p className="text-xs mt-2" style={{ color: colors.onSurfaceVariant }}>
+            Technical Console v1.0
+          </p>
         </div>
-
-        <nav className="flex-1 overflow-y-auto py-4">
-          <ul className="flex flex-col space-y-1 px-2">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.label}>
-                <a
-                  href="#"
-                  aria-current={item.active ? "page" : undefined}
-                  className={`flex items-center gap-4 px-4 py-2 transition-colors duration-200 ${
-                    item.active ? "font-bold opacity-80" : ""
-                  }`}
-                  style={{
-                    color: item.active ? COLORS.onSurface : COLORS.onPrimaryContainer,
-                    backgroundColor: item.active ? COLORS.surfaceContainer : "transparent",
-                    borderLeft: item.active ? `2px solid ${COLORS.primary}` : "2px solid transparent",
-                  }}
-                >
-                  <MaterialIcon name={item.icon} filled={item.active} />
-                  <span
-                    className="text-[12px] tracking-[0.08em] font-semibold"
-                    style={{ fontFamily: "Geist, sans-serif" }}
-                  >
-                    {item.label}
-                  </span>
-                </a>
-              </li>
-            ))}
-            <li className="mt-12">
-              <a
-                href="#"
-                className="flex items-center gap-4 px-4 py-2 border border-transparent transition-colors duration-200"
-                style={{ color: COLORS.dangerAccent }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#2a0a0a";
-                  e.currentTarget.style.borderColor = COLORS.dangerAccent;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.borderColor = "transparent";
-                }}
-              >
-                <MaterialIcon name="report" />
-                <span
-                  className="text-[12px] tracking-[0.08em] font-semibold"
-                  style={{ fontFamily: "Geist, sans-serif" }}
-                >
-                  Danger Zone
-                </span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-
-        <div className="p-4 border-t" style={{ borderColor: COLORS.borderSubtle }}>
+        <NavList />
+        <div className="px-4 mt-auto pt-6" style={{ borderTop: `1px solid ${colors.borderSubtle}` }}>
           <a
+            className="flex items-center gap-4 py-2 px-4 text-xs font-semibold tracking-wider transition-colors"
+            style={{ color: colors.onSurfaceVariant }}
             href="#"
-            className="flex items-center gap-4 px-4 py-2 transition-colors duration-200"
-            style={{ color: COLORS.onPrimaryContainer }}
           >
-            <MaterialIcon name="logout" />
-            <span
-              className="text-[12px] tracking-[0.08em] font-semibold"
-              style={{ fontFamily: "Geist, sans-serif" }}
-            >
-              Logout
-            </span>
+            <FileText size={18} /> Docs
+          </a>
+          <a
+            className="flex items-center gap-4 py-2 px-4 text-xs font-semibold tracking-wider transition-colors"
+            style={{ color: colors.onSurfaceVariant }}
+            href="#"
+          >
+            <HelpCircle size={18} /> Support
           </a>
         </div>
       </aside>
+
+      {/* Mobile sidebar drawer (identical to SystemSettings.jsx) */}
+      {mobileNavOpen && (
+        <div className="fixed inset-0 z-50 flex md:hidden">
+          <div
+            className="w-72 h-full flex flex-col py-8"
+            style={{ backgroundColor: colors.surface, borderRight: `1px solid ${colors.borderSubtle}` }}
+          >
+            <div className="px-6 mb-8 flex items-center justify-between">
+              <h1 className="text-xl font-bold" style={{ fontFamily: "Geist, sans-serif" }}>
+                Settings
+              </h1>
+              <button onClick={() => setMobileNavOpen(false)} style={{ color: colors.onSurfaceVariant }}>
+                ✕
+              </button>
+            </div>
+            <NavList onNavigate={() => setMobileNavOpen(false)} />
+          </div>
+          <div className="flex-1" onClick={() => setMobileNavOpen(false)} style={{ backgroundColor: "#000000aa" }} />
+        </div>
+      )}
 
       {/* Main content */}
       <main

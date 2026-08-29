@@ -674,10 +674,11 @@ const OtpVerification = () => {
                 >
 
                     {/* corner ornament */}
-                    <svg aria-hidden="true" width="30" height="30" viewBox="0 0 30 30" className="absolute right-6 top-6 opacity-60">
+                    {/* <svg aria-hidden="true" width="30" height="30" viewBox="0 0 30 30" className="absolute right-6 top-6 opacity-60">
                         <path d="M2 2 Q 18 2 18 18 Q 18 28 28 28" stroke="#D4A54A" strokeWidth="1" fill="none" />
                         <circle cx="28" cy="28" r="1.6" fill="#D4A54A" />
-                    </svg>
+                    </svg> */}
+                    <img className="w-10 h-10" src="/logo2.svg" alt="" srcset="" />
 
                     {/* header */}
                     <div className="flex items-start justify-between gap-6">
@@ -706,9 +707,9 @@ const OtpVerification = () => {
                     </div>
 
                     {/* flourish divider */}
-                    <svg className="otp-flourish mt-5 h-3 w-full" viewBox="0 0 500 12" preserveAspectRatio="none">
+                    {/* <svg className="otp-flourish mt-5 h-3 w-full" viewBox="0 0 500 12" preserveAspectRatio="none">
                         <path d="M0 6 C 80 -2, 160 14, 250 6 S 420 -2, 500 6" stroke="#D4A54A" strokeWidth="1" fill="none" opacity="0.55" />
-                    </svg>
+                    </svg> */}
 
                     {/* expiry status */}
                     <div className="mt-6">
