@@ -59,6 +59,9 @@ import DataExport from './pages/ExportData';
 import BlockedUsers from './pages/BlockedUsers';
 import KalamSuggestPage from './pages/SuggestImprovement';
 import ReportProblem from './pages/ReportProblem';
+import ForgotPassword from './pages/VerifyEmail';
+import ResetOtpVerification from './pages/VerifyOtp';
+import ResetPassword from './pages/ResetPassword';
 
 
 function App() {
@@ -155,6 +158,9 @@ onMessage(messaging, (data) => {
       <Route path='/settings/privacy/blockedUsers' element= {<BlockedUsers/>}/>
       <Route path='/settings/support/suggestimprovement' element= {<KalamSuggestPage/>}/>
       <Route path='/settings/support/reportproblem' element= {<ReportProblem/>}/>
+      <Route path='/forgot_password' element= {<ForgotPassword/>}/>
+      <Route path='/otp_verification' element= {<ResetOtpVerification/>}/>
+      <Route path='/reset_password' element= {<ResetPassword/>}/>
 
       {/* <ContextProvider>
         <Kalam/>
