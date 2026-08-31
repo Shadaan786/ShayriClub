@@ -26,7 +26,7 @@ const ForgotPassword = () => {
             .post(`/api/emailverification?email=${email}`)
             .then((Response) => {
                 if (Response.data.success) {
-                    Navigate(`/OtpVerification?email=${email}&phase_id=${Response.data.phase_id}`);
+                    Navigate(`/Otp_verification?email=${email}&phase_id=${Response.data.phase_id}`);
                 } else {
                     setText(Response.data.message || "No account found with that email");
                     setIsSending(false);

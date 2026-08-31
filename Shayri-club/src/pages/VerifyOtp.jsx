@@ -89,18 +89,18 @@ const ResetOtpVerification = () => {
 
     const handleVerify = () => {
 
-        if (!secretPin || secretPin.length < 6) {
+        if (!secretPin || secretPin.length < 5) {
             setText("Enter the six-digit code from your email");
             return;
         }
 
         axiosInstance
-            .post(`/api/verify_reset_otp?email=${email}&phaseId=${phase_id}`, {
+            .post(`/api/otpverification?email=${email}&phase_Id=${phase_id}`, {
                 otp: secretPin
             })
             .then((Response) => {
                 if (Response.data.success) {
-                    Navigate(`/otpverification?email=${email}&otp=${secretPin}`);
+                    Navigate(`/reset_password?email=${email}&otp=${secretPin}&phase_id=${phase_id}`);
                 } else if(Response.status === 403) {
                     setText("Something went wrong");
                 }else{
