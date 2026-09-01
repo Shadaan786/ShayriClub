@@ -139,6 +139,7 @@ const Login = () => {
       const data = response.data;
       if (data.success) {
         setNotice2(`Welcome back, ${id}`);
+            navigate('/');
         
         const token = await  getFCMToken();
 

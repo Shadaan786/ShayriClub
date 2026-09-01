@@ -62,7 +62,7 @@ const ResetPassword = () => {
             })
             .then((Response) => {
                 if (Response.data.success) {
-                    Navigate('/login');
+                    Navigate('/Signup/Login');
                 } else if (Response.data.error === "invalid_phase_id" || Response.data.error === "missing_phase_id") {
                     setText("This reset link has expired. Please start the reset again.");
                     setIsSaving(false);

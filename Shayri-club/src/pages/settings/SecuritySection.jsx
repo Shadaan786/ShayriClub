@@ -1,8 +1,11 @@
 import React from "react";
 import { Row, SectionHeader, SaveButton } from "./SettingsPrimitives";
 import axiosInstance from "@/Apis/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 export default function SecuritySection() {
+
+  const Navigate = useNavigate();
   const handleSaveSecurity = () => {
     // TODO: persist security setting changes
   };
@@ -25,7 +28,7 @@ export default function SecuritySection() {
       <div className="space-y-1">
         <Row onAction={()=>logoutUser()} title="Global Sign Out" description="Log out of all active sessions across all devices." actionLabel="Log out" />
         <Row title="Authentication" description="Log into another account to manage security." actionLabel="Log into another account" />
-        <Row title="Password" description="Update your current password." actionLabel="Change" />
+        <Row onAction={()=>Navigate('/forgot_password')} title="Password" description="Update your current password." actionLabel="Change" />
         <Row title="Active Session" description="Log out of this device." actionLabel="Log out" />
         <Row title="Account Switching" description="Log into another account." actionLabel="Switch Account" />
       </div>

@@ -89,7 +89,7 @@ const ResetOtpVerification = () => {
 
     const handleVerify = () => {
 
-        if (!secretPin || secretPin.length < 5) {
+        if (!secretPin) {
             setText("Enter the six-digit code from your email");
             return;
         }
