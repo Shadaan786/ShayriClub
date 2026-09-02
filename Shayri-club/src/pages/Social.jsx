@@ -1452,7 +1452,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------->
 import axiosInstance from "../Apis/axiosInstance";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { Card } from "./components/Card";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import SidebarExample from "./components/Sidebar"
@@ -1460,6 +1460,9 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import NewKalam from "./components/NewKalam";
 import { type } from "firebase/firestore/lite/pipelines";
 import { Footer } from "@/Bg";
+import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
+import { ModalContext } from "./Contexts/ModalContext";
+import { KalamComment } from "./KalamComment";
 
 
 // ── Poetry-aesthetic font options ──────────────────────────────────────────
@@ -1533,6 +1536,7 @@ export const Social = () => {
   const [profilePic, setProfilePic] = useState("");
   // const[searchType, setSearchType] = useState("feed_search");
   const [isSearchFocused, setIsSearchFocused] = useState(false); // UI-only: search bar focus/blur width animation
+  const {isKalamCommentModalOpen, setIsKalamCommentModalOpen, kalamComment} = useContext(ModalContext);
 
   const handle = () => {
     axiosInstance
@@ -2224,6 +2228,13 @@ export const Social = () => {
 
 
         </div>
+        <MyVerticallyCenteredModal isOpen={isKalamCommentModalOpen} onClose={()=>setIsKalamCommentModalOpen} height={"full"} width={"full"}>
+
+          <div>
+            <KalamComment commentType={"kalamComment"} kalamId={kalamComment} postId={null}/>
+          </div>
+
+        </MyVerticallyCenteredModal>
       </div>
 
       {/* ── Floating Publish button (mobile only) ── */}

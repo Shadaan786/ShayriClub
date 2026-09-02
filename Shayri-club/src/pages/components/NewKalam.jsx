@@ -1229,7 +1229,7 @@ const buildGoogleFontsUrl = () => {
   // const[imageSrc, setImageSrc] = useState("")
   const isImage = useRef(false)
   const[isSaved2, setIsSaved2] = useState(isSaved)
-  const {isKalamMenuOpen, setIsKalamMenuOpen, setKalamId, setMenuPosition} = useContext(ModalContext);
+  const {isKalamMenuOpen, setIsKalamMenuOpen, setKalamId, setMenuPosition, isKalamCommentModalOpen, setIsKalamCommentModalOpen, setKalamComment} = useContext(ModalContext);
 
 
 
@@ -2262,7 +2262,7 @@ const buildGoogleFontsUrl = () => {
 
         {/* Comment */}
         <button
-          onClick={() => Navigate(`/comment?kalamId=${kalId}`)}
+          onClick={() => {setKalamComment(kalId); setIsKalamCommentModalOpen(true)}}
           className="k-action-btn"
           aria-label="Comment"
         >

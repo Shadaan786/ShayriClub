@@ -2,8 +2,20 @@ import React from "react";
 import { AlertTriangle } from "lucide-react";
 import { SectionHeader } from "./SettingsPrimitives";
 import { colors } from "./theme";
+import axiosInstance from "@/Apis/axiosInstance";
 
 export default function DangerSection() {
+
+  const handleDeleteUserAccount=()=>{
+    axiosInstance
+    .post('/api/deleteUser',{},{
+      withCredentials:true
+    }).then(()=>{
+      console.log("Fetched successfully");
+    }).catch((error)=>{
+      console.error("Error while fetching", error)
+    })
+  }
   return (
     <div>
       <SectionHeader title="Danger Zone" description="Irreversible actions related to your account and data." />
@@ -36,6 +48,7 @@ export default function DangerSection() {
             </p>
           </div>
           <button
+          onClick={handleDeleteUserAccount}
             className="px-6 py-2 text-xs font-semibold tracking-wide whitespace-nowrap transition-opacity"
             style={{ backgroundColor: colors.dangerAccent, color: colors.surface }}
           >

@@ -219,6 +219,7 @@
 //-------------------------------------------------------------------------------------------------------------------------->
 import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "../Apis/axiosInstance";
+import { useSearchParams } from "react-router-dom";
 
 /**
  * KalamComment — comment thread for a post or a kalam.
@@ -499,6 +500,7 @@ export const KalamComment = ({ commentType, kalamId, postId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isPosting, setIsPosting] = useState(false);
   const [error, setError] = useState(null);
+  const [SearchParams] = useSearchParams();
 
   const fetchComments = useCallback(() => {
     setIsLoading(true);
