@@ -1128,6 +1128,7 @@ import axiosInstance from "@/Apis/axiosInstance";
 import { HeartIcon } from "@animateicons/react/lucide";
 import { MessageCircleIcon } from "@animateicons/react/lucide";
 import { ShareIcon } from "@animateicons/react/lucide";
+import { PlayIcon } from "@animateicons/react/lucide";
 // import { BookmarkIcon } from "@animateicons/react/lucide";
 import { SocialContext } from "../Contexts/SocketContext";
 import { data, useNavigate } from "react-router-dom";
@@ -1999,25 +2000,30 @@ const buildGoogleFontsUrl = () => {
           max-width: 460px;
         }
 
+        /* ── Capsule action strip (matches sketch) ── */
         .k-action-strip {
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 12px;
+          gap: 6px;
+          padding: 14px 8px;
+          border-radius: 999px;
+          border: 0.5px solid rgba(255,255,255,0.14);
+          background: rgba(255,255,255,0.035);
           flex-shrink: 0;
         }
 
         .k-action-btn {
           display: flex; align-items: center; justify-content: center;
-          width: 42px; height: 42px; border-radius: 50%;
-          border: 0.5px solid rgba(255,255,255,0.14);
-          background: rgba(255,255,255,0.035);
+          width: 38px; height: 38px; border-radius: 50%;
+          border: none;
+          background: transparent;
           cursor: pointer; transition: all 0.15s; flex-shrink: 0;
         }
-        .k-action-btn:hover { transform: scale(1.08); background: rgba(255,255,255,0.06); }
-        .k-action-btn.liked { border-color: rgba(226,75,74,0.45); background: rgba(226,75,74,0.14); }
-        .k-action-btn.saved { border-color: rgba(210,170,90,0.45); background: rgba(210,170,90,0.14); }
+        .k-action-btn:hover { background: rgba(255,255,255,0.08); }
+        .k-action-btn.liked { background: rgba(226,75,74,0.14); }
+        .k-action-btn.saved { background: rgba(210,170,90,0.14); }
 
         @media (max-width: 900px) {
           .k-card-strip-wrap {
@@ -2026,7 +2032,8 @@ const buildGoogleFontsUrl = () => {
           }
           .k-action-strip {
             flex-direction: row;
-            width: 100%;
+            width: auto;
+            align-self: center;
             justify-content: center;
             margin-top: 10px;
           }
@@ -2267,6 +2274,18 @@ const buildGoogleFontsUrl = () => {
           aria-label="Comment"
         >
           <MessageCircleIcon
+            size={18}
+            duration={1}
+            color="rgba(240,235,227,0.85)"
+          />
+        </button>
+
+        {/* Play */}
+        <button
+          className="k-action-btn"
+          aria-label="Play"
+        >
+          <PlayIcon
             size={18}
             duration={1}
             color="rgba(240,235,227,0.85)"

@@ -1144,8 +1144,8 @@ const AlbumsLive = () => {
                         </button>
 
                         <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
-                            <img src="/logo2.svg" alt="Alfaz Logo" className="h-7 sm:h-8 w-auto" />
-                            <span className="relative inline-block leading-none font-black tracking-wide">
+                            {/* <img src="/logo2.svg" alt="Alfaz Logo" className="h-7 sm:h-8 w-auto" /> */}
+                            {/* <span className="relative inline-block leading-none font-black tracking-wide">
                                 <span className="relative inline-block text-xl sm:text-2xl md:text-3xl">
                                     <span
                                         className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
@@ -1166,7 +1166,8 @@ const AlbumsLive = () => {
                                         az
                                     </span>
                                 </span>
-                            </span>
+                            </span> */}
+                            <span className="font-extrabold text-xl md:text-3xl tracking-tight">Library</span>
                         </Link>
                     </div>
 
@@ -1211,6 +1212,9 @@ const AlbumsLive = () => {
                                 className="bg-transparent border-none focus:ring-0 text-sm w-48 outline-none"
                                 style={{ color: COLORS.onSurface }}
                             />
+                            <button onClick={()=>Navigate(`/albums?query=${searchQuery.current}`)}>
+                                search
+                            </button>
                         </div>
                         <button className="material-symbols-outlined" style={{ color: COLORS.onSurface }}>account_circle</button>
                     </div>
@@ -1237,11 +1241,11 @@ const AlbumsLive = () => {
                     </div>
                     <div className="flex flex-col gap-1">
                         {[
-                            { icon: "home", label: "Home", to: "/" },
-                            { icon: "explore", label: "Explore", to: "/explore" },
-                            { icon: "library_music", label: "Library", to: "/library", active: true },
-                            { icon: "history", label: "Recent", to: "/recent" },
-                            { icon: "download", label: "Downloads", to: "/downloads" },
+                            { label: "Home", to: "/" },
+                            { label: "Kalam", to: "/kalam" },
+                            { label: "Community", to: "/spaces" },                           
+                            { label: "Browse", to: "/social" },
+                            { label: "Library", to: "/library", active: true },
                         ].map((item) => (
                             <Link
                                 key={item.label}
@@ -1319,7 +1323,7 @@ const AlbumsLive = () => {
                                 <h2 className="text-lg sm:text-2xl font-bold mb-0.5 sm:mb-2">Recently Added</h2>
                                 <p className="text-xs sm:text-base truncate" style={{ color: COLORS.onSurfaceVariant }}>Fresh tracks from your favorite genres.</p>
                             </div>
-                            <Link to="/albums" className="flex-shrink-0 text-[10px] sm:text-xs font-semibold tracking-widest uppercase hover:underline whitespace-nowrap" style={{ color: COLORS.primary }}>
+                            <Link to="/albums?query=motivation" className="flex-shrink-0 text-[10px] sm:text-xs font-semibold tracking-widest uppercase hover:underline whitespace-nowrap" style={{ color: COLORS.primary }}>
                                 View All
                             </Link>
                         </div>

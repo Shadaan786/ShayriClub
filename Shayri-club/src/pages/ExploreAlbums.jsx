@@ -3,6 +3,7 @@ import axiosInstance from "@/Apis/axiosInstance";
 import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 /**
  * Color tokens pulled from the Library page's Material-3 dark theme mock,
@@ -45,8 +46,17 @@ const ExploreAlbums = () => {
     const [sortBy, setSortBy] = useState("recent");
     const [activeGenre, setActiveGenre] = useState(null);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+    const [SearchParams] = useSearchParams();
+
+    const navQuery = SearchParams.get('query');
     
     const Navigate = useNavigate();
+
+    if(navQuery){
+        console.log(true);
+    }else{
+        console.log(false)
+    }
 
     // Same pattern as AlbumsLive: refs drive the request params so we don't
     // need to worry about stale closures inside the InfiniteScroll callbacks.
@@ -57,8 +67,10 @@ const ExploreAlbums = () => {
     const [searchValue, setSearchValue] = useState("");
 
     const handleFetch = () => {
-        if (query.current.trim() === "") {
+        if (query.current.trim() === "" && !navQuery) {
             query.current = "all";
+        } else if(navQuery){
+            query.current = navQuery;
         }
 
         page.current = 1;
@@ -316,11 +328,10 @@ const ExploreAlbums = () => {
 
                         <div className="space-y-1">
                             {[
-                                { icon: "home", label: "Home", to: "/" },
-                                { icon: "explore", label: "Explore", to: "/explore" },
-                                { icon: "library_music", label: "Library", to: "/library", active: true },
-                                { icon: "history", label: "Recent", to: "/recent" },
-                                { icon: "download", label: "Downloads", to: "/downloads" },
+                            { label: "Home", to: "/" },
+                            { label: "Kalam", to: "/kalam" },
+                            { label: "Community", to: "/spaces" },                           
+                            { label: "Browse", to: "/social" },
                             ].map((item) => (
                                 <Link
                                     key={item.label}
@@ -336,9 +347,34 @@ const ExploreAlbums = () => {
                                     <span>{item.label}</span>
                                 </Link>
                             ))}
+
+                            <Link
+                                to="/library"
+                                className="ea-sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg"
+                                style={{
+                                    color: COLORS.onSurfaceVariant,
+                                    fontWeight: 400,
+                                    background: "transparent",
+                                }}
+                            >
+                                <span className="material-symbols-outlined">{undefined}</span>
+                                <span>Library</span>
+                            </Link>
+                            <Link
+                                to="/explore"
+                                className="ea-sidebar-link flex items-center gap-3 pl-11 pr-4 py-2 rounded-lg"
+                                style={{
+                                    color: COLORS.primary,
+                                    fontWeight: 700,
+                                    background: "rgba(255,255,255,0.05)",
+                                    fontSize: 14,
+                                }}
+                            >
+                                <span>Explore</span>
+                            </Link>
                         </div>
 
-                        <div className="mt-8 px-4">
+                        {/* <div className="mt-8 px-4">
                             <button
                                 className="ea-sunset-gradient w-full py-3 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 font-semibold"
                                 style={{ color: COLORS.onPrimary }}
@@ -346,7 +382,7 @@ const ExploreAlbums = () => {
                                 <span className="material-symbols-outlined">add</span>
                                 Add New
                             </button>
-                        </div>
+                        </div> */}
 
                         <div className="mt-auto pt-8" style={{ borderTop: `1px solid rgba(255,255,255,0.05)` }}>
                             <Link to="/settings" className="ea-sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" style={{ color: COLORS.onSurfaceVariant }}>
@@ -366,7 +402,7 @@ const ExploreAlbums = () => {
                     {/* Page Header */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
                         <div>
-                            <h2 className="text-2xl font-bold mb-1">All Albums</h2>
+                            <h2 className="text-2xl font-bold mb-1">{navQuery || query.current}</h2>
                             <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: "rgba(203,196,210,0.7)" }}>
                                 {total} ALBUMS TOTAL
                             </p>
@@ -507,7 +543,7 @@ const ExploreAlbums = () => {
             </div>
 
             {/* ── Now Playing bar ── */}
-            <footer
+            {/* <footer
                 className="ea-now-playing fixed bottom-0 left-0 w-full h-24 z-[100] px-6"
                 style={{ background: "rgba(5,20,36,0.7)", backdropFilter: "blur(40px)", borderTop: `1px solid ${COLORS.borderSubtle}` }}
             >
@@ -571,7 +607,7 @@ const ExploreAlbums = () => {
                         </div>
                     </div>
                 </div>
-            </footer>
+            </footer> */}
 
             {/* ── Mobile Sidebar Drawer ── */}
             {sidebarOpen && (
