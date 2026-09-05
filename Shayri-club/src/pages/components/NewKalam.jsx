@@ -1167,7 +1167,8 @@ const NewKalam=({
       isLiked2,
       isSaved,
       customStyles,
-      authorName
+      authorName,
+      kalamAudio
 })=>{
 
   // console.log("checking_isLiked",isLiked2)
@@ -1230,7 +1231,9 @@ const buildGoogleFontsUrl = () => {
   // const[imageSrc, setImageSrc] = useState("")
   const isImage = useRef(false)
   const[isSaved2, setIsSaved2] = useState(isSaved)
-  const {isKalamMenuOpen, setIsKalamMenuOpen, setKalamId, setMenuPosition, isKalamCommentModalOpen, setIsKalamCommentModalOpen, setKalamComment} = useContext(ModalContext);
+  const {isKalamMenuOpen, setIsKalamMenuOpen, setKalamId, setMenuPosition, isKalamCommentModalOpen, setIsKalamCommentModalOpen, setKalamComment, kalamTrack, setKalamTrack, isPlayerModalOpen, setIsPlayerModalOpen} = useContext(ModalContext);
+
+  console.log("See kalamAudio", kalamAudio)
 
 
 
@@ -2281,9 +2284,17 @@ const buildGoogleFontsUrl = () => {
         </button>
 
         {/* Play */}
-        <button
+       { kalamAudio && <button
           className="k-action-btn"
           aria-label="Play"
+          onClick={()=>{setKalamTrack([{
+            _id:kalId,
+            title: "see",
+            artist: "see2",
+            coverUrl: "seeAgain",
+            waveformVideoUrl: kalamAudio
+          }]);setIsPlayerModalOpen(true)
+        }}
         >
           <PlayIcon
             size={18}
@@ -2291,6 +2302,7 @@ const buildGoogleFontsUrl = () => {
             color="rgba(240,235,227,0.85)"
           />
         </button>
+}
 
         {/* Share */}
         <button

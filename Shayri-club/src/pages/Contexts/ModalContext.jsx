@@ -10,9 +10,11 @@ export const ModalContextprovider = ({children})=>{
     const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
     const [postOpen, setPostOpen] = useState(null);
     const [kalamComment, setKalamComment] = useState("");
+    const[isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
+    const [kalamTrack, setKalamTrack] = useState([]);
 
     return(
-    <ModalContext.Provider value = {{isKalamMenuOpen, setIsKalamMenuOpen, kalamId, setKalamId, menuPosition, setMenuPosition, isCommentModalOpen, setIsCommentModalOpen, postOpen, setPostOpen, isKalamCommentModalOpen, setIsKalamCommentModalOpen, kalamComment, setKalamComment}}>
+    <ModalContext.Provider value = {{isKalamMenuOpen, setIsKalamMenuOpen, kalamId, setKalamId, menuPosition, setMenuPosition, isCommentModalOpen, setIsCommentModalOpen, postOpen, setPostOpen, isKalamCommentModalOpen, setIsKalamCommentModalOpen, kalamComment, setKalamComment, isPlayerModalOpen, setIsPlayerModalOpen, kalamTrack, setKalamTrack}}>
         {children}
     </ModalContext.Provider>
 )

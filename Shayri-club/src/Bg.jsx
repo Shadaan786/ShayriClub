@@ -789,7 +789,7 @@ useEffect(() => {
   </div>
 
   {/* ── Nav arrows ── */}
-  {[{ dir: 'left', label: '‹', delta: -1 }, { dir: 'right', label: '›', delta: 1 }].map(({ dir, label, delta }) => (
+  {/* {[{ dir: 'left', label: '‹', delta: -1 }, { dir: 'right', label: '›', delta: 1 }].map(({ dir, label, delta }) => (
     <button
       key={dir}
       className={`absolute top-1/2 -translate-y-1/2 ${dir === 'left' ? 'left-5' : 'right-5'} z-20 w-10 h-10 rounded-full flex items-center justify-center text-white text-xl transition`}
@@ -800,7 +800,7 @@ useEffect(() => {
       }}
       aria-label={dir === 'left' ? 'Previous slide' : 'Next slide'}
     >{label}</button>
-  ))}
+  ))} */}
 
   {/* ── Dot indicators ── */}
   <FeatureScrollDots />
@@ -877,7 +877,7 @@ useEffect(() => {
                   {console.log("see status", item.isSeen)}
 
             {/* Status dot*/}
-           {item.isSeen && <div className="relative flex-shrink-0 mt-1">
+           {!item.isSeen && <div className="relative flex-shrink-0 mt-1">
               <span
                 className="block w-2.5 h-2.5 rounded-full"
                 style={{

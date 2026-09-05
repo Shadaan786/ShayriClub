@@ -1463,6 +1463,7 @@ import { Footer } from "@/Bg";
 import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
 import { ModalContext } from "./Contexts/ModalContext";
 import { KalamComment } from "./KalamComment";
+import {KalamPlayer} from "./components/kalamPlayer"
 
 
 // ── Poetry-aesthetic font options ──────────────────────────────────────────
@@ -1537,7 +1538,8 @@ export const Social = () => {
   // const[searchType, setSearchType] = useState("feed_search");
   const [isSearchFocused, setIsSearchFocused] = useState(false); // UI-only: search bar focus/blur width animation
   const {isKalamCommentModalOpen, setIsKalamCommentModalOpen, kalamComment} = useContext(ModalContext);
-
+  const {isPlayerModalOpen, setIsPlayerModalOpen} = useContext(ModalContext);
+  const {kalamTrack, setKalamTrack} = useContext(ModalContext);
   const handle = () => {
     axiosInstance
       .get(`/api/social?page=1&limit=${limit}&searchType=${searchType.current}`, { withCredentials: true })
@@ -1857,6 +1859,30 @@ export const Social = () => {
           .s-page-body { margin-left: 220px; }
         }
 
+        /* ── Vertical border lines framing the whole middle content column ──────
+           Runs from right under the navbar to the bottom of the page, not just
+           around the cards — achieved by wrapping the entire content section
+           (not only the feed) and using min-height to reach the viewport floor. */
+        .s-content-frame {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+          max-width: 720px;
+          margin: 0 auto;
+          min-height: calc(100vh - 76px);
+          padding: 0 24px;
+          border-left: 1px solid rgba(233,193,118,0.25);
+          border-right: 1px solid rgba(233,193,118,0.25);
+          box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+          .s-content-frame {
+            padding: 0 12px;
+          }
+        }
+
         @media (max-width: 768px) {
           .s-nav-search, .s-nav-links { display: none !important; }
           .s-nav-publish-inline { display: none !important; }
@@ -2072,6 +2098,7 @@ export const Social = () => {
         style={{ paddingTop: 76, paddingBottom: "max(80px, env(safe-area-inset-bottom))" }}
       >
         <div className="max-w-[1600px] mx-auto">
+        <div className="s-content-frame">
 
           {/* ── Hero Header ── */}
           
@@ -2217,6 +2244,7 @@ export const Social = () => {
                     title={item.name}
                     isImage={isImage}
                     isLiked2={likedKalams2.current.has(item._id)}
+                    kalamAudio={item.kalamAudio}
                   />
                 </div>
               ))}
@@ -2226,13 +2254,22 @@ export const Social = () => {
           
           }
 
-
+        </div>
         </div>
         <MyVerticallyCenteredModal isOpen={isKalamCommentModalOpen} onClose={()=>setIsKalamCommentModalOpen} height={"full"} width={"full"}>
 
           <div>
             <KalamComment commentType={"kalamComment"} kalamId={kalamComment} postId={null}/>
           </div>
+
+        </MyVerticallyCenteredModal>
+
+        <MyVerticallyCenteredModal isOpen={isPlayerModalOpen} width={"1/3"} height={"1/3"} onClose={()=>setIsPlayerModalOpen(false)}> 
+
+        {console.log("See track", kalamTrack)}
+
+        <KalamPlayer tracks={kalamTrack} />
+
 
         </MyVerticallyCenteredModal>
       </div>
