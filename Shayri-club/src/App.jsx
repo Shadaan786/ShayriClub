@@ -108,28 +108,28 @@ onMessage(messaging, (data) => {
       } */}
 
       <Route path = '/' element = {<Bg/>}/>
-      <Route path = 'IqbalInfo' element = {<IqbalInfo/>}/>
+      {/* <Route path = 'IqbalInfo' element = {<IqbalInfo/>}/>
       <Route path = 'JaunInfo' element = {<JaunInfo/>}/>
-      <Route path = 'IqbalInfo/Iqbalsher' element = {<Iqbalsher/>}/>
+      <Route path = 'IqbalInfo/Iqbalsher' element = {<Iqbalsher/>}/> */}
       <Route path = 'Signup' element = {<Signup/>}/>
       <Route path = 'Signup/Login' element = {<Login/>}/>
       
       <Route path = '/Kalam' element = {<Kalam/>}/>
       <Route path = 'UrKalam' element = {<UrKalam/>}/>
       <Route path = '/Profile' element = {<UserProfile/>}/>
-      <Route path = '/Streak' element = {<Streak/>}/>
-      <Route path = '/Chat' element = {<GlobalChat/>}/>
+      {/* <Route path = '/Streak' element = {<Streak/>}/>
+      <Route path = '/Chat' element = {<GlobalChat/>}/> */}
       <Route path = '/Search' element = {<Search/>}/>
-      <Route path = '/Communities' element = {<Community/>}/>
-      <Route path = '/DispCommunities' element = {<DispCommunities/>}/>
-      <Route path = '/CommunityNav' element = {<CommunityNav/>}/>
+      {/* <Route path = '/Communities' element = {<Community/>}/> */}
+      {/* <Route path = '/DispCommunities' element = {<DispCommunities/>}/> */}
+      {/* <Route path = '/CommunityNav' element = {<CommunityNav/>}/>
       <Route path = '/CommunityProfile' element = {<CommunityProfile/>}/>
-      <Route path='/CommunityChat' element= {<CommunityChat/>}/>
-      <Route path='/Try' element= {<Auth/>}/>
-      <Route path='/Try2' element= {<AuthPage/>}/>
+      <Route path='/CommunityChat' element= {<CommunityChat/>}/> */}
+      {/* <Route path='/Try' element= {<Auth/>}/>
+      <Route path='/Try2' element= {<AuthPage/>}/> */}
       <Route path='/Social' element= {<Social/>}/>
-      <Route path='/Card' element= {<Card/>}/>
-      <Route path='/Bg2' element= {<LightRays/>}/>
+      {/* <Route path='/Card' element= {<Card/>}/> */}
+      {/* <Route path='/Bg2' element= {<LightRays/>}/> */}
       <Route path='/Comment' element= {<KalamComment/>}/>
       <Route path='/ProfileCard' element= {<PoetProfileDashboard/>}/>
       <Route path='/CreatingAlbums' element= {<CreatingAlbums/>}/>
