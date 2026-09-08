@@ -3,7 +3,7 @@
 
   "rewrites": [
     {
-      "source": "/(:path*)",
+      "source": "/:path*",
       "has": [
         {
           "type": "header",
@@ -11,11 +11,10 @@
           "value": "(?i)(googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest\\/0.|pinterestbot|slackbot|vkShare|W3C_Validator|whatsapp|openai|chatgpt|gptbot|anthropic|claude|perplexity)"
         }
       ],
-      "destination": "/api/prerender/$1"
+      "destination": "/api/prerender?path=/:path*"
     },
-
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ]
