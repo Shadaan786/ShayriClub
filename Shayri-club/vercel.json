@@ -3,6 +3,10 @@
 
   "routes": [
     {
+      "handle": "filesystem"
+    },
+
+    {
       "src": "/(.*)",
       "has": [
         {
