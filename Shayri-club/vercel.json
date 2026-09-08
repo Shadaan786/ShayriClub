@@ -1,26 +1,24 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
 
-  "routes": [
+  "rewrites": [
     {
-      "handle": "filesystem"
-    },
-
-    {
-      "src": "/(.*)",
+      "source": "/:path*",
       "has": [
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(.*)Googlebot(.*)"
+          "value": {
+            "eq": "Googlebot"
+          }
         }
       ],
-      "dest": "/api/prerender?path=/$1"
+      "destination": "/api/prerender?path=/:path*"
     },
 
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/:path*",
+      "destination": "/index.html"
     }
   ]
 }
