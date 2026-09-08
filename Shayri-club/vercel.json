@@ -1,24 +1,26 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
 
-  "rewrites": [
+  "routes": [
     {
-      "source": "/:path*",
+      "src": "/(.*)",
       "has": [
         {
           "type": "header",
           "key": "user-agent",
-          "value": {
-            "eq": "Googlebot"
-          }
+          "value": "(.*)(Googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|pinterestbot|slackbot|vkShare|W3C_Validator|whatsapp|openai|chatgpt|gptbot|anthropic|claude|perplexity)(.*)"
         }
       ],
-      "destination": "/api/prerender?path=/:path*"
+      "dest": "/api/prerender?path=/$1"
     },
 
     {
-      "source": "/:path*",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
