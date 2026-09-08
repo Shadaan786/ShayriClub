@@ -1,4 +1,6 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+
   "rewrites": [
     {
       "source": "/(:path*)",
@@ -6,14 +8,15 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i)(googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest\/0.|pinterestbot|slackbot|vkShare|W3C_Validator|whatsapp|openai|chatgpt|gptbot|anthropic|claude|perplexity)"
+          "value": "(?i)(googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest\\/0.|pinterestbot|slackbot|vkShare|W3C_Validator|whatsapp|openai|chatgpt|gptbot|anthropic|claude|perplexity)"
         }
       ],
-      "destination": "https://prerender.io%{host}/$1?prerenderToken=$PRERENDER_TOKEN"
+      "destination": "/api/prerender/$1"
     },
-    { 
-      "source": "/(.*)", 
-      "destination": "/" 
+
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
