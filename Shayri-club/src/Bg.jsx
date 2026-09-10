@@ -558,6 +558,7 @@ useEffect(() => {
         {/* // ─── ADD THIS SECTION COMPONENT (insert just before the existing <section className="pt-32 pb-20"> Hero) ─── */}
 
 {/* ── Full-Screen Horizontal Scroll Feature Hero ── */}
+{/* ── Full-Screen Horizontal Scroll Feature Hero ── */}
 <section className="relative w-full" style={{ marginTop: '80px' }}>
   {/* Scroll track */}
   <div
@@ -698,49 +699,642 @@ useEffect(() => {
   </div>
 </div>
 
-    {/* ── Slide 2: Kalam of the Week ── */}
-    <div className="relative flex-shrink-0 w-full h-screen snap-start flex items-center justify-center overflow-hidden min-h-[560px]">
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=1400&q=80')",
-          filter: 'brightness(0.28)',
-        }}
-      />
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg,rgba(15,76,129,0.65) 0%,rgba(0,0,0,0.5) 100%)' }} />
-      <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
-        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl"
-          style={{ background: 'rgba(251,191,36,0.18)', border: '1.5px solid rgba(251,191,36,0.4)' }}>🏆</div>
-        <span className="inline-block text-xs tracking-widest uppercase px-4 py-1.5 rounded-full mb-5 font-medium"
-          style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.3)' }}>Weekly spotlight</span>
-        <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
-          Kalam <br />
-          <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">of the Week</span>
-        </h2>
-        <p className="text-gray-300 text-lg mb-6 max-w-xl mx-auto leading-relaxed">
-          Every week, our community votes for the piece that moved them most. Get featured, earn recognition, and inspire the next generation of poets.
+{/* ── Slide 2: Kalam of the Week (Archival Folio) ── */}
+<div className="relative flex-shrink-0 w-full h-screen snap-start flex items-center justify-center overflow-hidden min-h-[560px] bg-[#0B0806] text-[#F5EDE0]">
+  <style>{`
+    @keyframes kotw-manuscriptFloat {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+        box-shadow: 0 28px 70px -15px rgba(0, 0, 0, 0.95), 0 0 50px -10px rgba(212, 163, 89, 0.12), inset 0 1px 0 rgba(229, 192, 123, 0.18);
+      }
+      50% {
+        transform: translateY(-16px) rotate(0.4deg) scale(1.008);
+        box-shadow: 0 42px 90px -10px rgba(0, 0, 0, 0.98), 0 0 75px 0px rgba(212, 163, 89, 0.22), inset 0 1px 0 rgba(229, 192, 123, 0.28);
+      }
+    }
+    .kotw-floating-folio {
+      animation: kotw-manuscriptFloat 7s ease-in-out infinite;
+    }
+    .kotw-parchment-glow {
+      background: radial-gradient(circle at 50% 30%, rgba(212, 163, 89, 0.14) 0%, rgba(35, 25, 18, 0) 70%);
+    }
+    @keyframes kotw-acousticWave {
+      0%, 100% { height: 26%; opacity: 0.55; }
+      50% { height: 95%; opacity: 0.98; }
+    }
+    .kotw-wave-reed {
+      animation: kotw-acousticWave 1.9s ease-in-out infinite;
+      transform-origin: bottom;
+    }
+    .kotw-deckle-inset {
+      box-shadow: inset 0 0 20px rgba(11, 8, 6, 0.7), inset 0 0 3px rgba(212, 163, 89, 0.35);
+    }
+    @keyframes kotw-spotlightBeam {
+      0%, 100% { opacity: 0.65; }
+      50% { opacity: 0.95; }
+    }
+    .kotw-animate-spotlight-beam {
+      animation: kotw-spotlightBeam 4.5s ease-in-out infinite;
+    }
+    @keyframes kotw-auraHalo {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 0.9; transform: scale(1.04); }
+    }
+    .kotw-animate-aura-halo {
+      animation: kotw-auraHalo 5s ease-in-out infinite;
+    }
+    @keyframes kotw-moteFloat {
+      0% { opacity: 0; transform: translateY(0px); }
+      20% { opacity: 0.9; }
+      80% { opacity: 0.6; }
+      100% { opacity: 0; transform: translateY(-40px); }
+    }
+    .kotw-mote-1 { animation: kotw-moteFloat 4.2s ease-in-out infinite 0.2s; }
+    .kotw-mote-2 { animation: kotw-moteFloat 3.6s ease-in-out infinite 1.1s; }
+    .kotw-mote-3 { animation: kotw-moteFloat 4.8s ease-in-out infinite 0.6s; }
+    .kotw-mote-4 { animation: kotw-moteFloat 3.9s ease-in-out infinite 1.6s; }
+    .kotw-mote-5 { animation: kotw-moteFloat 4.5s ease-in-out infinite 2.1s; }
+  `}</style>
+
+  {/* Background Warm Vignette & Antique Paper Glow */}
+  <div className="absolute inset-0 pointer-events-none kotw-parchment-glow opacity-80 z-0"></div>
+  <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#d4a359_0.75px,transparent_0.75px)] [background-size:24px_24px] z-0"></div>
+
+  <main className="w-full max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center relative z-10 px-6 sm:px-10 lg:px-14">
+
+    {/* LEFT COLUMN: EDITORIAL NARRATIVE & SCHOLARLY CITATIONS */}
+    <div className="lg:col-span-5 flex flex-col justify-center space-y-7 pr-0 lg:pr-3">
+
+      {/* Wax Seal & Archival Epigraph Badge */}
+      <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-[#18120D]/90 border border-[#4F3D30]/80 shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_4px_12px_rgba(0,0,0,0.5)] w-fit">
+        <span className="relative flex h-3 w-3 items-center justify-center">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4A359] opacity-40"></span>
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-[#E5C07B] via-[#C89547] to-[#754F1F] shadow-sm border border-[#FAF3DF]/30"></span>
+        </span>
+        <span className="text-[10.5px] font-cinzel tracking-[0.22em] text-[#D4A359] uppercase font-semibold">
+          FOLIO ARCHIVE • ISSUE NO. 48
+        </span>
+        <span className="h-3 w-[1px] bg-[#4D3313]"></span>
+        <span className="text-[10px] font-mono text-[#A89480] tracking-wider">ANNO 2026</span>
+      </div>
+
+      {/* Main Headline */}
+      <div className="space-y-3.5">
+        <h1 className="text-4xl sm:text-5xl lg:text-[62px] leading-[1.04] font-serif font-light tracking-tight text-[#FAF6EF]">
+          <span className="block text-[13px] sm:text-[14px] font-cinzel font-medium tracking-[0.28em] text-[#D4A359]/90 uppercase mb-2">
+            Weekly Literary Laurel
+          </span>
+          <span className="block font-serif text-[#F5EDE0] tracking-normal">Honoring the</span>
+          <span
+            className="italic block font-serif font-normal py-0.5"
+            style={{
+              background: 'linear-gradient(135deg, #FDE68A 0%, #E5C07B 35%, #D4A359 65%, #9B6E32 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            verse that moved
+          </span>
+          <span className="inline-block relative text-[#FAF6EF] font-serif">
+            thousands<span className="text-[#D4A359] font-serif">.</span>
+          </span>
+        </h1>
+        <p className="text-[16px] sm:text-[17px] text-[#C2B29F] font-body leading-relaxed pt-1 font-normal max-w-lg">
+          Every week, the community gathers to listen, cherish, and resonate with verses across the guild.
+          The kalam that touches the most souls—championed by listeners, repeated plays, and heartfelt
+          community likes—takes center stage as{' '}
+          <span className="text-[#FAF6EF] italic font-serif">Kalam of the Week</span>.
         </p>
-        {/* Winner card */}
-        <div className="flex items-center gap-4 text-left p-4 rounded-xl mb-7 mx-auto max-w-sm"
-          style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)' }}>
-          <div className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center text-2xl"
-            style={{ background: 'linear-gradient(135deg,#a855f7,#ec4899)' }}>📜</div>
-          <div>
-            <p className="text-xs uppercase tracking-widest text-white/40 mb-0.5">This week's winner</p>
-            <p className="font-semibold text-white text-base">Tanhaiyon Ki Baat</p>
-            <p className="text-xs text-white/50">by @aditi_shayar · 2.4k votes</p>
+      </div>
+
+      {/* Archival Criterion Tablets */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+        <div className="p-4 rounded-xl bg-[#140E0A]/95 border border-[#3D2F24] hover:border-[#754F1F] transition-colors relative group shadow-lg shadow-black/40">
+          <div className="flex items-center gap-2.5 text-[#D4A359] text-[11px] font-cinzel tracking-[0.14em] font-semibold">
+            <svg className="w-4 h-4 text-[#D4A359]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.6"
+              />
+            </svg>
+            COMMUNITY RESONANCE
           </div>
+          <p className="text-[13px] text-[#A89684] font-body mt-2 leading-snug">
+            Crowned by over 50,000+ weekly listens, genuine community appreciations, and repeated shares
+            across the literary circle.
+          </p>
+          <div className="absolute bottom-1 right-2 text-[18px] text-[#2A2017] pointer-events-none font-serif select-none">❦</div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <button className="px-7 py-3.5 rounded-lg font-semibold text-white"
-            style={{ background: 'linear-gradient(90deg,#d97706,#ea580c)' }}>Nominate a kalam ›</button>
-          <button className="px-7 py-3.5 rounded-lg font-semibold text-white"
-            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.2)' }}>Past winners</button>
+
+        <div className="p-4 rounded-xl bg-[#140E0A]/95 border border-[#3D2F24] hover:border-[#754F1F] transition-colors relative group shadow-lg shadow-black/40">
+          <div className="flex items-center gap-2.5 text-[#D4A359] text-[11px] font-cinzel tracking-[0.14em] font-semibold">
+            <svg className="w-4 h-4 text-[#D4A359]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.6"
+              />
+            </svg>
+            ARCHIVAL IMMORTALITY
+          </div>
+          <p className="text-[13px] text-[#A89684] font-body mt-2 leading-snug">
+            Pressed into the Gold Vault Anthology with bespoke cover art and FLAC master.
+          </p>
+          <div className="absolute bottom-1 right-2 text-[18px] text-[#2A2017] pointer-events-none font-serif select-none">❦</div>
         </div>
+      </div>
+
+      {/* CTA Row */}
+      <div className="flex flex-wrap items-center gap-3 pt-2">
+        <button className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#D4A359] via-[#E2B774] to-[#C89547] hover:from-[#E2B774] hover:to-[#D4A359] active:scale-[0.98] text-[#140E0A] font-cinzel font-bold text-xs tracking-wider transition-all duration-200 shadow-[0_8px_20px_rgba(200,149,71,0.25),inset_0_1px_1px_rgba(255,255,255,0.4)] flex items-center gap-2.5 group border border-[#FAF3DF]/40">
+          <span>Read &amp; Listen to Laureate</span>
+          <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
+          </svg>
+        </button>
+        <button className="px-5 py-3.5 rounded-xl bg-[#1A120D] hover:bg-[#231912] border border-[#4F3D30] hover:border-[#9B6E32] text-[#D9CEBE] hover:text-[#FAF6EF] font-body text-sm font-medium transition-all duration-200 flex items-center gap-2.5 shadow-sm">
+          <span>Past Laureates Archive</span>
+          <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#2A2017] text-[#D4A359] border border-[#3D2F24]">47</span>
+        </button>
+      </div>
+
+      {/* Calligraphic Seal Footnote / Scholar Council */}
+      <div className="flex items-center gap-3.5 pt-3 border-t border-[#2E2219]">
+        <div className="flex -space-x-2">
+          <div className="w-7 h-7 rounded-full bg-[#1F1610] border border-[#754F1F] flex items-center justify-center text-[12px] font-serif text-[#D4A359] shadow-inner">غ</div>
+          <div className="w-7 h-7 rounded-full bg-[#18110C] border border-[#754F1F] flex items-center justify-center text-[12px] font-serif text-[#D4A359] shadow-inner">ف</div>
+          <div className="w-7 h-7 rounded-full bg-[#120D09] border border-[#754F1F] flex items-center justify-center text-[12px] font-serif text-[#D4A359] shadow-inner">ق</div>
+        </div>
+        <p className="text-xs text-[#9E8B78] font-mono tracking-wide">
+          Celebrated across listener circles &amp; community heart metrics this week.
+        </p>
       </div>
     </div>
 
-    {/* ── Slide 3: Album Creation ── */}
+    {/* RIGHT COLUMN: THE FLOATING "KALAM OF THE WEEK" SHOWCASE ARTIFACT */}
+    <div className="lg:col-span-7 flex justify-center">
+      <div className="w-full max-w-[680px] kotw-floating-folio rounded-2xl bg-gradient-to-b from-[#18120D] via-[#140E0A] to-[#100B08] border border-[#4A382A] shadow-2xl relative overflow-hidden backdrop-blur-md">
+
+        {/* Ambient Warm Amber Top Light */}
+        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[420px] h-36 bg-[#D4A359]/15 blur-3xl pointer-events-none rounded-full"></div>
+
+        {/* Archival Portfolio Header */}
+        <div className="px-6 py-3.5 border-b border-[#35271C] bg-[#120D09]/95 flex items-center justify-between relative">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center text-[#D4A359]/70 select-none text-xs font-serif tracking-widest">
+              <span>✦</span>
+              <span className="mx-1 text-[#4F3D30]">——</span>
+              <span>✦</span>
+            </div>
+            <span className="text-xs font-cinzel text-[#D9C5A8] tracking-[0.2em] uppercase font-medium">
+              KALAM OF THE WEEK // VOL. 48
+            </span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#261A0E] border border-[#9B6E32]/70 text-[#FAF3DF] text-[11px] font-cinzel font-semibold shadow-inner">
+              <span className="text-[#D4A359]">★</span>
+              LAUREATE CHOICE
+            </span>
+            <span className="text-[11px] font-mono text-[#8C7A68]">WEEK 36 • 2026</span>
+          </div>
+        </div>
+
+        {/* Main Featured Work Body */}
+        <div className="p-6 md:p-7 space-y-6">
+          <div className="flex flex-col items-center justify-center relative">
+
+            {/* Volumetric Overhead Spotlight & Atmospheric Ray System */}
+            <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-full max-w-[560px] h-[440px] pointer-events-none z-10 overflow-visible">
+              <div
+                className="kotw-animate-spotlight-beam absolute -top-4 left-1/2 w-[340px] sm:w-[420px] h-[360px] opacity-80 mix-blend-screen"
+                style={{
+                  background:
+                    'conic-gradient(from 162deg at 50% 0%, transparent 0deg, rgba(250, 243, 223, 0.38) 12deg, rgba(212, 163, 89, 0.45) 18deg, rgba(212, 163, 89, 0.2) 28deg, transparent 36deg)',
+                  filter: 'blur(10px)',
+                }}
+              ></div>
+
+              <div
+                className="kotw-animate-spotlight-beam absolute -top-6 left-1/2 w-[280px] h-[320px] opacity-60 mix-blend-screen"
+                style={{
+                  background: 'linear-gradient(115deg, rgba(245, 222, 154, 0.32) 0%, rgba(212, 163, 89, 0.12) 50%, transparent 80%)',
+                  filter: 'blur(8px)',
+                  transform: 'translateX(-65%)',
+                }}
+              ></div>
+
+              <div
+                className="kotw-animate-spotlight-beam absolute -top-6 left-1/2 w-[280px] h-[320px] opacity-60 mix-blend-screen"
+                style={{
+                  background: 'linear-gradient(245deg, rgba(245, 222, 154, 0.32) 0%, rgba(212, 163, 89, 0.12) 50%, transparent 80%)',
+                  filter: 'blur(8px)',
+                  transform: 'translateX(-35%)',
+                }}
+              ></div>
+
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-48 h-20 rounded-full opacity-90 mix-blend-color-dodge blur-xl bg-[radial-gradient(ellipse_at_center,#FAF3DF_0%,#D4A359_45%,transparent_75%)]"></div>
+
+              <div className="absolute inset-0 select-none">
+                <span className="kotw-mote-1 absolute top-20 left-[42%] w-1.5 h-1.5 rounded-full bg-[#FAF3DF] shadow-[0_0_6px_#FAF3DF] opacity-0"></span>
+                <span className="kotw-mote-2 absolute top-28 left-[54%] w-1 h-1 rounded-full bg-[#E5C07B] shadow-[0_0_4px_#D4A359] opacity-0"></span>
+                <span className="kotw-mote-3 absolute top-36 left-[36%] w-1 h-1 rounded-full bg-[#FAF3DF] shadow-[0_0_5px_#FAF3DF] opacity-0"></span>
+                <span className="kotw-mote-4 absolute top-44 left-[60%] w-1.5 h-1.5 rounded-full bg-[#D4A359] shadow-[0_0_5px_#C89547] opacity-0"></span>
+                <span className="kotw-mote-5 absolute top-52 left-[48%] w-1 h-1 rounded-full bg-[#FAF3DF] shadow-[0_0_4px_#FAF3DF] opacity-0"></span>
+              </div>
+            </div>
+
+            {/* Ethereal Multi-Tier Golden Halo Aura Behind Manuscript Vitrine */}
+            <div className="absolute top-[58%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-88 sm:w-[440px] h-88 sm:h-[440px] pointer-events-none -z-10">
+              <div className="kotw-animate-aura-halo absolute inset-0 rounded-full bg-[radial-gradient(circle,#D4A359_0%,rgba(200,149,71,0.28)_42%,rgba(77,51,19,0.08)_65%,transparent_75%)] blur-3xl opacity-75"></div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-80 h-64 sm:h-80 rounded-full bg-[radial-gradient(circle,#FAF3DF_0%,#E5C07B_30%,#D4A359_55%,transparent_75%)] blur-2xl opacity-45 mix-blend-screen"></div>
+              <div className="absolute top-[18%] left-1/2 -translate-x-1/2 w-56 h-12 rounded-full bg-[#FAF3DF]/35 blur-lg mix-blend-overlay"></div>
+            </div>
+
+            {/* Laureate Header & Metadata */}
+            <div className="w-full flex flex-wrap items-center justify-between gap-3 mb-5 border-b border-[#2D2015] pb-3.5">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 rounded text-[10px] font-cinzel tracking-wider uppercase bg-[#231A12] text-[#D4A359] border border-[#4F3D30]">
+                    Nazm • Shikwa-o-Shikayat
+                  </span>
+                  <span className="text-[11px] font-mono text-[#8C7A68]">Meter: Bahr-e-Hazaj</span>
+                </div>
+                <div className="flex items-baseline gap-3">
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#FAF6EF] tracking-tight">Shikayat</h2>
+                  <span className="text-sm font-serif italic text-[#D4A359]">by Arif Karimi</span>
+                  <span className="text-[11px] text-[#7A6958] font-mono hidden sm:inline">• Modern Classical</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="text-right font-mono text-xs">
+                  <span className="text-[#9E8B78] text-[10px] block font-cinzel tracking-widest">WEEKLY LISTENS</span>
+                  <span className="text-[#FAF6EF] font-bold text-sm">38.4k</span>
+                </div>
+                <div className="h-6 w-[1px] bg-[#35271C] mx-1"></div>
+                <div className="text-right font-mono text-xs">
+                  <span className="text-[#9E8B78] text-[10px] block font-cinzel tracking-widest">HEARTS</span>
+                  <span className="text-[#D4A359] font-bold text-sm tracking-wide">12.6k ♥</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Grand Spotlight Manuscript Centerpiece Display */}
+            <div className="relative group max-w-[340px] sm:max-w-[370px] w-full my-1">
+              <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-[#D4A359] z-20 pointer-events-none"></div>
+              <div className="absolute -top-2 -right-2 w-4 h-4 border-t-2 border-r-2 border-[#D4A359] z-20 pointer-events-none"></div>
+              <div className="absolute -bottom-2 -left-2 w-4 h-4 border-b-2 border-l-2 border-[#D4A359] z-20 pointer-events-none"></div>
+              <div className="absolute -bottom-2 -right-2 w-4 h-4 border-b-2 border-r-2 border-[#D4A359] z-20 pointer-events-none"></div>
+
+              <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-4/5 h-6 bg-black/80 blur-lg rounded-full pointer-events-none"></div>
+
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-gradient-to-b from-[#382B1F] via-[#231A12] to-[#140E0A] border-2 border-[#754F1F] shadow-[0_20px_50px_rgba(0,0,0,0.9),0_0_40px_rgba(212,163,89,0.18)] transition-transform duration-700 group-hover:scale-[1.015]">
+                <div className="aspect-square rounded-xl overflow-hidden border border-[#D4A359]/50 shadow-inner relative bg-[#1B130D]">
+                  <img
+                    alt="Original Parchment Manuscript - Shikayat by Arif Karimi"
+                    className="w-full h-full object-cover sepia-[0.12] contrast-[1.02] duration-700 transition-transform group-hover:scale-105"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgQFF5IJ9MScvLdL3gXSyLdXB-RhNGOgYdCKDRntTVkGfpl52dPbBoWo60DUdPncTFi-CDVC1cqnajuHE87xcB57RMZuazvYJTBBTUx3Iy5diy5VCM8MqAar5NqpdGAVVLVp4hHpS_jpiAhfriwQBkO94LMMc8vgFXbQfpYvGzP9J5O4ZKWFG0E1hqTDWE8YxHxKpUCnwfKhkLZ9H-vQL4ECoMNMb4kuRT5N5xYSzF-0yfHafzj7ZjJgrBCSwbjbQ7SbQ"
+                  />
+                  <div className="absolute inset-0 kotw-deckle-inset pointer-events-none"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Prominent Community Call to Action strip */}
+            <div className="w-full flex items-center justify-between pt-4 mt-2 border-t border-[#2D2015] text-[10.5px] font-mono tracking-wider text-[#A89480]">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359] shadow-[0_0_4px_#D4A359]"></span>
+                <span className="font-cinzel text-[#D9C5A8] tracking-[0.2em] uppercase font-medium">
+                  ARCHIVED IN VAULT // REKHTA &amp; ALF GUILD
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[#D4A359]/90 font-cinzel text-[10px] tracking-[0.14em] px-2.5 py-0.5 rounded bg-[#1A120D] border border-[#3D2F24]">
+                <span className="text-[#D4A359]">★</span>
+                <span>CURATED SELECTION • WEEK 36</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+    {/* ── Slide 3: Archival Press & Studio (Poetry & Spoken Sound Archives) ── */}
+    <div className="relative flex-shrink-0 w-full h-screen snap-start flex items-center justify-center overflow-hidden min-h-[560px] bg-[#0b0d13] text-[#ded7c8] font-archival-sans">
+      {/* Scoped styles for this slide only — class names are prefixed with "archival-" so
+          nothing here can collide with the rest of the app's global CSS. */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Cinzel:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap');
+
+        .archival-slide { position: relative; }
+
+        .archival-vinyl-sleeve {
+          position: relative;
+          box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.4);
+          transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+          will-change: transform;
+        }
+        .archival-vinyl-sleeve::before {
+          content: '';
+          position: absolute;
+          top: 0; bottom: 0; left: 0;
+          width: 6px;
+          background: linear-gradient(90deg, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0.4) 40%, rgba(255,255,255,0.06) 80%, transparent 100%);
+          z-index: 15;
+          pointer-events: none;
+        }
+        .archival-vinyl-sleeve::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.6);
+          pointer-events: none;
+          z-index: 14;
+        }
+        .archival-vinyl-sleeve:hover,
+        .archival-craft-sleeve:hover {
+          transform: translateY(-12px) scale(1.025) !important;
+          box-shadow: 0 24px 44px -10px rgba(0, 0, 0, 0.9), 0 0 20px rgba(212, 175, 55, 0.1) !important;
+          z-index: 20;
+          animation-play-state: paused;
+        }
+
+        .archival-craft-sleeve {
+          position: relative;
+          background: radial-gradient(circle at 30% 20%, rgba(36, 42, 54, 0.75) 0%, rgba(17, 20, 27, 0.95) 100%);
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+          transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+          will-change: transform;
+        }
+
+        @keyframes archival-float-whole-showcase {
+          0%, 100% { transform: translateY(0px); box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 45px -10px rgba(212, 163, 89, 0.05); }
+          50% { transform: translateY(-12px); box-shadow: 0 38px 80px -15px rgba(0, 0, 0, 0.85), 0 0 65px -5px rgba(212, 163, 89, 0.09); }
+        }
+        .archival-animate-showcase-float {
+          animation: archival-float-whole-showcase 7.5s ease-in-out infinite;
+          will-change: transform, box-shadow;
+        }
+
+        @keyframes archival-float-1 { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-8px) rotate(-0.4deg); } }
+        @keyframes archival-float-2 { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-10px) rotate(0.5deg); } }
+        @keyframes archival-float-3 { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-7px) rotate(-0.5deg); } }
+        @keyframes archival-float-4 { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-9px) rotate(0.4deg); } }
+        @keyframes archival-float-5 { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-7px) rotate(-0.3deg); } }
+        @keyframes archival-float-6 { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-6px) rotate(0.6deg); } }
+
+        .archival-animate-float-1 { animation: archival-float-1 5.4s ease-in-out infinite 0s; }
+        .archival-animate-float-2 { animation: archival-float-2 6.2s ease-in-out infinite 0.7s; }
+        .archival-animate-float-3 { animation: archival-float-3 5.8s ease-in-out infinite 1.4s; }
+        .archival-animate-float-4 { animation: archival-float-4 6.6s ease-in-out infinite 0.3s; }
+        .archival-animate-float-5 { animation: archival-float-5 5.2s ease-in-out infinite 1.1s; }
+        .archival-animate-float-6 { animation: archival-float-6 6.8s ease-in-out infinite 1.8s; }
+
+        @keyframes archival-amber-glow {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(223, 183, 88, 0.4), 0 0 8px 1px rgba(223, 183, 88, 0.3); opacity: 0.9; }
+          50% { box-shadow: 0 0 0 4px rgba(223, 183, 88, 0.15), 0 0 14px 3px rgba(223, 183, 88, 0.55); opacity: 1; }
+        }
+        .archival-pulse-amber { animation: archival-amber-glow 3.2s ease-in-out infinite; }
+
+        .archival-bg-noise {
+          background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+          background-size: 20px 20px;
+        }
+
+        @keyframes archival-hifi-eq { 0%, 100% { height: 4px; } 50% { height: 18px; } }
+        .archival-eq-1 { animation: archival-hifi-eq 1.4s ease-in-out infinite 0.1s; }
+        .archival-eq-2 { animation: archival-hifi-eq 1.1s ease-in-out infinite 0.4s; }
+        .archival-eq-3 { animation: archival-hifi-eq 1.6s ease-in-out infinite 0.2s; }
+        .archival-eq-4 { animation: archival-hifi-eq 1.2s ease-in-out infinite 0.5s; }
+        .archival-eq-5 { animation: archival-hifi-eq 1.5s ease-in-out infinite 0.3s; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .archival-animate-showcase-float,
+          .archival-animate-float-1, .archival-animate-float-2, .archival-animate-float-3,
+          .archival-animate-float-4, .archival-animate-float-5, .archival-animate-float-6,
+          .archival-pulse-amber,
+          .archival-eq-1, .archival-eq-2, .archival-eq-3, .archival-eq-4, .archival-eq-5 {
+            animation: none !important;
+          }
+          .archival-vinyl-sleeve, .archival-craft-sleeve { transition: none !important; }
+        }
+      `}</style>
+
+      {/* Subtle tactile editorial background: Charcoal, deeply muted sepia & vignette */}
+      <div className="absolute inset-0 bg-[#0b0d13] pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_10%,rgba(38,32,26,0.45)_0%,transparent_75%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_75%,rgba(26,30,42,0.5)_0%,transparent_60%)]"></div>
+        <div className="absolute inset-0 archival-bg-noise opacity-40"></div>
+        <div className="absolute inset-0 border-b border-white/[0.06] pointer-events-none"></div>
+      </div>
+
+      {/* Main content */}
+      <main className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+
+          {/* Left Column: Editorial Typography */}
+          <div className="lg:col-span-5 text-left space-y-7">
+            <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-sm bg-[#161a22] border border-white/10 text-[11px] tracking-[0.16em] uppercase font-mono text-[#eed188]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#dfb758]"></span>
+              <span>Archival Press &amp; Studio</span>
+              <span className="text-white/20">|</span>
+              <span className="text-[#aba69a] font-archival-sans lowercase font-normal tracking-normal text-xs">series no. 04</span>
+            </div>
+
+            <div className="space-y-4">
+              <h1 className="font-archival-serif text-4xl sm:text-5xl lg:text-6xl text-[#fbfaf8] leading-[1.08] tracking-tight font-normal">
+                Turn your verses into <br />
+                <span className="italic font-normal text-[#dfb758] pr-1">living records.</span>
+              </h1>
+              <p className="text-[#a6a094] text-base sm:text-lg font-light leading-relaxed max-w-md pt-1">
+                Compose physical-grade sleeve artwork, master spoken ghazals and nazms with synchronized acoustic backing, and press bespoke anthologies ready for the world.
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-wrap items-center gap-3.5">
+              <button className="px-6 py-3.5 rounded-sm bg-[#ece7de] hover:bg-white text-[#0f1117] font-medium text-xs tracking-wider uppercase transition-all duration-200 flex items-center gap-2.5 shadow-lg shadow-black/40 cursor-pointer">
+                <span className="font-semibold">Create New Anthology</span>
+                <svg className="w-3.5 h-3.5 text-[#0f1117]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                </svg>
+              </button>
+              <button className="px-5 py-3.5 rounded-sm bg-transparent hover:bg-white/[0.04] border border-white/20 hover:border-white/40 text-[#ded7c8] text-xs tracking-wider uppercase font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer">
+                <span>Browse Press Catalog</span>
+              </button>
+            </div>
+
+            <div className="pt-6 border-t border-white/[0.08] flex items-center gap-4">
+              <div className="flex -space-x-1.5 overflow-hidden flex-shrink-0">
+                <div className="w-7 h-7 rounded-full ring-1 ring-[#0b0d13] bg-[#242a36] text-[#dfb758] flex items-center justify-center font-archival-serif text-[11px] font-semibold">ف</div>
+                <div className="w-7 h-7 rounded-full ring-1 ring-[#0b0d13] bg-[#2c2621] text-[#eed188] flex items-center justify-center font-archival-serif text-[11px] font-semibold">م</div>
+                <div className="w-7 h-7 rounded-full ring-1 ring-[#0b0d13] bg-[#1d2624] text-[#c59d3f] flex items-center justify-center font-archival-serif text-[11px] font-semibold">غ</div>
+              </div>
+              <div className="text-xs text-[#8c887b] leading-snug">
+                <span className="text-[#ded7c8] font-medium">Preserving 14,000+ poetic works</span> across Ghazal, Nazm, Rubaiyat, and Sufi oral traditions.
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Curated Physical Vinyl & Anthology Rack */}
+          <div className="lg:col-span-7">
+            <div className="rounded-lg bg-[#12151d]/90 border border-[#222734] p-5 sm:p-7 shadow-2xl backdrop-blur-md archival-animate-showcase-float">
+
+              {/* Curator Header Bar */}
+              <div className="flex items-center justify-between pb-4 mb-5 border-b border-white/[0.07] text-xs">
+                <div className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-[#dfb758] archival-pulse-amber"></span>
+                  <span className="font-archival-serif text-sm tracking-wider text-[#e8e4dc] font-medium">Selected Physical Editions</span>
+                  <span className="text-white/20">/</span>
+                  <span className="text-[11px] text-[#8c887b] font-mono tracking-tight">ALF-ARCHIVE-AUTUMN</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono text-[11px] text-[#aba69a]">
+                  <span>33⅓ RPM STEREO</span>
+                </div>
+              </div>
+
+              {/* Physical Vinyl Jacket Rack (3x2 Grid) */}
+              <div className="grid grid-cols-3 gap-3.5 sm:gap-4 mb-5">
+
+                {/* Sleeve 1: Ishq-e-Khamoosh */}
+                <div className="archival-vinyl-sleeve archival-animate-float-1 group rounded-sm overflow-hidden aspect-square bg-[#161a22] cursor-pointer border border-white/10 relative">
+                  <img alt="Ishq-e-Khamoosh" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://picsum.photos/seed/ishq-e-khamoosh/600/600" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 p-2.5 flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[9px] text-[#eed188] bg-black/60 px-1.5 py-0.5 rounded-xs uppercase tracking-wider">ALF-081</span>
+                      <span className="text-[9px] text-white/80 font-mono">Vol. 01</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-white/70 block font-archival-serif italic">عشقِ خاموش</span>
+                      <h3 className="font-archival-serif text-xs sm:text-sm font-semibold text-white tracking-wide truncate">Ishq-e-Khamoosh</h3>
+                      <span className="text-[9px] text-[#dfb758] font-mono tracking-tight mt-0.5 block">8 Verses • Mastered</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sleeve 2: Aatish-e-Junoon */}
+                <div className="archival-vinyl-sleeve archival-animate-float-2 group rounded-sm overflow-hidden aspect-square bg-[#161a22] cursor-pointer border border-white/10 relative">
+                  <img alt="Motivation and Fire" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://picsum.photos/seed/aatish-e-junoon/600/600" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 p-2.5 flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[9px] text-[#eed188] bg-black/60 px-1.5 py-0.5 rounded-xs uppercase tracking-wider">ALF-082</span>
+                      <span className="text-[9px] text-white/80 font-mono">Vol. 02</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-white/70 block font-archival-serif italic">آتشِ جنوں</span>
+                      <h3 className="font-archival-serif text-xs sm:text-sm font-semibold text-white tracking-wide truncate">Aatish-e-Junoon</h3>
+                      <span className="text-[9px] text-[#e8c374] font-mono tracking-tight mt-0.5 block">14 Verses • Press Draft</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sleeve 3: Sadaa-e-Kohsaar */}
+                <div className="archival-vinyl-sleeve archival-animate-float-3 group rounded-sm overflow-hidden aspect-square bg-[#161a22] cursor-pointer border border-white/10 relative">
+                  <img alt="Aurora Echoes" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://picsum.photos/seed/sadaa-e-kohsaar/600/600" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 p-2.5 flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[9px] text-[#eed188] bg-black/60 px-1.5 py-0.5 rounded-xs uppercase tracking-wider">ALF-083</span>
+                      <span className="text-[9px] text-white/80 font-mono">Vol. 03</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-white/70 block font-archival-serif italic">صدائے کہسار</span>
+                      <h3 className="font-archival-serif text-xs sm:text-sm font-semibold text-white tracking-wide truncate">Sadaa-e-Kohsaar</h3>
+                      <span className="text-[9px] text-[#a0d9b4] font-mono tracking-tight mt-0.5 block">11 Verses • Pressed</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sleeve 4: City of Echoes */}
+                <div className="archival-vinyl-sleeve archival-animate-float-4 group rounded-sm overflow-hidden aspect-square bg-[#161a22] cursor-pointer border border-white/10 relative">
+                  <img alt="City of Echoes" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://picsum.photos/seed/city-of-echoes/600/600" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 p-2.5 flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[9px] text-[#eed188] bg-black/60 px-1.5 py-0.5 rounded-xs uppercase tracking-wider">ALF-084</span>
+                      <span className="text-[9px] text-white/80 font-mono">Vol. 04</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-white/70 block font-archival-serif italic">شبِ تنہائی</span>
+                      <h3 className="font-archival-serif text-xs sm:text-sm font-semibold text-white tracking-wide truncate">City of Echoes</h3>
+                      <span className="text-[9px] text-[#c4b5fd] font-mono tracking-tight mt-0.5 block">6 Verses • Vinyl Master</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sleeve 5: Khizaan Ke Phool */}
+                <div className="archival-vinyl-sleeve archival-animate-float-5 group rounded-sm overflow-hidden aspect-square bg-[#161a22] cursor-pointer border border-white/10 relative">
+                  <img alt="Memories Poems of Autumn" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://picsum.photos/seed/khizaan-ke-phool/600/600" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 p-2.5 flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[9px] text-[#eed188] bg-black/60 px-1.5 py-0.5 rounded-xs uppercase tracking-wider">ALF-085</span>
+                      <span className="text-[9px] text-white/80 font-mono">Vol. 05</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-white/70 block font-archival-serif italic">خزاں کے پھول</span>
+                      <h3 className="font-archival-serif text-xs sm:text-sm font-semibold text-white tracking-wide truncate">Khizaan Ke Phool</h3>
+                      <span className="text-[9px] text-[#dfb758] font-mono tracking-tight mt-0.5 block">19 Verses • Complete</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sleeve 6: Blank Archival Kraft Sleeve (+ PRESS NEW ALBUM) */}
+                <div className="archival-craft-sleeve archival-animate-float-6 group rounded-sm border border-dashed border-white/20 hover:border-[#dfb758]/80 aspect-square p-3 flex flex-col justify-between items-center text-center cursor-pointer hover:bg-[#181d27]">
+                  <div className="w-full flex justify-between items-center text-[9px] font-mono text-[#8c887b]">
+                    <span>NEW PRESS</span>
+                    <span>VOL. 06</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-[#eed188] mb-2 group-hover:border-[#dfb758] group-hover:scale-105 transition-all">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75"></path>
+                      </svg>
+                    </div>
+                    <h4 className="font-archival-serif text-xs sm:text-sm text-[#f5f2eb] font-medium tracking-wide">Press New Album</h4>
+                    <p className="text-[10px] text-[#8c887b] mt-0.5 font-light">Custom sleeve &amp; verses</p>
+                  </div>
+                  <span className="text-[9px] font-mono text-[#eed188]/75 tracking-wider uppercase">Unbound Master</span>
+                </div>
+              </div>
+
+              {/* Bespoke Master Audio Playback Dock */}
+              <div className="rounded-sm bg-[#0c0e14] border border-white/[0.08] p-3 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="relative w-10 h-10 rounded-sm overflow-hidden flex-shrink-0 border border-white/15">
+                    <img alt="Now Playing Album" className="w-full h-full object-cover" src="https://picsum.photos/seed/ishq-e-khamoosh/600/600" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-xs font-archival-serif font-semibold text-[#f5f2eb] truncate">Ishq-e-Khamoosh (عشقِ خاموش)</h4>
+                      <span className="text-[9px] font-mono uppercase bg-[#1f2533] text-[#eed188] px-1.5 py-0.2 rounded-xs">FLAC MASTER</span>
+                    </div>
+                    <p className="text-[11px] text-[#8c887b] truncate font-light mt-0.5">Track 04: Raqs-e-Khayal — Spoken recitative with acoustic Tanpura</p>
+                  </div>
+                </div>
+
+                <div className="hidden sm:flex items-center gap-1 h-5 px-2.5 py-1 bg-black/40 rounded-sm border border-white/5">
+                  <span className="w-0.5 bg-[#dfb758] rounded-full archival-eq-1"></span>
+                  <span className="w-0.5 bg-[#eed188] rounded-full archival-eq-2"></span>
+                  <span className="w-0.5 bg-[#dfb758] rounded-full archival-eq-3"></span>
+                  <span className="w-0.5 bg-[#eed188] rounded-full archival-eq-4"></span>
+                  <span className="w-0.5 bg-[#dfb758] rounded-full archival-eq-5"></span>
+                </div>
+
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  <span className="hidden md:inline-block font-mono text-[11px] text-[#8c887b]">-02:24</span>
+                  <button aria-label="Play or Pause" className="w-8 h-8 rounded-full bg-[#ece7de] hover:bg-white text-[#0f1117] flex items-center justify-center transition-colors shadow-sm">
+                    <svg className="w-3.5 h-3.5 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    {/* ── Slide 4: Album Creation ── */}
     <div className="relative flex-shrink-0 w-full h-screen snap-start flex items-center justify-center overflow-hidden min-h-[560px]">
       <div
         className="absolute inset-0 bg-cover bg-center"

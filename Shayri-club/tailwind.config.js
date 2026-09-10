@@ -35,6 +35,15 @@ export default {
         "admin-label-md": ["Geist"],
         "admin-body-sm": ["Inter"],
         "admin-headline-lg": ["Geist"],
+
+        // --- Archival Press & Studio slide (namespaced "archival-" —
+        // this is the vinyl/poetry-archive hero slide only; nothing else
+        // in the app references these, so default font-serif/font-sans/
+        // font-mono elsewhere are untouched) ---
+        "archival-serif": ["Cormorant Garamond", "Georgia", "serif"],
+        "archival-display": ["Cinzel", "serif"],
+        "archival-urdu": ["Noto Nastaliq Urdu", "serif"],
+        "archival-sans": ["Plus Jakarta Sans", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
       },
       animation: {
         typewriter: 'typewriter 4s steps(28) forwards',
