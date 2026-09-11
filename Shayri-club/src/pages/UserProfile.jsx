@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { MyContext } from "../ContextProvider"
 import { PoetProfileDashboard } from "./components/ProfileCard";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useRef } from "react";
 
 
 
@@ -30,6 +31,7 @@ const UserProfile = () =>{
     const[available, setAvailable]  = useState(false);
     const[profilePic, setProfilePic] = useState("");
     const[followerCount, setFollowerCount] = useState(0)
+    const allFollowers = useRef(new Set());
 
     // --- Follow / own-profile state ---
     // PoetProfileDashboard is presentational: it no longer fetches this
@@ -40,15 +42,38 @@ const UserProfile = () =>{
     const[followersList, setFollowersList] = useState([]);
     const [featuredVerse, setFeaturedVerse] = useState("");
     const [coverImage, setCoverImage] = useState("");
+    const[thisUser, setThisUser] = useState("");
 
     const[SearchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const userId = SearchParams.get("userId");
+
+
      
+      const getCurrentUser=()=>{
+
+        axiosInstance
+        .get('/api/userId',{
+          withCredentials: true
+        }).then((response)=>{
+          setThisUser(response.data);
+
+        }).catch((error)=>{
+          console.error("Error while fetching current userId", error);
+        })
+
+      }
+
+      useEffect(()=>{
+
+        getCurrentUser();
+      }, [])
    
 
     const profile= ()=>{
+
+
 
 
 
@@ -63,8 +88,20 @@ const UserProfile = () =>{
             
 
             // currentstreak
-            const followers = response.data.netFollowers?.followers.length || response.data.userFollowers
-            console.log("see followers",followers)
+            const followers = response.data.netFollowers?.followers.length || response.data.userFollowers?.length
+            console.log("see followers",followers);
+
+            const all_followers = response.data.netFollowers?.followers || response.data.userFollowers;
+
+            console.log("See type", typeof(all_followers));
+            console.log("See length", all_followers.length)
+
+            if(all_followers.length !==0){
+            all_followers.forEach((item)=>{
+              allFollowers.current.add(item.follower);
+            })
+            }
+
 
            setFollowerCount(followers)
 
@@ -104,7 +141,7 @@ const UserProfile = () =>{
             console.log(response.data)
 
             const res = response.data.userDb?.[0].name || JSON.parse(response.data.userInfo).name
-            console.log("see name",res)
+            console.log("see name",response.data.userDb[0].name)
 
             setUserName(res);
 
@@ -299,6 +336,11 @@ const UserProfile = () =>{
 
 }
 
+const getUserFollowers=()=>{
+  axiosInstance
+  .get('/api/')
+}
+
     useEffect(()=>{
         profile();
     }, []);
@@ -420,6 +462,14 @@ const UserProfile = () =>{
     }
 
     
+    // if(allFollowers.current.size === 0){
+
+    //   return(
+    //     <>
+    //     <h1 className="text-9xl">Loading...</h1>
+    //     </>
+    //   )
+    // }
 
 
    
@@ -462,7 +512,7 @@ const UserProfile = () =>{
         
 
         isOwnProfile={isOwnProfile}
-        isFollowing={true}
+        isFollowing={allFollowers.current.has(thisUser._id)}
         onFollow={triggerFollow}
         onUnfollow={triggerUnfollow}
         followersList={followersList}
