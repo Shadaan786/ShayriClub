@@ -3445,7 +3445,7 @@
 //------------------------------------------------------------------------------------------------------------------------------>
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { AlbumsPanel } from "../new"; // adjust path to wherever profileAlbums.jsx lives;
 import { useSearchParams } from "react-router-dom";
 import { Edit } from "lucide-react";
@@ -3891,6 +3891,8 @@ export function PoetProfileDashboard({
   const [verseDraft, setVerseDraft] = useState("");
   const [savingVerse, setSavingVerse] = useState(false);
 
+  const Navigate = useNavigate();
+
   useEffect(() => {
     setCurrentVerse(spotlightVerse || null);
   }, [spotlightVerse]);
@@ -4174,7 +4176,9 @@ export function PoetProfileDashboard({
           <div className="h-8 w-[1px] bg-[#ffe6ac]/10 hidden sm:block" />
           <div className="flex items-center gap-4">
             <HeaderSearch onSearchUser={onSearchUser} onSelectSearchResult={onSelectSearchResult} />
-            <Icon name="settings" className="!text-[20px] text-[#d0c5b0] hover:text-[#ffe6ac] cursor-pointer transition-colors" />
+            <button onClick={()=>Navigate('/settings')}>
+            <Icon name="settings"  className="!text-[20px] text-[#d0c5b0] hover:text-[#ffe6ac] cursor-pointer transition-colors" />
+            </button>
             <div className="w-8 h-8 rounded-full border border-[#ffe6ac]/40 overflow-hidden cursor-pointer bg-[#2e2735] flex items-center justify-center text-[10px] text-[#ffe6ac]">
               {profileLink ? (
                 <img alt="Profile" className="w-full h-full object-cover" src={profileLink} />
