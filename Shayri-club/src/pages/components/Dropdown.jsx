@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function Dropdown({ title, items }) {
+export default function Dropdown({ title, items, userPic}) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -41,6 +41,7 @@ export default function Dropdown({ title, items }) {
   >
     {/* Profile image / reserved space */}
     <div className="h-8 w-8 flex-shrink-0">
+      {console.log("See imgg================================================================================================================>", item.profilePic)}
       {item.image && (
         <img
           src={item.image}
