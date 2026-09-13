@@ -415,21 +415,21 @@ useEffect(() => {
       <div className="relative z-10">
 {/* Navbar */}
 <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-black via-[#1a0828] to-black backdrop-blur-lg border-b border-amber-500/20">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="flex items-center justify-between h-20 gap-4">
+  <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4">
 
       {/* Logo */}
-      <div className="flex-shrink-0 flex items-center gap-2.5 group cursor-pointer">
-        <div className="relative">
+      <div className="flex-shrink-0 flex items-center gap-1.5 sm:gap-2.5 group cursor-pointer min-w-0">
+        <div className="relative flex-shrink-0">
           <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 rounded-full blur-md opacity-30 group-hover:opacity-60 transition-opacity duration-500" />
           <img
             src={logo}
             alt="Shayri Club Logo"
-            className="relative h-14 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] transition-transform duration-300 ease-out group-hover:scale-105"
+            className="relative h-8 sm:h-14 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] transition-transform duration-300 ease-out group-hover:scale-105"
           />
         </div>
 
-        <h1 className="relative inline-block text-2xl sm:text-4xl leading-none font-black tracking-wide cursor-default group">
+        <h1 className="relative inline-block text-xl sm:text-4xl leading-none font-black tracking-wide cursor-default group whitespace-nowrap">
           <span
             aria-hidden="true"
             className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-amber-400 via-rose-400 to-orange-400 bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-70"
@@ -446,7 +446,7 @@ useEffect(() => {
               A
             </span>
             <bdi
-              className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
+              className="inline-block -mx-0.5 translate-y-[2px] sm:translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
               style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
             >
               لف
@@ -490,16 +490,17 @@ useEffect(() => {
       </div>
 
       {/* Right-side actions — all grouped in one consistent flex row */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-0.5 sm:gap-3 flex-shrink-0">
 
         {isLoggedIn && (
           <button
             onClick={() => setNotificationOpened(true)}
             aria-label="Notifications"
-            className="relative p-2.5 rounded-lg text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 transition-colors"
+            className="relative p-2 sm:p-2.5 rounded-lg text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 transition-colors"
           >
-            <BellRingIcon size={22} duration={1} color="currentColor" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-black" />
+            <BellRingIcon size={18} className="sm:hidden" duration={1} color="currentColor" />
+            <BellRingIcon size={22} className="hidden sm:block" duration={1} color="currentColor" />
+            <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-rose-500 rounded-full ring-2 ring-black" />
           </button>
         )}
 
@@ -532,13 +533,20 @@ useEffect(() => {
           )}
         </div>
 
+        {/* Mobile-only profile avatar (shown next to hamburger when logged in) */}
+        {isLoggedIn && (
+          <div className="md:hidden w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-black text-xs font-bold flex-shrink-0 overflow-hidden">
+            <img onClick={()=>Navigate(`/profile?userId=${user._id}`)} className="h-full w-full rounded-full object-cover" src={profilePic} />
+          </div>
+        )}
+
         {/* Mobile menu toggle */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
-          className="md:hidden p-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+          className="md:hidden p-2 sm:p-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
         >
-          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
     </div>
@@ -556,6 +564,9 @@ useEffect(() => {
         </a>
         <a href="/Social" className="block px-4 py-3 text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg transition">
           Browse
+        </a>
+        <a href="/albumsLive" className="block px-4 py-3 text-gray-300 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg transition">
+          Library
         </a>
 
         <div className="pt-4 mt-2 space-y-2 border-t border-white/10">
