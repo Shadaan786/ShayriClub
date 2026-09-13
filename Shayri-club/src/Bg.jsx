@@ -827,7 +827,7 @@ useEffect(() => {
  
         {/* ── Slide 2: Kalam of the Week (Archival Folio) ── */}
         <div
-          className="relative flex-shrink-0 w-full h-screen snap-start flex items-center justify-center overflow-hidden min-h-[560px] bg-[#0B0806] text-[#F5EDE0]"
+          className="relative flex-shrink-0 w-full min-h-screen lg:h-screen snap-start flex items-center justify-center overflow-hidden bg-[#0B0806] text-[#F5EDE0]"
           style={{ contentVisibility: 'auto', contain: 'layout style paint' }}
         >
           <style>{`
@@ -895,9 +895,9 @@ useEffect(() => {
           <div className="absolute inset-0 pointer-events-none kotw-parchment-glow opacity-80 z-0"></div>
           <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#d4a359_0.75px,transparent_0.75px)] [background-size:24px_24px] z-0"></div>
  
-          <main className="w-full max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center relative z-10 px-6 sm:px-10 lg:px-14">
+          <main className="w-full max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center relative z-10 px-5 sm:px-10 lg:px-14 py-12 sm:py-14 lg:py-0">
             {/* LEFT COLUMN: EDITORIAL NARRATIVE & SCHOLARLY CITATIONS */}
-            <div className="lg:col-span-5 flex flex-col justify-center space-y-7 pr-0 lg:pr-3">
+            <div className="lg:col-span-5 flex flex-col justify-center space-y-6 sm:space-y-7 pr-0 lg:pr-3">
               {/* Wax Seal & Archival Epigraph Badge */}
               {/* <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-[#18120D]/90 border border-[#4F3D30]/80 shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_4px_12px_rgba(0,0,0,0.5)] w-fit">
                 <span className="relative flex h-3 w-3 items-center justify-center">
@@ -912,9 +912,9 @@ useEffect(() => {
               </div> */}
  
               {/* Main Headline */}
-              <div className="space-y-3.5">
-                <h1 className="text-4xl sm:text-5xl lg:text-[62px] leading-[1.04] font-serif font-light tracking-tight text-[#FAF6EF]">
-                  <span className="block text-[13px] sm:text-[14px] font-cinzel font-medium tracking-[0.28em] text-[#D4A359]/90 uppercase mb-2">
+              <div className="space-y-3 sm:space-y-3.5">
+                <h1 className="text-3xl sm:text-5xl lg:text-[62px] leading-[1.1] sm:leading-[1.04] font-serif font-light tracking-tight text-[#FAF6EF]">
+                  <span className="block text-[12px] sm:text-[14px] font-cinzel font-medium tracking-[0.28em] text-[#D4A359]/90 uppercase mb-2">
                     Weekly Literary Laurel
                   </span>
                   <span className="block font-serif text-[#F5EDE0] tracking-normal">Honoring the</span>
@@ -932,7 +932,7 @@ useEffect(() => {
                     thousands<span className="text-[#D4A359] font-serif">.</span>
                   </span>
                 </h1>
-                <p className="text-[16px] sm:text-[17px] text-[#C2B29F] font-body leading-relaxed pt-1 font-normal max-w-lg">
+                <p className="text-sm sm:text-[17px] text-[#C2B29F] font-body leading-relaxed pt-1 font-normal max-w-lg">
                   Every week, the community gathers to listen, cherish, and resonate with verses across the guild.
                   The kalam that touches the most souls—championed by listeners, repeated plays, and heartfelt
                   community likes—takes center stage as{' '}
@@ -941,7 +941,7 @@ useEffect(() => {
               </div>
  
               {/* Archival Criterion Tablets */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 pt-1">
                 <div className="p-4 rounded-xl bg-[#140E0A]/95 border border-[#3D2F24] hover:border-[#754F1F] transition-colors relative group shadow-lg shadow-black/40">
                   <div className="flex items-center gap-2.5 text-[#D4A359] text-[11px] font-cinzel tracking-[0.14em] font-semibold">
                     <svg className="w-4 h-4 text-[#D4A359]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -985,14 +985,14 @@ useEffect(() => {
               </div>
  
               {/* CTA Row */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <button className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#D4A359] via-[#E2B774] to-[#C89547] hover:from-[#E2B774] hover:to-[#D4A359] active:scale-[0.98] text-[#140E0A] font-cinzel font-bold text-xs tracking-wider transition-all duration-200 shadow-[0_8px_20px_rgba(200,149,71,0.25),inset_0_1px_1px_rgba(255,255,255,0.4)] flex items-center gap-2.5 group border border-[#FAF3DF]/40">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 pt-2">
+                <button className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#D4A359] via-[#E2B774] to-[#C89547] hover:from-[#E2B774] hover:to-[#D4A359] active:scale-[0.98] text-[#140E0A] font-cinzel font-bold text-xs tracking-wider transition-all duration-200 shadow-[0_8px_20px_rgba(200,149,71,0.25),inset_0_1px_1px_rgba(255,255,255,0.4)] flex items-center justify-center gap-2.5 group border border-[#FAF3DF]/40">
                   <span>Read &amp; Listen to Laureate</span>
                   <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
                   </svg>
                 </button>
-                <button className="px-5 py-3.5 rounded-xl bg-[#1A120D] hover:bg-[#231912] border border-[#4F3D30] hover:border-[#9B6E32] text-[#D9CEBE] hover:text-[#FAF6EF] font-body text-sm font-medium transition-all duration-200 flex items-center gap-2.5 shadow-sm">
+                <button className="px-5 py-3.5 rounded-xl bg-[#1A120D] hover:bg-[#231912] border border-[#4F3D30] hover:border-[#9B6E32] text-[#D9CEBE] hover:text-[#FAF6EF] font-body text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2.5 shadow-sm">
                   <span>Past Laureates Archive</span>
                   <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#2A2017] text-[#D4A359] border border-[#3D2F24]">47</span>
                 </button>
@@ -1000,7 +1000,7 @@ useEffect(() => {
  
               {/* Calligraphic Seal Footnote / Scholar Council */}
               <div className="flex items-center gap-3.5 pt-3 border-t border-[#2E2219]">
-                <div className="flex -space-x-2">
+                <div className="flex -space-x-2 shrink-0">
                   <div className="w-7 h-7 rounded-full bg-[#1F1610] border border-[#754F1F] flex items-center justify-center text-[12px] font-serif text-[#D4A359] shadow-inner">غ</div>
                   <div className="w-7 h-7 rounded-full bg-[#18110C] border border-[#754F1F] flex items-center justify-center text-[12px] font-serif text-[#D4A359] shadow-inner">ف</div>
                   <div className="w-7 h-7 rounded-full bg-[#120D09] border border-[#754F1F] flex items-center justify-center text-[12px] font-serif text-[#D4A359] shadow-inner">ق</div>
@@ -1018,14 +1018,14 @@ useEffect(() => {
                 <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[420px] h-36 bg-[#D4A359]/15 blur-3xl pointer-events-none rounded-full"></div>
  
                 {/* Archival Portfolio Header */}
-                <div className="px-6 py-3.5 border-b border-[#35271C] bg-[#120D09]/95 flex items-center justify-between relative">
+                <div className="px-4 sm:px-6 py-3 sm:py-3.5 border-b border-[#35271C] bg-[#120D09]/95 flex flex-wrap items-center justify-between gap-2 relative">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center text-[#D4A359]/70 select-none text-xs font-serif tracking-widest">
+                    <div className="hidden sm:flex items-center text-[#D4A359]/70 select-none text-xs font-serif tracking-widest">
                       <span>✦</span>
                       <span className="mx-1 text-[#4F3D30]">——</span>
                       <span>✦</span>
                     </div>
-                    <span className="text-xs font-cinzel text-[#D9C5A8] tracking-[0.2em] uppercase font-medium">
+                    <span className="text-[11px] sm:text-xs font-cinzel text-[#D9C5A8] tracking-[0.2em] uppercase font-medium">
                       KALAM OF THE WEEK // VOL. 48
                     </span>
                   </div>
@@ -1034,15 +1034,15 @@ useEffect(() => {
                       <span className="text-[#D4A359]">★</span>
                       LAUREATE CHOICE
                     </span>
-                    <span className="text-[11px] font-mono text-[#8C7A68]">WEEK 36 • 2026</span>
+                    <span className="hidden sm:inline text-[11px] font-mono text-[#8C7A68]">WEEK 36 • 2026</span>
                   </div>
                 </div>
  
                 {/* Main Featured Work Body */}
-                <div className="p-6 md:p-7 space-y-6">
+                <div className="p-4 sm:p-6 md:p-7 space-y-5 sm:space-y-6">
                   <div className="flex flex-col items-center justify-center relative">
                     {/* Volumetric Overhead Spotlight & Atmospheric Ray System */}
-                    <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-full max-w-[560px] h-[440px] pointer-events-none z-10 overflow-visible">
+                    <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-full max-w-[560px] h-[300px] sm:h-[440px] pointer-events-none z-10 overflow-visible">
                       <div
                         className="kotw-animate-spotlight-beam absolute -top-4 left-1/2 w-[340px] sm:w-[420px] h-[360px] opacity-80 mix-blend-screen"
                         style={{
@@ -1082,23 +1082,23 @@ useEffect(() => {
                     </div>
  
                     {/* Ethereal Multi-Tier Golden Halo Aura Behind Manuscript Vitrine */}
-                    <div className="absolute top-[58%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-88 sm:w-[440px] h-88 sm:h-[440px] pointer-events-none -z-10">
+                    <div className="absolute top-[58%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 sm:w-88 lg:w-[440px] h-72 sm:h-88 lg:h-[440px] pointer-events-none -z-10">
                       <div className="kotw-animate-aura-halo absolute inset-0 rounded-full bg-[radial-gradient(circle,#D4A359_0%,rgba(200,149,71,0.28)_42%,rgba(77,51,19,0.08)_65%,transparent_75%)] blur-3xl opacity-75"></div>
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-80 h-64 sm:h-80 rounded-full bg-[radial-gradient(circle,#FAF3DF_0%,#E5C07B_30%,#D4A359_55%,transparent_75%)] blur-2xl opacity-45 mix-blend-screen"></div>
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 sm:w-64 lg:w-80 h-56 sm:h-64 lg:h-80 rounded-full bg-[radial-gradient(circle,#FAF3DF_0%,#E5C07B_30%,#D4A359_55%,transparent_75%)] blur-2xl opacity-45 mix-blend-screen"></div>
                       <div className="absolute top-[18%] left-1/2 -translate-x-1/2 w-56 h-12 rounded-full bg-[#FAF3DF]/35 blur-lg mix-blend-overlay"></div>
                     </div>
  
                     {/* Laureate Header & Metadata */}
-                    <div className="w-full flex flex-wrap items-center justify-between gap-3 mb-5 border-b border-[#2D2015] pb-3.5">
+                    <div className="w-full flex flex-wrap items-center justify-between gap-3 mb-4 sm:mb-5 border-b border-[#2D2015] pb-3 sm:pb-3.5">
                       <div>
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
                           <span className="px-2.5 py-0.5 rounded text-[10px] font-cinzel tracking-wider uppercase bg-[#231A12] text-[#D4A359] border border-[#4F3D30]">
                             Nazm • Shikwa-o-Shikayat
                           </span>
                           <span className="text-[11px] font-mono text-[#8C7A68]">Meter: Bahr-e-Hazaj</span>
                         </div>
-                        <div className="flex items-baseline gap-3">
-                          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#FAF6EF] tracking-tight">Shikayat</h2>
+                        <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+                          <h2 className="text-xl sm:text-3xl font-serif font-bold text-[#FAF6EF] tracking-tight">Shikayat</h2>
                           <span className="text-sm font-serif italic text-[#D4A359]">by Arif Karimi</span>
                           <span className="text-[11px] text-[#7A6958] font-mono hidden sm:inline">• Modern Classical</span>
                         </div>
@@ -1117,7 +1117,7 @@ useEffect(() => {
                     </div>
  
                     {/* Grand Spotlight Manuscript Centerpiece Display */}
-                    <div className="relative group max-w-[340px] sm:max-w-[370px] w-full my-1">
+                    <div className="relative group max-w-[260px] sm:max-w-[340px] lg:max-w-[370px] w-full my-1">
                       <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-[#D4A359] z-20 pointer-events-none"></div>
                       <div className="absolute -top-2 -right-2 w-4 h-4 border-t-2 border-r-2 border-[#D4A359] z-20 pointer-events-none"></div>
                       <div className="absolute -bottom-2 -left-2 w-4 h-4 border-b-2 border-l-2 border-[#D4A359] z-20 pointer-events-none"></div>
@@ -1139,7 +1139,7 @@ useEffect(() => {
                     </div>
  
                     {/* Prominent Community Call to Action strip */}
-                    <div className="w-full flex items-center justify-between pt-4 mt-2 border-t border-[#2D2015] text-[10.5px] font-mono tracking-wider text-[#A89480]">
+                    <div className="w-full flex flex-wrap items-center justify-between gap-2 pt-4 mt-2 border-t border-[#2D2015] text-[10px] sm:text-[10.5px] font-mono tracking-wider text-[#A89480]">
                       <div className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359] shadow-[0_0_4px_#D4A359]"></span>
                         <span className="font-cinzel text-[#D9C5A8] tracking-[0.2em] uppercase font-medium">
@@ -1160,7 +1160,7 @@ useEffect(() => {
  
         {/* ── Slide 3: Archival Press & Studio (Poetry & Spoken Sound Archives) ── */}
         <div
-          className="relative flex-shrink-0 w-full h-screen snap-start flex items-center justify-center overflow-hidden min-h-[560px] bg-[#0b0d13] text-[#ded7c8] font-archival-sans"
+          className="relative flex-shrink-0 w-full min-h-screen lg:h-screen snap-start flex items-center justify-center overflow-hidden bg-[#0b0d13] text-[#ded7c8] font-archival-sans"
           style={{ contentVisibility: 'auto', contain: 'layout style paint' }}
         >
           {/* Scoped styles for this slide only — class names are prefixed with "archival-" so
@@ -1273,9 +1273,9 @@ useEffect(() => {
  
           {/* Main content */}
           <main className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-12">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
               {/* Left Column: Editorial Typography */}
-              <div className="lg:col-span-5 text-left space-y-7">
+              <div className="lg:col-span-5 text-left space-y-6 sm:space-y-7">
                 {/* <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-sm bg-[#161a22] border border-white/10 text-[11px] tracking-[0.16em] uppercase font-mono text-[#eed188]">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#dfb758]"></span>
                   <span>Archival Press &amp; Studio</span>
@@ -1283,24 +1283,24 @@ useEffect(() => {
                   <span className="text-[#aba69a] font-archival-sans lowercase font-normal tracking-normal text-xs">series no. 04</span>
                 </div> */}
  
-                <div className="space-y-4">
-                  <h1 className="font-archival-serif text-4xl sm:text-5xl lg:text-6xl text-[#fbfaf8] leading-[1.08] tracking-tight font-normal">
+                <div className="space-y-3 sm:space-y-4">
+                  <h1 className="font-archival-serif text-3xl sm:text-5xl lg:text-6xl text-[#fbfaf8] leading-[1.12] sm:leading-[1.08] tracking-tight font-normal">
                     Turn your verses into <br />
                     <span className="italic font-normal text-[#dfb758] pr-1">living records.</span>
                   </h1>
-                  <p className="text-[#a6a094] text-base sm:text-lg font-light leading-relaxed max-w-md pt-1">
+                  <p className="text-[#a6a094] text-sm sm:text-lg font-light leading-relaxed max-w-md pt-1">
                     Compose physical-grade sleeve artwork, master spoken ghazals and nazms with synchronized acoustic backing, and press bespoke anthologies ready for the world.
                   </p>
                 </div>
  
-                <div className="pt-2 flex flex-wrap items-center gap-3.5">
-                  <button className="px-6 py-3.5 rounded-sm bg-[#ece7de] hover:bg-white text-[#0f1117] font-medium text-xs tracking-wider uppercase transition-all duration-200 flex items-center gap-2.5 shadow-lg shadow-black/40 cursor-pointer">
+                <div className="pt-2 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-3.5">
+                  <button className="px-6 py-3.5 rounded-sm bg-[#ece7de] hover:bg-white text-[#0f1117] font-medium text-xs tracking-wider uppercase transition-all duration-200 flex items-center justify-center gap-2.5 shadow-lg shadow-black/40 cursor-pointer">
                     <span className="font-semibold">Create New Anthology</span>
                     <svg className="w-3.5 h-3.5 text-[#0f1117]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                     </svg>
                   </button>
-                  <button className="px-5 py-3.5 rounded-sm bg-transparent hover:bg-white/[0.04] border border-white/20 hover:border-white/40 text-[#ded7c8] text-xs tracking-wider uppercase font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer">
+                  <button className="px-5 py-3.5 rounded-sm bg-transparent hover:bg-white/[0.04] border border-white/20 hover:border-white/40 text-[#ded7c8] text-xs tracking-wider uppercase font-medium transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
                     <span>Browse Press Catalog</span>
                   </button>
                 </div>
@@ -1319,14 +1319,14 @@ useEffect(() => {
  
               {/* Right Column: Curated Physical Vinyl & Anthology Rack */}
               <div className="lg:col-span-7">
-                <div className="rounded-lg bg-[#12151d]/90 border border-[#222734] p-5 sm:p-7 shadow-2xl backdrop-blur-md archival-animate-showcase-float">
+                <div className="rounded-lg bg-[#12151d]/90 border border-[#222734] p-4 sm:p-7 shadow-2xl backdrop-blur-md archival-animate-showcase-float">
                   {/* Curator Header Bar */}
-                  <div className="flex items-center justify-between pb-4 mb-5 border-b border-white/[0.07] text-xs">
-                    <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-4 mb-5 border-b border-white/[0.07] text-xs">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <span className="w-2 h-2 rounded-full bg-[#dfb758] archival-pulse-amber"></span>
                       <span className="font-archival-serif text-sm tracking-wider text-[#e8e4dc] font-medium">Selected Physical Editions</span>
-                      <span className="text-white/20">/</span>
-                      <span className="text-[11px] text-[#8c887b] font-mono tracking-tight">ALF-ARCHIVE-AUTUMN</span>
+                      <span className="hidden sm:inline text-white/20">/</span>
+                      <span className="hidden sm:inline text-[11px] text-[#8c887b] font-mono tracking-tight">ALF-ARCHIVE-AUTUMN</span>
                     </div>
                     <div className="flex items-center gap-2 font-mono text-[11px] text-[#aba69a]">
                       <span>33⅓ RPM STEREO</span>
@@ -1334,7 +1334,7 @@ useEffect(() => {
                   </div>
  
                   {/* Physical Vinyl Jacket Rack (3x2 Grid) */}
-                  <div className="grid grid-cols-3 gap-3.5 sm:gap-4 mb-5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-5">
                     {/* Sleeve 1: Ishq-e-Khamoosh */}
                     <div className="archival-vinyl-sleeve archival-animate-float-1 group rounded-sm overflow-hidden aspect-square bg-[#161a22] cursor-pointer border border-white/10 relative">
                       <img alt="Ishq-e-Khamoosh" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://picsum.photos/seed/ishq-e-khamoosh/600/600" loading="lazy" />
@@ -1435,7 +1435,7 @@ useEffect(() => {
                   </div>
  
                   {/* Bespoke Master Audio Playback Dock */}
-                  <div className="rounded-sm bg-[#0c0e14] border border-white/[0.08] p-3 flex items-center justify-between gap-4">
+                  <div className="rounded-sm bg-[#0c0e14] border border-white/[0.08] p-3 flex items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="relative w-10 h-10 rounded-sm overflow-hidden flex-shrink-0 border border-white/15">
                         <img alt="Now Playing Album" className="w-full h-full object-cover" src="https://picsum.photos/seed/ishq-e-khamoosh/600/600" loading="lazy" />
@@ -1443,7 +1443,7 @@ useEffect(() => {
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
                           <h4 className="text-xs font-archival-serif font-semibold text-[#f5f2eb] truncate">Ishq-e-Khamoosh (عشقِ خاموش)</h4>
-                          <span className="text-[9px] font-mono uppercase bg-[#1f2533] text-[#eed188] px-1.5 py-0.2 rounded-xs">FLAC MASTER</span>
+                          <span className="hidden sm:inline text-[9px] font-mono uppercase bg-[#1f2533] text-[#eed188] px-1.5 py-0.2 rounded-xs">FLAC MASTER</span>
                         </div>
                         <p className="text-[11px] text-[#8c887b] truncate font-light mt-0.5">Track 04: Raqs-e-Khayal — Spoken recitative with acoustic Tanpura</p>
                       </div>
