@@ -1,13 +1,30 @@
-FROM node:22-alpine
+# build stage
+
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package*.json ./
 
 RUN npm install
 
 COPY . .
 
-EXPOSE 4000
+RUN npm run build
 
-CMD [ "npm", "run", "preview"]
+EXPOSE 5173
+
+CMD [ "npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+# Production Stage (Aquiring dist folder)
+# FROM node:24-alpine
+
+# WORKDIR /app
+
+# RUN npm i -g serve
+# ENV PATH="/usr/local/bin:$PATH"
+# COPY --from=build /app/dist ./dist
+
+# EXPOSE 3000
+
+# CMD [ "serve", "-s", "dist", "-l", "3000"]
