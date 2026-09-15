@@ -15,6 +15,11 @@ import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig({
   plugins: [react()],
+
+  server:{
+    host: '0.0.0.0',
+    allowedHosts: ['alfaz.live'],
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
