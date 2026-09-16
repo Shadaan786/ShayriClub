@@ -24,7 +24,7 @@ import axios from "axios";
 
 // Automatically detect environment
 const API_URL = import.meta.env.MODE === 'development' 
-  ? "http://localhost:9000"  // Local development
+  ? "http://16.192.173.158:4000"  // Local development
   : "http://localhost:4000"; // Production
 
 console.log('Current mode:', import.meta.env.MODE);
