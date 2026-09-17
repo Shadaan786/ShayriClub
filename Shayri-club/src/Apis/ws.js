@@ -1,4 +1,4 @@
-const env = import.meta.env.MODE === 'development'? 'ws://localhost:9000':'wss://shayribackend-ff04.onrender.com'
+const env = import.meta.env.MODE === 'development'? 'http://16.192.173.158:4000':'wss://shayribackend-ff04.onrender.com'
 
 
 console.log('current mode', import.meta.env.MODE);
