@@ -2194,7 +2194,7 @@ export const Album = () => {
     console.log("seeeee user Idddd", userId)
 
     axiosInstance
-      .post('/upload/albumBgCover', formData, {
+      .post('/api/upload/albumBgCover', formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true
       })

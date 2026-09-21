@@ -737,7 +737,7 @@ const UserProfile=()=>{
 
 
       axiosInstance
-      .post("/upload", formData,{
+      .post("/api/upload", formData,{
 
         headers:{"Content-Type":"multipart/form-data" },
         withCredentials: true

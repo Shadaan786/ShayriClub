@@ -132,7 +132,7 @@ const Login = () => {
     setNotice("");
     try {
       const response = await axiosInstance.post(
-        "/login",
+        "/api/login",
         { email: id, password },
         { withCredentials: true }
       );
