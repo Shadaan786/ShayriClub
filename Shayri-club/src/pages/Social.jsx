@@ -1540,6 +1540,23 @@ export const Social = () => {
   const {isKalamCommentModalOpen, setIsKalamCommentModalOpen, kalamComment} = useContext(ModalContext);
   const {isPlayerModalOpen, setIsPlayerModalOpen} = useContext(ModalContext);
   const {kalamTrack, setKalamTrack} = useContext(ModalContext);
+
+  // Add once near the top of the file (or in a shared hooks file)
+const useIsMobile = (breakpoint = 640) => {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < breakpoint : false
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < breakpoint);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [breakpoint]);
+
+  return isMobile;
+};
+
+const isMobile = useIsMobile();
   const handle = () => {
     axiosInstance
       .get(`/api/social?page=1&limit=${limit}&searchType=${searchType.current}`, { withCredentials: true })
@@ -2275,14 +2292,14 @@ export const Social = () => {
 
         </MyVerticallyCenteredModal>
 
-        <MyVerticallyCenteredModal isOpen={isPlayerModalOpen} width={"1/3"} height={"1/3"} onClose={()=>setIsPlayerModalOpen(false)}> 
-
-        {console.log("See track", kalamTrack)}
-
-        <KalamPlayer tracks={kalamTrack} />
-
-
-        </MyVerticallyCenteredModal>
+       <MyVerticallyCenteredModal
+  isOpen={isPlayerModalOpen}
+  width={isMobile ? "full" : "1/3"}
+  height={isMobile ? "full" : "1/3"}
+  onClose={() => setIsPlayerModalOpen(false)}
+>
+  <KalamPlayer tracks={kalamTrack} />
+</MyVerticallyCenteredModal>
       </div>
 
       {/* ── Floating Publish button (mobile only) ── */}

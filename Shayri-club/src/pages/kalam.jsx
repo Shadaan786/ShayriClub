@@ -1491,6 +1491,7 @@ fetchUserNotifications();
           background: rgba(83,74,183,0.18); border: 0.5px solid rgba(210,170,90,0.3);
           display: flex; align-items: center; justify-content: center;
           font-size: 11px; font-weight: 500; color: rgba(210,170,90,0.8); cursor: pointer;
+          overflow: hidden;
         }
         .k-hamburger {
           display: none; flex-direction: column; justify-content: center;
@@ -1503,10 +1504,13 @@ fetchUserNotifications();
           background: rgba(10,10,14,0.97); backdrop-filter: blur(20px);
           border-bottom: 0.5px solid rgba(210,170,90,0.1); padding: 0.5rem 0;
           display: flex; flex-direction: column;
+          max-height: calc(100vh - 120px);
+          overflow-y: auto;
         }
         .k-mobile-menu .k-nl {
           padding: 13px 1.25rem; font-size: 12px; border-radius: 0;
           border-bottom: 0.5px solid var(--border-sm); text-align: left;
+          text-decoration: none; color: var(--text-sec); display: block;
         }
         .k-mobile-menu .k-nl:last-child { border-bottom: none; }
 
@@ -1989,6 +1993,7 @@ fetchUserNotifications();
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          min-width: 0;
         }
         .font-option-name {
           font-family: 'DM Mono', monospace;
@@ -2052,17 +2057,21 @@ fetchUserNotifications();
         }
 
         /* ── Responsive ────────────────────────────── */
+        /* Tablet / small-laptop tier: keep two columns but tighten spacing */
+        @media (max-width: 1024px) and (min-width: 901px) {
+          .k-split { padding: 0 1rem; }
+          .k-form-pane { padding-left: 1rem; }
+        }
+
+        /* Mobile tier: stack preview above form (THE key fix — was
+           incorrectly staying 2-column before) */
         @media (max-width: 900px) {
           .k-split {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
-            height: calc(100vh - 120px - 130px);
-            min-height: 600px;
-            padding: 0 max(1rem, env(safe-area-inset-left));
-            overflow: hidden;
+            grid-template-columns: 1fr;
+            height: auto;
+            min-height: 0;
+            overflow: visible;
+            padding: 0 1rem;
           }
           .k-preview-pane {
             position: relative; top: auto;
@@ -2082,10 +2091,16 @@ fetchUserNotifications();
           .k-field-grid { grid-template-columns: 1fr; gap: 10px; }
           .k-hamburger { display: flex; }
           .k-nav-links { display: none; }
+          .k-global-links { display: none; }
         }
 
         @media (max-width: 480px) {
-          .k-nav { height: 50px; }
+          .k-global-nav { padding: 0 1rem; column-gap: 10px; height: 60px; }
+          .k-global-logo-img { height: 26px; }
+          .k-global-wordmark { font-size: 17px; }
+          .k-global-bell, .k-avatar { width: 30px; height: 30px; }
+          .k-nav { top: 60px; margin-top: 60px; height: 48px; }
+          .k-mobile-menu { top: 108px; max-height: calc(100vh - 108px); }
           .k-hero { padding: 1.5rem 1rem 1.25rem; }
           .k-hero-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
           .k-stats { justify-content: flex-start; }
@@ -2100,6 +2115,10 @@ fetchUserNotifications();
           .k-action-left { width: 100%; }
           .k-action-left .k-btn-ghost { flex: 1; justify-content: center; }
           .k-btn-primary { width: 100%; justify-content: center; padding: 12px 14px; }
+          .bp-swatch { width: 34px; height: 34px; }
+          .font-picker-scroll { max-height: 150px; }
+          .k-mic span { display: none; }
+          .k-toolbar { padding: 6px 8px; }
         }
 
         .k-body-wrap {
@@ -2165,19 +2184,24 @@ fetchUserNotifications();
             </div>
           </nav>
 
-          {/* Mobile menu */}
+          {/* Mobile menu — includes Compose/Collection AND the global nav
+              links (Community/Browse/Library), which are hidden above 900px
+              from the top navbar and would otherwise be unreachable on mobile */}
           <AnimatePresence>
             {mobileMenuOpen && (
               <motion.div className="k-mobile-menu"
                 initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.14 }}
               >
-                {["Compose","Collection","Explore","Analytics"].map(n => (
+                {["Compose","Collection"].map(n => (
                   <button key={n} className={`k-nl${activeNav === n ? " active" : ""}`}
-                    onClick={() => { setActiveNav(n); setMobileMenuOpen(false); }}>
+                    onClick={() => { setActiveNav(n); setMobileMenuOpen(false); if(n==='Collection') Navigate('/urKalam'); }}>
                     {n}
                   </button>
                 ))}
+                <a href="/spaces" className="k-nl" onClick={() => setMobileMenuOpen(false)}>Community</a>
+                <a href="/Social" className="k-nl" onClick={() => setMobileMenuOpen(false)}>Browse</a>
+                <a href="/albumsLive" className="k-nl" onClick={() => setMobileMenuOpen(false)}>Library</a>
               </motion.div>
             )}
           </AnimatePresence>
@@ -2654,96 +2678,102 @@ fetchUserNotifications();
                 </Link>
               </div>
             </div>
+
+            {/* ── Notifications modal (fixed: was calling a non-existent
+                 setNotificationOpened; now correctly toggles
+                 isNotificationModalOpen via setIsNotificationmodalOpened) ── */}
             <MyVerticallyCenteredModal isOpen={isNotificationModalOpen} onClose={() => setIsNotificationmodalOpened(false)}>
-              <div
-                className="rounded-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden border border-[#f59e0b]/15 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-                style={{ background: "rgba(29,13,33,0.45)", backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)" }}
-              >
-            
-                {/* Header */}
-                <div className="px-6 py-5 border-b border-[#f59e0b]/15 relative">
-                  <div className="flex justify-between items-center mb-1">
-                    <h2 className="flex items-center gap-3 text-[#f4daf7] text-xl font-semibold tracking-wide">
-                      Notifications
-                      {/* {notifications.length > 0 && (
-                        <span className="bg-[#f59e0b]/10 text-[#ffc174] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#f59e0b]/20">
-                          {notifications.length} NEW
-                        </span>
-                      )} */}
-                    </h2>
-                    <button
-                      onClick={() => setNotificationOpened(false)}
-                      className="w-8 h-8 flex items-center justify-center rounded-full text-[#d8c3ad] hover:text-[#ffc174] transition-colors active:scale-90"
-                      aria-label="Close notifications"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                  <div className="w-12 h-1 bg-[#ffc174] rounded-full mt-2" />
-                </div>
-                
-            
-                {/* List */}
-                <div className="flex-1 overflow-y-auto p-2 space-y-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#f59e0b]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
-                  {notifications.length > 0 ? (
-                    notifications.map((item, i) => (
-                      
-                      <button
-                        key={item.id ?? i}
-                        onClick={() => {Navigate(item.toNavigate); handleNotificationSeen(item._id)}}
-                        className="w-full text-left flex gap-4 p-4 rounded-lg border border-transparent transition-all duration-300 hover:bg-[#f59e0b]/5 hover:border-[#f59e0b]/40 hover:-translate-y-0.5"
-                      >
-                              {console.log("see status", item.isSeen)}
-            
-                        {/* Status dot*/}
-                       {!item.isSeen && <div className="relative flex-shrink-0 mt-1">
-                          <span
-                            className="block w-2.5 h-2.5 rounded-full"
-                            style={{
-                              background: item.read ? "transparent" : "#f59e0b",
-                              boxShadow: item.read ? "none" : "0 0 8px #f59e0b",
-                            }}
-                          />
-                        </div>}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-start mb-1 gap-2">
-                            <h3 className={`truncate text-sm ${item.read ? "font-medium text-[#f4daf7]/70" : "font-bold text-[#f4daf7]"}`}>
-                              {item.notificationTitle}
-                            </h3>
-                            <span className="text-[10px] tracking-wider text-[#d8c3ad] opacity-60 whitespace-nowrap font-mono">
-                              {item.createdAt ?? "Just now"}
-                            </span>
-                          </div>
-                          <p className="text-sm text-[#d8c3ad] leading-relaxed truncate">
-                            {item.notificationBody}
-                          </p>
-                        </div>
-                      </button>
-                    ))
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-center px-8">
-                      <div className="w-20 h-20 rounded-full bg-[#f59e0b]/5 border border-[#f59e0b]/10 flex items-center justify-center mb-6">
-                        <span className="text-[#f59e0b] text-3xl opacity-40">🔔</span>
-                      </div>
-                      <h3 className="text-[#f4daf7] font-semibold text-lg mb-2">Your notifications will appear here</h3>
-                      <p className="text-[#d8c3ad] max-w-xs mx-auto text-sm">
-                        We'll let you know when something important happens in your elite ecosystem.
-                      </p>
-                    </div>
-                  )}
-                </div>
-            
-                {/* Footer */}
-                <div className="px-6 py-4 border-t border-[#f59e0b]/15 flex justify-between items-center" style={{ background: "rgba(23,8,28,0.5)" }}>
-                  {/* <button className="text-[#d8c3ad] hover:text-[#ffc174] transition-colors text-[10px] font-medium tracking-[0.15em] font-mono">
-                    MARK ALL AS READ
-                  </button> */}
-                  <button onClick={()=>setIsNotificationmodalOpened(false)} className="text-[#d8c3ad] text-right hover:text-[#ffc174] transition-colors text-[10px] font-medium tracking-[0.15em] font-mono flex items-center gap-1">
-                    close <span className="text-sm">›</span>
-                  </button>
-                </div>
+  <div
+    className="rounded-none sm:rounded-xl w-full h-full sm:h-auto sm:max-w-md sm:max-h-[80vh] flex flex-col overflow-hidden border border-[#f59e0b]/15 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+    style={{
+      background: "rgba(29,13,33,0.45)",
+      backdropFilter: "blur(32px)",
+      WebkitBackdropFilter: "blur(32px)",
+      paddingTop: "env(safe-area-inset-top, 0px)",
+      paddingBottom: "env(safe-area-inset-bottom, 0px)",
+    }}
+  >
+
+    {/* Header */}
+    <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-[#f59e0b]/15 relative flex-shrink-0">
+      <div className="flex justify-between items-center mb-1">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-[#f4daf7] text-lg sm:text-xl font-semibold tracking-wide">
+          Notifications
+        </h2>
+        <button
+          onClick={() => setIsNotificationmodalOpened(false)}
+          className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-[#d8c3ad] hover:text-[#ffc174] transition-colors active:scale-90"
+          aria-label="Close notifications"
+        >
+          ✕
+        </button>
+      </div>
+      <div className="w-12 h-1 bg-[#ffc174] rounded-full mt-2" />
+    </div>
+
+    {/* List */}
+    <div className="flex-1 overflow-y-auto overscroll-contain p-2 space-y-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-[#f59e0b]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+      {notifications.length > 0 ? (
+        notifications.map((item, i) => (
+          <button
+            key={item.id ?? i}
+            onClick={() => { Navigate(item.toNavigate); handleNotificationSeen(item._id); }}
+            className="w-full text-left flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border border-transparent transition-all duration-300 active:bg-[#f59e0b]/10 hover:bg-[#f59e0b]/5 hover:border-[#f59e0b]/40 sm:hover:-translate-y-0.5"
+          >
+            {/* Status dot */}
+            {!item.isSeen && (
+              <div className="relative flex-shrink-0 mt-1.5 sm:mt-1">
+                <span
+                  className="block w-2.5 h-2.5 rounded-full"
+                  style={{
+                    background: item.read ? "transparent" : "#f59e0b",
+                    boxShadow: item.read ? "none" : "0 0 8px #f59e0b",
+                  }}
+                />
               </div>
-            </MyVerticallyCenteredModal>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-1 gap-0.5 sm:gap-2">
+                <h3 className={`text-sm leading-snug break-words ${item.read ? "font-medium text-[#f4daf7]/70" : "font-bold text-[#f4daf7]"}`}>
+                  {item.notificationTitle}
+                </h3>
+                <span className="text-[10px] tracking-wider text-[#d8c3ad] opacity-60 whitespace-nowrap font-mono">
+                  {item.createdAt ?? "Just now"}
+                </span>
+              </div>
+              <p className="text-sm text-[#d8c3ad] leading-relaxed line-clamp-2 sm:truncate">
+                {item.notificationBody}
+              </p>
+            </div>
+          </button>
+        ))
+      ) : (
+        <div className="flex flex-col items-center justify-center py-12 sm:py-16 text-center px-6 sm:px-8">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#f59e0b]/5 border border-[#f59e0b]/10 flex items-center justify-center mb-5 sm:mb-6">
+            <span className="text-[#f59e0b] text-2xl sm:text-3xl opacity-40">🔔</span>
+          </div>
+          <h3 className="text-[#f4daf7] font-semibold text-base sm:text-lg mb-2">Your notifications will appear here</h3>
+          <p className="text-[#d8c3ad] max-w-xs mx-auto text-sm">
+            We'll let you know when something important happens in your elite ecosystem.
+          </p>
+        </div>
+      )}
+    </div>
+
+    {/* Footer */}
+    <div
+      className="px-4 sm:px-6 py-3 sm:py-4 border-t border-[#f59e0b]/15 flex justify-between items-center flex-shrink-0"
+      style={{ background: "rgba(23,8,28,0.5)" }}
+    >
+      <button
+        onClick={() => setIsNotificationmodalOpened(false)}
+        className="min-h-[44px] px-2 text-[#d8c3ad] text-right hover:text-[#ffc174] transition-colors text-[10px] font-medium tracking-[0.15em] font-mono flex items-center gap-1 ml-auto"
+      >
+        close <span className="text-sm">›</span>
+      </button>
+    </div>
+  </div>
+</MyVerticallyCenteredModal>
 
           </div>
           <Footer/>

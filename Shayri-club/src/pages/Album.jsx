@@ -2426,7 +2426,7 @@ export const Album = () => {
 
         {/* Actions */}
         
-        <div className="flex flex-col gap-3 mb-6">
+        {isSelf && <div className="flex flex-col gap-3 mb-6">
           <p className="text-sm text-white/40">Configure how your seekers find this collection.</p>
           <button
             onClick={handlePublish}
@@ -2453,10 +2453,10 @@ export const Album = () => {
               Upload cover →
             </button>
           )}
-        </div>
+        </div>}
 
         {/* Settings list */}
-        <div className="border-t border-amber-400/10 pt-4 space-y-1">
+        {isSelf && <div className="border-t border-amber-400/10 pt-4 space-y-1">
           <button
             onClick={() => setModalShow(true)}
             className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white/[0.04] transition-colors"
@@ -2483,7 +2483,7 @@ export const Album = () => {
               <span className="text-sm text-red-400/60">Archive Album</span>
             </div>
           </button>
-        </div>
+        </div>}
       </div>
 
       {/* Other libraries */}
@@ -2545,7 +2545,7 @@ export const Album = () => {
             className="font-semibold text-xl tracking-tight bg-clip-text text-transparent"
             style={{ backgroundImage: "linear-gradient(to right, #f9bd22, #ffe1a7, #f9bd22)" }}
           >
-            SufiVerse
+            Album
           </span>
         </div>
 
@@ -2736,20 +2736,20 @@ export const Album = () => {
                   <h2 className="text-xl font-semibold text-white/90">Collection</h2>
                   <p className="text-sm text-white/40">The soul&apos;s journey through rhythmic silence</p>
                 </div>
-                <div className="hidden sm:flex gap-2">
-                  <button className="w-10 h-10 rounded-full bg-white/[0.03] border border-amber-400/10 flex items-center justify-center hover:bg-amber-400/15 transition-colors">
+                {isSelf && <div className="hidden sm:flex gap-2">
+                  {/* <button className="w-10 h-10 rounded-full bg-white/[0.03] border border-amber-400/10 flex items-center justify-center hover:bg-amber-400/15 transition-colors">
                     <ListFilter className="w-4 h-4 text-amber-300" />
                   </button>
                   <button className="w-10 h-10 rounded-full bg-white/[0.03] border border-amber-400/10 flex items-center justify-center hover:bg-amber-400/15 transition-colors">
                     <ArrowUpDown className="w-4 h-4 text-amber-300" />
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => setModalShow(true)}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12.5px] font-medium bg-gradient-to-r from-amber-400 to-orange-400 text-black hover:opacity-90 transition"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Kalam
                   </button>
-                </div>
+                </div>}
                 
               </div>
 
