@@ -519,14 +519,14 @@ const OtpVerification = () => {
             })
             .then((Response) => {
                 console.log("Response", Response)
-                if (Response.data.success) {
+                // if (Response.data.success) {
 
-                    Navigate('/');
-                } else {
+                //     Navigate('/');
+                // } else {
 
-                    setText("Sorry, invalid secret pin")
+                //     setText("Sorry, invalid secret pin")
 
-                }
+                // }
             }).catch((error) => {
                 console.error("Error while sending post request to otp endpoint", error);
             })

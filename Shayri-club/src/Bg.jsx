@@ -647,194 +647,215 @@ useEffect(() => {
         }}
       >
         {/* ── Slide 1: Kalam Creation Palette ── */}
-        <div
-          className="relative flex-shrink-0 w-full h-screen snap-start flex items-center justify-center overflow-hidden bg-[#07080a] text-[#EAE6DF]"
-          style={{ contentVisibility: 'auto', contain: 'layout style paint' }}
-        >
-          <style>{`
-            @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
- 
-            .kalam1-serif { font-family: 'Cormorant Garamond', serif; }
-            .kalam1-mono { font-family: 'JetBrains Mono', monospace; }
- 
-            @keyframes kalam1-ambientPulse {
-              0%, 100% { opacity: 1; transform: scale(1); }
-              50% { opacity: 0.5; transform: scale(0.85); }
-            }
-            .kalam1-pulse-dot {
-              animation: kalam1-ambientPulse 2.8s ease-in-out infinite;
-            }
- 
-            @media (prefers-reduced-motion: reduce) {
-              .kalam1-pulse-dot { animation: none !important; }
-            }
-          `}</style>
- 
-          {/* Ambient obsidian background layers */}
-          <div className="absolute inset-0 pointer-events-none -z-10" aria-hidden="true">
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage:
-                  'radial-gradient(circle at 15% 25%, rgba(212, 175, 55, 0.045) 0%, transparent 45%), radial-gradient(circle at 88% 30%, rgba(212, 175, 55, 0.05) 0%, transparent 42%), radial-gradient(circle at 85% 75%, rgba(30, 27, 75, 0.25) 0%, transparent 55%), radial-gradient(circle at 50% 50%, rgba(13, 14, 20, 0.9) 0%, #07080a 100%)',
-              }}
-            />
-            <div
-              className="absolute inset-0 opacity-[0.09]"
-              style={{
-                backgroundImage: 'radial-gradient(rgba(243, 229, 171, 0.5) 0.75px, transparent 0.75px)',
-                backgroundSize: '24px 24px',
-              }}
-            />
+       <div
+  className="relative flex-shrink-0 w-full h-screen snap-start flex items-center justify-center overflow-hidden bg-[#07080a] text-[#EAE6DF]"
+  style={{ contentVisibility: 'auto', contain: 'layout style paint' }}
+>
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    .kalam1-serif { font-family: 'Cormorant Garamond', serif; }
+    .kalam1-mono { font-family: 'JetBrains Mono', monospace; }
+
+    @keyframes kalam1-ambientPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+    .kalam1-pulse-dot {
+      animation: kalam1-ambientPulse 2.8s ease-in-out infinite;
+    }
+
+    /* Glowing near-white border pulse for the auto-scrolling preview card */
+    @keyframes kalam1-glowPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 0 1px rgba(255,255,255,0.65),
+          0 0 10px 1px rgba(255,255,255,0.32),
+          0 0 20px 3px rgba(255,255,255,0.13),
+          inset 0 1px 0 rgba(255,255,255,0.1);
+      }
+      50% {
+        box-shadow:
+          0 0 0 1.5px rgba(255,255,255,0.9),
+          0 0 14px 2px rgba(255,255,255,0.45),
+          0 0 28px 5px rgba(255,255,255,0.18),
+          inset 0 1px 0 rgba(255,255,255,0.15);
+      }
+    }
+    .kalam1-glow-border {
+      animation: kalam1-glowPulse 3.2s ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .kalam1-pulse-dot { animation: none !important; }
+      .kalam1-glow-border {
+        animation: none !important;
+        box-shadow: 0 0 0 1.5px rgba(255,255,255,0.75), 0 0 12px 2px rgba(255,255,255,0.28);
+      }
+    }
+
+    @keyframes scrollUp {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+  `}</style>
+
+  {/* Ambient obsidian background layers */}
+  <div className="absolute inset-0 pointer-events-none -z-10" aria-hidden="true">
+    <div
+      className="absolute inset-0"
+      style={{
+        backgroundImage:
+          'radial-gradient(circle at 15% 25%, rgba(212, 175, 55, 0.045) 0%, transparent 45%), radial-gradient(circle at 88% 30%, rgba(212, 175, 55, 0.05) 0%, transparent 42%), radial-gradient(circle at 85% 75%, rgba(30, 27, 75, 0.25) 0%, transparent 55%), radial-gradient(circle at 50% 50%, rgba(13, 14, 20, 0.9) 0%, #07080a 100%)',
+      }}
+    />
+    <div
+      className="absolute inset-0 opacity-[0.09]"
+      style={{
+        backgroundImage: 'radial-gradient(rgba(243, 229, 171, 0.5) 0.75px, transparent 0.75px)',
+        backgroundSize: '24px 24px',
+      }}
+    />
+  </div>
+
+  <div className="relative z-10 flex flex-col lg:flex-row items-center w-full h-full px-5 sm:px-10 lg:px-16 py-5 sm:py-6 lg:py-14 gap-4 sm:gap-6 lg:gap-12">
+    {/* LEFT: on mobile this wrapper becomes `contents` so its children (text, CTA, footnote)
+        become direct items of the outer flex container and can be reordered independently
+        of the visual column. At lg it becomes a normal flex column again, exactly as before. */}
+    <div className="contents lg:flex lg:flex-col lg:gap-6 lg:w-full lg:flex-[0_0_50%] lg:max-w-[540px]">
+      <div className="order-1 lg:order-none space-y-2 lg:space-y-3">
+        <h1 className="text-xl sm:text-2xl lg:text-5xl xl:text-[54px] leading-[1.15] sm:leading-[1.08] lg:leading-[1.08] kalam1-serif tracking-tight text-white">
+          Sculpt your thoughts into{' '}
+          <span className="italic font-normal text-[#E6CA65] kalam1-serif">visual poetry</span>.
+        </h1>
+        <p className="text-xs sm:text-sm lg:text-lg text-[#9D988E] font-light leading-relaxed max-w-xl line-clamp-2 lg:line-clamp-none">
+          The <strong className="text-white/90 font-medium">Kalam Creation Palette</strong> unites
+          traditional poetic meter (
+          <span className="kalam1-serif italic text-[#F3E5AB]">Ghazal, Nazm, Rubaiyat</span>) with
+          real-time typography styling, mood palettes, and AA-grade contrast mastering.
+        </p>
+      </div>
+
+      {/* Studio Feature Badges / Highlights — hidden on mobile to keep the slide to one screen */}
+      <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 pt-1 max-w-lg">
+        <div className="p-3.5 rounded-xl bg-[#0c0d11]/80 border border-white/[0.07] backdrop-blur-sm transition-all duration-200 hover:border-[#D4AF37]/40 hover:bg-[#111318]">
+          <div className="flex items-center gap-2 mb-1.5">
+            <svg className="w-4 h-4 text-[#E6CA65]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.8"
+              />
+            </svg>
+            <span className="text-xs kalam1-mono uppercase tracking-wider text-white/90 font-medium">
+              Bilingual Meter
+            </span>
           </div>
- 
-          <div className="relative z-10 flex flex-col lg:flex-row items-center w-full h-full px-5 sm:px-10 lg:px-16 py-5 sm:py-6 lg:py-14 gap-4 sm:gap-6 lg:gap-12">
-            {/* LEFT: editorial narrative content, adapted from the Kalam Creation Palette brief */}
-            <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 w-full lg:flex-[0_0_50%] lg:max-w-[540px]">
-              {/* <div className="inline-flex items-center gap-3 self-start px-3.5 py-1.5 rounded-full bg-[#111318] border border-white/10 text-xs kalam1-mono tracking-widest text-[#B3AEA3] uppercase w-fit">
-                <span className="w-2 h-2 rounded-full bg-[#D4AF37] kalam1-pulse-dot"></span>
-                <span className="text-[#E6CA65] font-semibold">Kalam Studio Suite</span>
-                <span className="text-white/20">|</span>
-                <span className="text-white/60">Module 01</span>
-              </div> */}
- 
-              <div className="space-y-2 lg:space-y-3">
-                <h1 className="text-xl sm:text-2xl lg:text-5xl xl:text-[54px] leading-[1.15] sm:leading-[1.08] lg:leading-[1.08] kalam1-serif tracking-tight text-white">
-                  Sculpt your thoughts into{' '}
-                  <span className="italic font-normal text-[#E6CA65] kalam1-serif">visual poetry</span>.
-                </h1>
-                <p className="text-xs sm:text-sm lg:text-lg text-[#9D988E] font-light leading-relaxed max-w-xl line-clamp-2 lg:line-clamp-none">
-                  The <strong className="text-white/90 font-medium">Kalam Creation Palette</strong> unites
-                  traditional poetic meter (
-                  <span className="kalam1-serif italic text-[#F3E5AB]">Ghazal, Nazm, Rubaiyat</span>) with
-                  real-time typography styling, mood palettes, and AA-grade contrast mastering.
-                </p>
-              </div>
- 
-              {/* Studio Feature Badges / Highlights — hidden on mobile to keep the slide to one screen */}
-              <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 pt-1 max-w-lg">
-                <div className="p-3.5 rounded-xl bg-[#0c0d11]/80 border border-white/[0.07] backdrop-blur-sm transition-all duration-200 hover:border-[#D4AF37]/40 hover:bg-[#111318]">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <svg className="w-4 h-4 text-[#E6CA65]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.8"
-                      />
-                    </svg>
-                    <span className="text-xs kalam1-mono uppercase tracking-wider text-white/90 font-medium">
-                      Bilingual Meter
-                    </span>
-                  </div>
-                  <p className="text-xs text-[#8A857A] leading-normal">
-                    Native Urdu Nastaliq &amp; Persian Nastaliq with bilingual romanized transcription.
-                  </p>
-                </div>
-                <div className="p-3.5 rounded-xl bg-[#0c0d11]/80 border border-white/[0.07] backdrop-blur-sm transition-all duration-200 hover:border-[#D4AF37]/40 hover:bg-[#111318]">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <svg className="w-4 h-4 text-[#E6CA65]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.8"
-                      />
-                    </svg>
-                    <span className="text-xs kalam1-mono uppercase tracking-wider text-white/90 font-medium">
-                      Atmosphere Presets
-                    </span>
-                  </div>
-                  <p className="text-xs text-[#8A857A] leading-normal">
-                    Curated moods from <em className="italic kalam1-serif">Ishq</em> &amp;{' '}
-                    <em className="italic kalam1-serif">Firaaq</em> to deep celestial{' '}
-                    <em className="italic kalam1-serif">Falsafa</em>.
-                  </p>
-                </div>
-              </div>
- 
-              {/* Action CTAs */}
-              <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 pt-1 lg:gap-4 lg:pt-2">
-                <button className="px-5 py-2.5 lg:px-7 lg:py-3.5 rounded-lg bg-[#E6CA65] hover:bg-[#F3E5AB] text-[#07080a] font-medium text-sm transition-all duration-200 shadow-[0_0_24px_rgba(212,175,55,0.22)] flex items-center justify-center gap-2.5 group">
-                  <span>Launch Kalam Studio</span>
-                  <svg
-                    className="w-4 h-4 transition-transform group-hover:translate-x-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-                  </svg>
-                </button>
-                <button className="px-4 py-2.5 lg:px-6 lg:py-3.5 rounded-lg bg-[#111318] hover:bg-[#161922] border border-white/10 hover:border-[#D4AF37]/40 text-[#D8D3C8] text-sm font-medium transition-all duration-200">
-                  Explore Typographic Rhythms
-                </button>
-              </div>
- 
-              {/* Micro Attribution / Footnote — hidden on mobile to save vertical space */}
-              <div className="hidden lg:flex items-center gap-3 pt-3 border-t border-white/[0.06] text-[11px] sm:text-xs text-[#7A756B] kalam1-mono">
-                <div className="flex -space-x-1.5 shrink-0">
-                  <span className="w-6 h-6 rounded-full bg-[#1b1e27] border border-white/10 flex items-center justify-center text-[10px] text-[#F3E5AB] kalam1-serif">
-                    ق
-                  </span>
-                  <span className="w-6 h-6 rounded-full bg-[#181b24] border border-white/10 flex items-center justify-center text-[10px] text-[#F3E5AB] kalam1-serif">
-                    ل
-                  </span>
-                  <span className="w-6 h-6 rounded-full bg-[#151720] border border-white/10 flex items-center justify-center text-[10px] text-[#F3E5AB] kalam1-serif">
-                    م
-                  </span>
-                </div>
-                <span>Over 24,000 verses composed with archival serif typesetting</span>
-              </div>
-            </div>
- 
-            {/* RIGHT: auto-scrolling screenshot with glassmorphism, tilt, glow & badges */}
-            <div className="w-full lg:flex-1 flex items-center justify-center lg:h-full py-1 sm:py-2 lg:py-4 relative">
-              {/* Tilt wrapper */}
-              <div className="relative z-10 w-full max-w-[240px] sm:max-w-[320px] lg:w-auto lg:max-w-none" style={{ transform: 'rotate(2deg)' }}>
-                {/* Floating badges */}
-                {/* Top-left */}
-               
- 
-                {/* Glassmorphism card */}
-                <div
-                  className="relative overflow-hidden rounded-2xl w-full lg:max-w-[600px] lg:max-h-[600px] mx-auto"
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    backdropFilter: 'blur(16px)',
-                    border: '1.5px solid rgba(255,255,255,0.15)',
-                    boxShadow:
-                      '0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.1)',
-                    padding: '6px',
-                  }}
-                >
-                  {/* Inner rounded clip for the scroll */}
-                  <div className="relative overflow-hidden rounded-xl max-h-[40vh] sm:max-h-[26vh] lg:max-h-[588px]">
-                    {/* Fade top */}
-                    <div
-                      className="absolute top-0 left-0 right-0 h-16 z-10 pointer-events-none"
-                      style={{ background: 'linear-gradient(to bottom, rgba(6,4,15,0.85), transparent)' }}
-                    />
-                    {/* Fade bottom */}
-                    <div
-                      className="absolute bottom-0 left-0 right-0 h-16 z-10 pointer-events-none"
-                      style={{ background: 'linear-gradient(to top, rgba(6,4,15,0.85), transparent)' }}
-                    />
- 
-                    {/* Scrolling track */}
-                    <div
-                      className="flex flex-col animate-[scrollUp_18s_linear_infinite] hover:[animation-play-state:paused]"
-                      style={{ willChange: 'transform' }}
-                    >
-                      <img src="/2nd hero.png" alt="App preview" className="w-full block" loading="lazy" />
-                      <img src="/2nd hero.png" alt="App preview" className="w-full block" loading="lazy" />
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <p className="text-xs text-[#8A857A] leading-normal">
+            Native Urdu Nastaliq &amp; Persian Nastaliq with bilingual romanized transcription.
+          </p>
+        </div>
+        <div className="p-3.5 rounded-xl bg-[#0c0d11]/80 border border-white/[0.07] backdrop-blur-sm transition-all duration-200 hover:border-[#D4AF37]/40 hover:bg-[#111318]">
+          <div className="flex items-center gap-2 mb-1.5">
+            <svg className="w-4 h-4 text-[#E6CA65]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.8"
+              />
+            </svg>
+            <span className="text-xs kalam1-mono uppercase tracking-wider text-white/90 font-medium">
+              Atmosphere Presets
+            </span>
+          </div>
+          <p className="text-xs text-[#8A857A] leading-normal">
+            Curated moods from <em className="italic kalam1-serif">Ishq</em> &amp;{' '}
+            <em className="italic kalam1-serif">Firaaq</em> to deep celestial{' '}
+            <em className="italic kalam1-serif">Falsafa</em>.
+          </p>
+        </div>
+      </div>
+
+      {/* Action CTAs */}
+      <div className="order-3 lg:order-none flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 pt-1 lg:gap-4 lg:pt-2">
+        <button className="px-5 py-2.5 lg:px-7 lg:py-3.5 rounded-lg bg-[#E6CA65] hover:bg-[#F3E5AB] text-[#07080a] font-medium text-sm transition-all duration-200 shadow-[0_0_24px_rgba(212,175,55,0.22)] flex items-center justify-center gap-2.5 group">
+          <span>Launch Kalam Studio</span>
+          <svg
+            className="w-4 h-4 transition-transform group-hover:translate-x-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+          </svg>
+        </button>
+        <button className="px-4 py-2.5 lg:px-6 lg:py-3.5 rounded-lg bg-[#111318] hover:bg-[#161922] border border-white/10 hover:border-[#D4AF37]/40 text-[#D8D3C8] text-sm font-medium transition-all duration-200">
+          Explore Typographic Rhythms
+        </button>
+      </div>
+
+      {/* Micro Attribution / Footnote — hidden on mobile to save vertical space */}
+      <div className="hidden lg:flex items-center gap-3 pt-3 border-t border-white/[0.06] text-[11px] sm:text-xs text-[#7A756B] kalam1-mono">
+        <div className="flex -space-x-1.5 shrink-0">
+          <span className="w-6 h-6 rounded-full bg-[#1b1e27] border border-white/10 flex items-center justify-center text-[10px] text-[#F3E5AB] kalam1-serif">
+            ق
+          </span>
+          <span className="w-6 h-6 rounded-full bg-[#181b24] border border-white/10 flex items-center justify-center text-[10px] text-[#F3E5AB] kalam1-serif">
+            ل
+          </span>
+          <span className="w-6 h-6 rounded-full bg-[#151720] border border-white/10 flex items-center justify-center text-[10px] text-[#F3E5AB] kalam1-serif">
+            م
+          </span>
+        </div>
+        <span>Over 24,000 verses composed with archival serif typesetting</span>
+      </div>
+    </div>
+
+    {/* RIGHT: auto-scrolling screenshot with glassmorphism, tilt, glow & badges.
+        order-2 puts it between the text and the CTA row on mobile; lg:order-none
+        restores normal document order (i.e. plain second column) on desktop. */}
+    <div className="order-2 lg:order-none w-full lg:flex-1 flex items-center justify-center lg:h-full py-1 sm:py-2 lg:py-4 relative">
+      {/* Tilt wrapper */}
+      <div className="relative z-10 w-full max-w-[240px] sm:max-w-[320px] lg:w-auto lg:max-w-none" style={{ transform: 'rotate(2deg)' }}>
+        {/* Glassmorphism card — with tighter glowing near-white border */}
+        <div
+          className="kalam1-glow-border relative overflow-hidden rounded-2xl w-full lg:max-w-[600px] lg:max-h-[600px] mx-auto"
+          style={{
+            background: 'rgba(255,255,255,0.05)',
+            backdropFilter: 'blur(16px)',
+            border: '1.5px solid rgba(255,255,255,0.85)',
+            padding: '6px',
+          }}
+        >
+          {/* Inner rounded clip for the scroll */}
+          <div className="relative overflow-hidden rounded-xl max-h-[40vh] sm:max-h-[26vh] lg:max-h-[588px]">
+            {/* Fade top */}
+            <div
+              className="absolute top-0 left-0 right-0 h-16 z-10 pointer-events-none"
+              style={{ background: 'linear-gradient(to bottom, rgba(6,4,15,0.85), transparent)' }}
+            />
+            {/* Fade bottom */}
+            <div
+              className="absolute bottom-0 left-0 right-0 h-16 z-10 pointer-events-none"
+              style={{ background: 'linear-gradient(to top, rgba(6,4,15,0.85), transparent)' }}
+            />
+
+            {/* Scrolling track */}
+            <div
+              className="flex flex-col animate-[scrollUp_18s_linear_infinite] hover:[animation-play-state:paused]"
+              style={{ willChange: 'transform' }}
+            >
+              <img src="/2nd hero.png" alt="App preview" className="w-full block" loading="lazy" />
+              <img src="/2nd hero.png" alt="App preview" className="w-full block" loading="lazy" />
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
  
         {/* ── Slide 2: Kalam of the Week (Archival Folio) ── */}
         <div
@@ -907,8 +928,9 @@ useEffect(() => {
           <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#d4a359_0.75px,transparent_0.75px)] [background-size:24px_24px] z-0"></div>
  
           <main className="w-full max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-14 items-center relative z-10 px-5 sm:px-10 lg:px-14 py-4 sm:py-6 lg:py-0">
-            {/* LEFT COLUMN: EDITORIAL NARRATIVE & SCHOLARLY CITATIONS */}
-            <div className="lg:col-span-5 flex flex-col justify-center space-y-3 sm:space-y-4 lg:space-y-7 pr-0 lg:pr-3">
+            {/* LEFT COLUMN: on mobile this becomes `contents` so its children can be reordered
+                relative to the visual column on the right; at lg it's a normal flex column again. */}
+            <div className="contents lg:flex lg:flex-col lg:justify-center lg:space-y-7 lg:col-span-5 lg:pr-3">
               {/* Wax Seal & Archival Epigraph Badge */}
               {/* <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-[#18120D]/90 border border-[#4F3D30]/80 shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_4px_12px_rgba(0,0,0,0.5)] w-fit">
                 <span className="relative flex h-3 w-3 items-center justify-center">
@@ -923,7 +945,7 @@ useEffect(() => {
               </div> */}
  
               {/* Main Headline */}
-              <div className="space-y-2 sm:space-y-3 lg:space-y-3.5">
+              <div className="order-1 lg:order-none space-y-2 sm:space-y-3 lg:space-y-3.5">
                 <h1 className="text-xl sm:text-3xl lg:text-[62px] leading-[1.1] sm:leading-[1.04] lg:leading-[1.04] font-serif font-light tracking-tight text-[#FAF6EF]">
                   <span className="block text-[12px] sm:text-[14px] font-cinzel font-medium tracking-[0.28em] text-[#D4A359]/90 uppercase mb-2">
                     Weekly Literary Laurel
@@ -996,7 +1018,7 @@ useEffect(() => {
               </div>
  
               {/* CTA Row */}
-              <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 pt-1 lg:gap-3 lg:pt-2">
+              <div className="order-3 lg:order-none flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 pt-1 lg:gap-3 lg:pt-2">
                 <button className="px-4 py-2 lg:px-6 lg:py-3.5 rounded-xl bg-gradient-to-r from-[#D4A359] via-[#E2B774] to-[#C89547] hover:from-[#E2B774] hover:to-[#D4A359] active:scale-[0.98] text-[#140E0A] font-cinzel font-bold text-xs tracking-wider transition-all duration-200 shadow-[0_8px_20px_rgba(200,149,71,0.25),inset_0_1px_1px_rgba(255,255,255,0.4)] flex items-center justify-center gap-2.5 group border border-[#FAF3DF]/40">
                   <span>Read &amp; Listen to Laureate</span>
                   <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1022,8 +1044,10 @@ useEffect(() => {
               </div>
             </div>
  
-            {/* RIGHT COLUMN: THE FLOATING "KALAM OF THE WEEK" SHOWCASE ARTIFACT */}
-            <div className="lg:col-span-7 flex justify-center">
+            {/* RIGHT COLUMN: THE FLOATING "KALAM OF THE WEEK" SHOWCASE ARTIFACT.
+                order-2 puts it between the headline and the CTA row on mobile;
+                lg:order-none restores its normal position as the second grid column on desktop. */}
+            <div className="order-2 lg:order-none lg:col-span-7 flex justify-center">
               <div className="w-full max-w-[280px] sm:max-w-[420px] lg:max-w-[680px] kotw-floating-folio rounded-2xl bg-gradient-to-b from-[#18120D] via-[#140E0A] to-[#100B08] border border-[#4A382A] shadow-2xl relative overflow-hidden backdrop-blur-md">
                 {/* Ambient Warm Amber Top Light */}
                 <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[420px] h-36 bg-[#D4A359]/15 blur-3xl pointer-events-none rounded-full"></div>
@@ -1286,8 +1310,9 @@ useEffect(() => {
           {/* Main content */}
           <main className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-12">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-14 items-center">
-              {/* Left Column: Editorial Typography */}
-              <div className="lg:col-span-5 text-left space-y-3 sm:space-y-4 lg:space-y-7">
+              {/* Left Column: on mobile this becomes `contents` so its children can be reordered
+                  relative to the visual column on the right; at lg it's a normal block column again. */}
+              <div className="contents lg:block lg:text-left lg:space-y-7 lg:col-span-5">
                 {/* <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-sm bg-[#161a22] border border-white/10 text-[11px] tracking-[0.16em] uppercase font-mono text-[#eed188]">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#dfb758]"></span>
                   <span>Archival Press &amp; Studio</span>
@@ -1295,7 +1320,7 @@ useEffect(() => {
                   <span className="text-[#aba69a] font-archival-sans lowercase font-normal tracking-normal text-xs">series no. 04</span>
                 </div> */}
  
-                <div className="space-y-2 sm:space-y-3 lg:space-y-4">
+                <div className="order-1 lg:order-none space-y-2 sm:space-y-3 lg:space-y-4">
                   <h1 className="font-archival-serif text-xl sm:text-3xl lg:text-6xl text-[#fbfaf8] leading-[1.15] sm:leading-[1.08] lg:leading-[1.08] tracking-tight font-normal">
                     Turn your verses into <br />
                     <span className="italic font-normal text-[#dfb758] pr-1">living records.</span>
@@ -1305,7 +1330,7 @@ useEffect(() => {
                   </p>
                 </div>
  
-                <div className="pt-1 lg:pt-2 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 lg:gap-3.5">
+                <div className="order-3 lg:order-none pt-1 lg:pt-2 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 lg:gap-3.5">
                   <button className="px-4 py-2 lg:px-6 lg:py-3.5 rounded-sm bg-[#ece7de] hover:bg-white text-[#0f1117] font-medium text-xs tracking-wider uppercase transition-all duration-200 flex items-center justify-center gap-2.5 shadow-lg shadow-black/40 cursor-pointer">
                     <span className="font-semibold">Create New Anthology</span>
                     <svg className="w-3.5 h-3.5 text-[#0f1117]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1330,8 +1355,10 @@ useEffect(() => {
                 </div>
               </div>
  
-              {/* Right Column: Curated Physical Vinyl & Anthology Rack */}
-              <div className="lg:col-span-7">
+              {/* Right Column: Curated Physical Vinyl & Anthology Rack.
+                  order-2 puts it between the headline and the CTA row on mobile;
+                  lg:order-none restores it as the normal second grid column on desktop. */}
+              <div className="order-2 lg:order-none lg:col-span-7">
                 <div className="rounded-lg bg-[#12151d]/90 border border-[#222734] p-2 sm:p-3 lg:p-7 shadow-2xl backdrop-blur-md archival-animate-showcase-float">
                   {/* Curator Header Bar */}
                   <div className="flex flex-wrap items-center justify-between gap-2 pb-2 mb-2 lg:pb-4 lg:mb-5 border-b border-white/[0.07] text-xs">
