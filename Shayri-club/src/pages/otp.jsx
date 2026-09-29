@@ -476,10 +476,9 @@
 // export default OtpVerification
 
 //------------------------------------------------------------------------------------------>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import { useTimer } from 'react-timer-hook';
 
@@ -494,6 +493,9 @@ const OtpVerification = () => {
     const [text, setText] = useState("");
     const [SearchParams] = useSearchParams();
     const [isDisable, setIsDisable] = useState(false);
+    const [agreeCookies, setAgreeCookies] = useState(false);
+    const [agreeTerms, setAgreeTerms] = useState(false);
+    const canSubmit = agreeCookies && agreeTerms;
     const mainTime = new Date();
     mainTime.setSeconds(mainTime.getSeconds() + 30); // 5 minutes timer
 
@@ -512,6 +514,10 @@ const OtpVerification = () => {
 
     const handleOtp = () => {
 
+        if (!canSubmit) {
+            setText("Please accept the cookie policy, terms of service and privacy policy to continue");
+            return;
+        }
 
         axiosInstance
             .post(`/api/verify_otp?email=${SearchParams.get("email")}`, {
@@ -738,9 +744,47 @@ const OtpVerification = () => {
                             onChange={(e) => setSecretPin(e.target.value)}
                         />
 
+                        {/* agreements */}
+                        <div className="mt-5 flex flex-col gap-3">
+                            <label className="flex items-start gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={agreeCookies}
+                                    onChange={(e) => { setAgreeCookies(e.target.checked); if (text) setText(""); }}
+                                    className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-[#D4A54A]"
+                                />
+                                <span className="text-[14px] leading-relaxed text-[#B7A6D3]">
+                                    I agree to the{" "}
+                                    <Link to="/cookie-policy" target="_blank" className="text-[#D4A54A] underline underline-offset-2 hover:text-[#F0C36D]">
+                                        Cookie Policy
+                                    </Link>
+                                </span>
+                            </label>
+
+                            <label className="flex items-start gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={agreeTerms}
+                                    onChange={(e) => { setAgreeTerms(e.target.checked); if (text) setText(""); }}
+                                    className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-[#D4A54A]"
+                                />
+                                <span className="text-[14px] leading-relaxed text-[#B7A6D3]">
+                                    I agree to Alfaz's{" "}
+                                    <Link to="/terms-of-service" target="_blank" className="text-[#D4A54A] underline underline-offset-2 hover:text-[#F0C36D]">
+                                        Terms of Service
+                                    </Link>{" "}
+                                    and{" "}
+                                    <Link to="/privacy-policy" target="_blank" className="text-[#D4A54A] underline underline-offset-2 hover:text-[#F0C36D]">
+                                        Privacy Policy
+                                    </Link>
+                                </span>
+                            </label>
+                        </div>
+
                         <button
-                            className="otp-serif mt-4 w-full rounded-lg bg-gradient-to-r from-[#D4A54A] to-[#C68F3A] py-3 text-[15px] font-semibold tracking-wide text-[#1D1230] transition hover:from-[#F0C36D] hover:to-[#D4A54A] active:scale-[0.995] focus:outline-none focus:ring-[3px] focus:ring-[#D4A54A]/25"
+                            className="otp-serif mt-4 w-full rounded-lg bg-gradient-to-r from-[#D4A54A] to-[#C68F3A] py-3 text-[15px] font-semibold tracking-wide text-[#1D1230] transition hover:from-[#F0C36D] hover:to-[#D4A54A] active:scale-[0.995] focus:outline-none focus:ring-[3px] focus:ring-[#D4A54A]/25 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:from-[#D4A54A] disabled:hover:to-[#C68F3A]"
                             onClick={handleOtp}
+                            disabled={!canSubmit}
                         >
                             Confirm &amp; continue
                         </button>
