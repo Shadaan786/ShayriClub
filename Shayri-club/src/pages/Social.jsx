@@ -1710,22 +1710,22 @@ const isMobile = useIsMobile();
     <div
       id="mainScroll"
       className="relative overflow-auto"
-      style={{ height: "100svh", WebkitOverflowScrolling: "touch", background: "linear-gradient(to right, #000000, #1a0828, #000000)" }}
+      style={{ height: "100svh", WebkitOverflowScrolling: "touch", background: "linear-gradient(180deg, #020104 0%, #06020a 35%, #030105 70%, #010002 100%)" }}
     >
       <SidebarExample isOpen={isOpen} onClose={() => setIsOpen(false)} />
 
       <SocialSidebar />
 
-      {/* ── Page-wide ambient glow (was previously scoped to hero only) ── */}
+      {/* ── Ambient deep background lights (from HTML) — near-black velvet mood ── */}
       <div
         style={{
           position: "fixed",
-          top: -80,
-          left: -60,
-          width: 500,
-          height: 500,
+          top: -120,
+          left: -80,
+          width: 620,
+          height: 620,
           borderRadius: "50%",
-          background: "radial-gradient(circle,rgba(197,160,89,0.10) 0%,transparent 65%)",
+          background: "radial-gradient(circle, rgba(233,193,118,0.04) 0%, rgba(233,193,118,0.01) 40%, transparent 70%)",
           pointerEvents: "none",
           zIndex: 0,
         }}
@@ -1733,24 +1733,36 @@ const isMobile = useIsMobile();
       <div
         style={{
           position: "fixed",
-          bottom: -40,
-          right: -40,
-          width: 340,
-          height: 340,
+          bottom: -80,
+          right: -80,
+          width: 550,
+          height: 550,
           borderRadius: "50%",
-          background: "radial-gradient(circle,rgba(139,92,246,0.10) 0%,transparent 65%)",
+          background: "radial-gradient(circle, rgba(139,92,246,0.035) 0%, rgba(76,29,149,0.01) 45%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+      <div
+        style={{
+          position: "fixed",
+          top: "35%",
+          left: "45%",
+          transform: "translate(-50%, -50%)",
+          width: 750,
+          height: 750,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(45, 12, 60, 0.05) 0%, transparent 65%)",
           pointerEvents: "none",
           zIndex: 0,
         }}
       />
 
-      {/* ── Subtle grain + radial ambient wash over whole page ── */}
+      {/* ── Micro grain overlay (from HTML) ── */}
       <div
-        className="pointer-events-none fixed inset-0 z-0"
+        className="pointer-events-none fixed inset-0 z-0 opacity-20"
         style={{
-          backgroundImage: `radial-gradient(circle at 50% 20%, rgba(233,193,118,0.06) 0%, transparent 60%),
-                            radial-gradient(circle at 80% 80%, rgba(139,92,246,0.05) 0%, transparent 50%),
-                            url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E")`,
           backgroundRepeat: 'repeat',
         }}
       />
@@ -1903,6 +1915,7 @@ const isMobile = useIsMobile();
           border-left: 1px solid rgba(233,193,118,0.25);
           border-right: 1px solid rgba(233,193,118,0.25);
           box-sizing: border-box;
+          background: linear-gradient(180deg, rgba(7, 4, 11, 0.7) 0%, rgba(3, 2, 6, 0.95) 100%);
         }
 
         @media (max-width: 768px) {
