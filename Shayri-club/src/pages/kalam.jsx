@@ -733,6 +733,8 @@ import { useContext } from "react";
 import { MyContext } from "../ContextProvider";
 import { Footer } from "@/Bg";
 import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
+import Shepherd from "shepherd.js";
+import "shepherd.js/dist/css/shepherd.css";
 
 
 
@@ -831,6 +833,306 @@ const buildGoogleFontsUrl = () => {
     .map(f => `family=${f.googleParam}`)
     .join("&");
   return `https://fonts.googleapis.com/css2?${params}&family=DM+Mono:wght@300;400&display=swap`;
+};
+
+// ── Product tour (Shepherd.js) ──────────────────────────────────────────────
+const tourEl = (selector, i = 0) => () => document.querySelectorAll(selector)[i];
+const TP = ".text-protect > .tp-row:nth-child"; // rows inside "Text readability"
+
+const TOUR_STEPS = [
+  {
+    id: "welcome",
+    title: "خوش آمدید · Welcome to Kalam",
+    text: "Let's take a short walk through the composer, from choosing a form to publishing your verse. It takes about a minute.",
+  },
+  {
+    id: "preview",
+    title: "Live preview",
+    text: "Everything you change appears here instantly: your words, fonts, colors and background. What you see is what readers will see.",
+    target: tourEl(".k-preview-card"),
+    on: "auto",
+  },
+  {
+    id: "form",
+    title: "Choose your form · صنف",
+    text: "Pick the kind of writing: Sher, Nazm, Ghazal, Qita, Rubai, Masnavi or Marsiya. It shows as a badge on your card.",
+    target: tourEl(".k-select"),
+    on: "bottom",
+  },
+  {
+    id: "title",
+    title: "Give it a title · عنوان",
+    text: "Name your kalam. The title is styled separately from your content, so you can give it its own font, color and size.",
+    target: tourEl(".k-input"),
+    on: "bottom",
+  },
+  {
+    id: "mood",
+    title: "Set the mood · کیفیت",
+    text: "Tag your piece with one or more moods like Ishq, Gham or Khushi. These help readers discover your work.",
+    target: tourEl(".k-moods"),
+    on: "bottom",
+  },
+  {
+    id: "content",
+    title: "Write your kalam · متن",
+    text: "Write in Urdu, Roman Urdu or both. Line breaks are preserved exactly as you type them.",
+    target: tourEl(".k-textarea-wrap"),
+    on: "top",
+  },
+  {
+    id: "voice",
+    title: "Add your voice 🎙",
+    text: "Tap <b>Speak</b> to record yourself reciting. Tap again to stop. Your recording appears below with a player and will be published with your kalam.",
+    target: tourEl(".k-mic"),
+    on: "top",
+  },
+  {
+    id: "background",
+    title: "Pick a background · پس منظر",
+    text: "Choose a preset color, a custom color, or upload your own image to set the scene for your words.",
+    target: tourEl(".bp-tabs"),
+    on: "top",
+  },
+  {
+    id: "brightness",
+    title: "Brightness",
+    text: "Dim or brighten your background color or image to find the right atmosphere.",
+    target: tourEl(".bp-opacity-row"),
+    on: "top",
+  },
+  {
+    id: "textcolor",
+    title: "Text color",
+    text: "Choose <b>Light</b>, <b>Dark</b>, or <b>Auto</b>, which picks the most readable option for your background.",
+    target: tourEl(`${TP}(2)`),
+    on: "top",
+  },
+  {
+    id: "backdrop",
+    title: "Text backdrop",
+    text: "Add a soft blur or a solid panel behind your text so it stays readable on busy images.",
+    target: tourEl(`${TP}(3)`),
+    on: "top",
+  },
+  {
+    id: "scrim",
+    title: "Scrim overlay",
+    text: "A scrim darkens your background evenly. Slide it up when text is hard to read over a bright image.",
+    target: tourEl(`${TP}(4)`),
+    on: "top",
+  },
+  {
+    id: "titlefont",
+    title: "Title font · عنوان کا خط",
+    text: "Scroll through poetry-friendly typefaces and tap one. The preview updates instantly.",
+    target: tourEl(`${TP}(5)`),
+    on: "top",
+  },
+  {
+    id: "titlecolor",
+    title: "Title color · عنوان رنگ",
+    text: "Stay on <b>Auto</b>, tap a palette swatch, or use the color thumb to pick any shade.",
+    target: tourEl(`${TP}(6)`),
+    on: "top",
+  },
+  {
+    id: "contentfont",
+    title: "Content font · متن کا خط",
+    text: "Pick a typeface for the body of your kalam, including Nastaliq options for Urdu script.",
+    target: tourEl(`${TP}(7)`),
+    on: "top",
+  },
+  {
+    id: "contentcolor",
+    title: "Content color · متن رنگ",
+    text: "Color your verses independently from the title for a layered, editorial look.",
+    target: tourEl(`${TP}(8)`),
+    on: "top",
+  },
+  {
+    id: "sizes",
+    title: "Title & content size",
+    text: "Switch between Small, Medium and Large for both the title and the content to balance your layout.",
+    target: tourEl(`${TP}(9)`),
+    on: "top",
+  },
+  {
+    id: "publish",
+    title: "Publish your kalam ✦",
+    text: "When you're happy with the preview, hit <b>Publish kalam</b> to share it with the world. Happy writing!",
+    target: tourEl(".k-btn-primary"),
+    on: "top",
+  },
+];
+
+const TOUR_CATS = {
+  welcome: "ATELIER ONBOARDING",
+  preview: "LIVE PREVIEW SUITE",
+  form: "CLASSICAL STRUCTURE",
+  title: "CLASSICAL STRUCTURE",
+  mood: "CLASSICAL STRUCTURE",
+  content: "MANUSCRIPT",
+  voice: "VOICE RECITATION",
+  background: "FOLIO BACKGROUND",
+  brightness: "FOLIO BACKGROUND",
+  textcolor: "TEXT READABILITY",
+  backdrop: "TEXT READABILITY",
+  scrim: "TEXT READABILITY",
+  titlefont: "CALLIGRAPHY",
+  titlecolor: "CALLIGRAPHY",
+  contentfont: "CALLIGRAPHY",
+  contentcolor: "CALLIGRAPHY",
+  sizes: "CALLIGRAPHY",
+  publish: "COMPLETION",
+};
+
+const buildKalamTour = ({ onComplete }) => {
+  const tour = new Shepherd.Tour({
+    useModalOverlay: true,
+    exitOnEsc: true,
+    keyboardNavigation: true,
+    defaultStepOptions: {
+      classes: "k-tour",
+      arrow: true,
+      scrollTo: { behavior: "smooth", block: "center" },
+      cancelIcon: { enabled: true, label: "Close tour" },
+      modalOverlayOpeningPadding: 8,
+      modalOverlayOpeningRadius: 10,
+    },
+  });
+
+  const total = TOUR_STEPS.length;
+
+  // ── Blur everything except the highlighted area ───────────────────────────
+  // Shepherd's dim overlay is an SVG <path> with a "hole" over the target.
+  // We copy that same path into a clip-path on a backdrop-blur layer, so the
+  // blur covers the whole screen EXCEPT the hole (the focused element).
+  let blurObserver = null;
+  // Positions the animated border exactly over the cut-out in Shepherd's path
+  const syncRing = (d) => {
+    const ring = document.getElementById("k-tour-ring");
+    if (!ring) return;
+    const i = d.indexOf("Z");
+    const rest = i >= 0 ? d.slice(i + 1) : "";
+    const cmds = {};
+    rest.replace(/([MaVH])([^MaVHZ]*)/g, (_, c, args) => {
+      if (!(c in cmds)) cmds[c] = (args.match(/-?\d*\.?\d+/g) || []).map(Number);
+      return "";
+    });
+    const [mx, my] = cmds.M || [];
+    const r = (cmds.a || [])[0];
+    const v = (cmds.V || [])[0];
+    const h = (cmds.H || [])[0];
+    if ([mx, my, r, v, h].some((n) => n == null || Number.isNaN(n))) {
+      ring.style.display = "none"; // no target on this step (e.g. welcome)
+      return;
+    }
+    const x = mx - r, y = my;
+    if (h + r - x < 2 || v + r - y < 2) {
+      ring.style.display = "none"; // zero-size opening = no target
+      return;
+    }
+    Object.assign(ring.style, {
+      display: "block",
+      left: `${x}px`,
+      top: `${y}px`,
+      width: `${h + r - x}px`,
+      height: `${v + r - y}px`,
+      borderRadius: `${r}px`,
+    });
+  };
+  const syncBlur = () => {
+    const path = document.querySelector(".shepherd-modal-overlay-container path");
+    const layer = document.getElementById("k-tour-blur");
+    const d = path?.getAttribute("d");
+    if (layer && d) layer.style.clipPath = `path('${d}')`;
+    if (d) syncRing(d);
+  };
+  const ensureBlur = () => {
+    if (!document.getElementById("k-tour-blur")) {
+      const layer = document.createElement("div");
+      layer.id = "k-tour-blur";
+      document.body.appendChild(layer);
+    }
+    if (!document.getElementById("k-tour-ring")) {
+      const ring = document.createElement("div");
+      ring.id = "k-tour-ring";
+      ring.style.display = "none";
+      document.body.appendChild(ring);
+    }
+    const path = document.querySelector(".shepherd-modal-overlay-container path");
+    if (path && !blurObserver) {
+      blurObserver = new MutationObserver(syncBlur);
+      blurObserver.observe(path, { attributes: true, attributeFilter: ["d"] });
+    }
+    syncBlur();
+  };
+  const removeBlur = () => {
+    blurObserver?.disconnect();
+    blurObserver = null;
+    document.getElementById("k-tour-blur")?.remove();
+    document.getElementById("k-tour-ring")?.remove();
+  };
+
+  TOUR_STEPS.forEach((s, idx) => {
+    const isFirst = idx === 0;
+    const isLast = idx === total - 1;
+    const buttons = [];
+
+    if (!isLast) {
+      buttons.push({ text: "Skip tour", classes: "k-tour-btn k-tour-btn-skip", action: () => tour.cancel() });
+    }
+    if (!isFirst) {
+      buttons.push({ text: "← Back", classes: "k-tour-btn k-tour-btn-ghost", action: () => tour.back() });
+    }
+    buttons.push({
+      text: isFirst ? "Begin tour →" : isLast ? "✦ Complete" : "Next Step →",
+      classes: "k-tour-btn k-tour-btn-primary",
+      action: () => (isLast ? tour.complete() : tour.next()),
+    });
+
+    tour.addStep({
+      id: s.id,
+      title: s.title,
+      text: s.text,
+      attachTo: s.target ? { element: s.target, on: s.on || "auto" } : undefined,
+      buttons,
+      when: {
+        show() {
+          ensureBlur();
+          const el = this.getElement();
+          const num = String(idx + 1).padStart(2, "0");
+          const tot = String(total).padStart(2, "0");
+
+          const header = el?.querySelector(".shepherd-header");
+          if (header && !header.querySelector(".k-tour-eyebrow")) {
+            const eyebrow = document.createElement("div");
+            eyebrow.className = "k-tour-eyebrow";
+            eyebrow.innerHTML = `
+              <span>STEP ${num} OF ${tot}</span>
+              <span class="k-tour-eyebrow-dot">·</span>
+              <span class="k-tour-eyebrow-cat">${TOUR_CATS[s.id] || ""}</span>`;
+            header.prepend(eyebrow);
+          }
+
+          const footer = el?.querySelector(".shepherd-footer");
+          if (!footer || footer.querySelector(".k-tour-progress")) return;
+          const bar = document.createElement("div");
+          bar.className = "k-tour-progress";
+          bar.innerHTML = `
+            <span class="k-tour-count">${num} / ${tot}</span>
+            <span class="k-tour-track"><span class="k-tour-fill" style="width:${((idx + 1) / total) * 100}%"></span></span>`;
+          footer.prepend(bar);
+        },
+      },
+    });
+  });
+
+  tour.on("complete", onComplete);
+  tour.on("complete", removeBlur);
+  tour.on("cancel", removeBlur);
+  return tour;
 };
 
 const Kalam = () => {
@@ -1240,6 +1542,48 @@ const Kalam = () => {
 getUserId();
 fetchUserNotifications();
   },[])
+
+  // ── Product tour ────────────────────────────────────────────────────────────
+  const tourRef = useRef(null);
+
+  const startKalamTour = () => {
+    if (tourRef.current?.isActive()) return;
+    const tour = buildKalamTour({
+      // Fires only when the user finishes the LAST step (not on skip / close)
+      onComplete: () => {
+        axiosInstance
+          .post("/api/updatetutorial", { payload: 1, type: "kalam_tour" }, { withCredentials: true })
+          .then((res) => console.log("tutorial saved", res.data))
+          .catch((err) => console.error("kalamTutorial error", err));
+      },
+    });
+    tourRef.current = tour;
+    tour.start();
+  };
+
+  useEffect(() => {
+    let timer;
+    let cancelled = false;
+
+    // Ask the backend first: only run the tour if content === false
+    axiosInstance
+      .get("/api/tutorials?type=kalam_tour", { withCredentials: true })
+      .then((response) => {
+        if (cancelled) return;
+        if (response.data.data === false) {
+          timer = setTimeout(startKalamTour, 900);
+        }
+      })
+      .catch((error) => {
+        console.error("Error while checking kalam tutorial status", error);
+      });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      if (tourRef.current?.isActive()) tourRef.current.cancel();
+    };
+  }, []);
 
   // ── Sidebar (Kalam active, Compose/Collection sub-nav) ─────────────────────
   const KalamSidebar = () => (
@@ -2123,6 +2467,152 @@ fetchUserNotifications();
 
         .k-body-wrap {
           padding-bottom: max(0px, env(safe-area-inset-bottom));
+        }
+
+        /* ── Shepherd product tour (Atelier theme) ─────────────── */
+        .shepherd-modal-overlay-container { z-index: 9997; }
+        .shepherd-modal-overlay-container.shepherd-modal-is-visible path {
+          fill: rgba(5,4,8,0.72);
+        }
+        /* Blur layer sits just under the dim overlay; its clip-path (set from JS)
+           leaves the highlighted element sharp and un-dimmed */
+        #k-tour-blur {
+          position: fixed; inset: 0; z-index: 9996; pointer-events: none;
+          backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        }
+
+        /* Animated gold border around the focused area */
+        @property --k-ring-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        @keyframes kRingSpin  { to { --k-ring-angle: 360deg; } }
+        @keyframes kRingPulse {
+          0%, 100% { box-shadow: 0 0 10px 0 rgba(232,200,114,0.25), 0 0 0 0 rgba(232,200,114,0.30); }
+          50%      { box-shadow: 0 0 26px 2px rgba(232,200,114,0.50), 0 0 0 7px rgba(232,200,114,0); }
+        }
+        #k-tour-ring {
+          position: fixed; z-index: 9998; pointer-events: none; box-sizing: border-box;
+          border: 1px solid rgba(232,200,114,0.35);
+          animation: kRingPulse 2.4s ease-in-out infinite;
+        }
+        #k-tour-ring::before {
+          content: ''; position: absolute; inset: -2px; border-radius: inherit; padding: 2px;
+          background: conic-gradient(from var(--k-ring-angle),
+            transparent 0deg, #c9a84c 50deg, #fff2cc 95deg, #e8c872 130deg, transparent 190deg,
+            transparent 220deg, #c9a84c 275deg, #fde68a 310deg, transparent 350deg);
+          -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+          animation: kRingSpin 3s linear infinite;
+          filter: drop-shadow(0 0 5px rgba(232,200,114,0.7));
+        }
+        @media (prefers-reduced-motion: reduce) {
+          #k-tour-ring, #k-tour-ring::before { animation: none; }
+        }
+        .shepherd-element.k-tour {
+          z-index: 9999;
+          width: 100%;
+          max-width: min(420px, calc(100vw - 2rem));
+          background: transparent;
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1.5px solid #ffffff;
+          border-radius: 12px;
+          box-shadow: 0 25px 60px -10px rgba(0,0,0,0.9), 0 0 35px rgba(232,200,114,0.12);
+          color: #f0ebe3;
+          font-family: 'DM Mono', monospace;
+        }
+        .shepherd-element.k-tour .shepherd-content {
+          position: relative; padding: 0; overflow: hidden;
+          border-radius: 10.5px;
+          background: rgba(14,12,22,0.96);
+        }
+        .shepherd-element.k-tour .shepherd-content::before {
+          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+          background: linear-gradient(90deg, transparent, #e8c872, #fff2cc, #e8c872, transparent);
+          pointer-events: none; z-index: 2;
+        }
+
+        /* Header: eyebrow + close on row 1, title on row 2 */
+        .shepherd-element.k-tour .shepherd-content .shepherd-header {
+          background: transparent; padding: 20px 20px 8px;
+          display: grid; grid-template-columns: 1fr auto; align-items: center; row-gap: 8px;
+        }
+        .k-tour-eyebrow {
+          grid-column: 1; grid-row: 1;
+          display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+          font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+          font-weight: 600; color: #e8c872;
+        }
+        .k-tour-eyebrow-dot { color: rgba(255,255,255,0.3); }
+        .k-tour-eyebrow-cat { color: rgba(255,255,255,0.5); letter-spacing: 0.1em; font-weight: 400; }
+        .shepherd-element.k-tour .shepherd-content .shepherd-cancel-icon {
+          grid-column: 2; grid-row: 1;
+          background: none; border: none; cursor: pointer; padding: 4px;
+          font-size: 14px; line-height: 1; color: rgba(255,255,255,0.4); transition: color 0.15s;
+        }
+        .shepherd-element.k-tour .shepherd-content .shepherd-cancel-icon:hover { color: #e8c872; }
+        .shepherd-element.k-tour .shepherd-content .shepherd-title {
+          grid-column: 1 / -1; grid-row: 2;
+          font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700;
+          font-size: 24px; line-height: 1.25;
+          background: linear-gradient(135deg, #fdf8ee 0%, #e8c872 50%, #c9a84c 100%);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        /* Body */
+        .shepherd-element.k-tour .shepherd-content .shepherd-text {
+          padding: 8px 20px; font-size: 13px; line-height: 1.625;
+          color: rgba(255,255,255,0.8);
+        }
+        .shepherd-element.k-tour .shepherd-content .shepherd-text b { color: #e8c872; font-weight: 500; }
+
+        /* Footer: progress row, then Skip (left) + Back / Next (right) */
+        .shepherd-element.k-tour .shepherd-content .shepherd-footer {
+          display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end;
+          gap: 16px 8px; padding: 12px 20px 20px; margin-top: 4px;
+          border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .k-tour-progress { flex-basis: 100%; display: flex; align-items: center; gap: 12px; }
+        .k-tour-count { font-size: 10px; letter-spacing: 0.1em; color: rgba(232,200,114,0.7); min-width: 42px; }
+        .k-tour-track { flex: 1; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.1); overflow: hidden; }
+        .k-tour-fill {
+          display: block; height: 100%; border-radius: 999px;
+          background: linear-gradient(90deg, #c9a84c, #e8c872, #fde68a);
+          transition: width 0.3s ease;
+        }
+
+        .shepherd-element.k-tour .shepherd-footer .k-tour-btn {
+          font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.02em;
+          border-radius: 8px; padding: 6px 12px; margin: 0; cursor: pointer;
+          transition: all 0.15s; white-space: nowrap;
+          display: inline-flex; align-items: center; gap: 6px;
+        }
+        .shepherd-element.k-tour .shepherd-footer .k-tour-btn.k-tour-btn-skip,
+        .shepherd-element.k-tour .shepherd-footer .k-tour-btn.k-tour-btn-skip:not(:disabled):hover {
+          margin-right: auto; background: transparent; border: 0;
+          color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 0.05em; padding: 6px 0;
+        }
+        .shepherd-element.k-tour .shepherd-footer .k-tour-btn.k-tour-btn-skip:not(:disabled):hover { color: rgba(255,255,255,0.8); }
+        .shepherd-element.k-tour .shepherd-footer .k-tour-btn.k-tour-btn-ghost,
+        .shepherd-element.k-tour .shepherd-footer .k-tour-btn.k-tour-btn-ghost:not(:disabled):hover {
+          background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.15);
+          color: rgba(255,255,255,0.8);
+        }
+        .shepherd-element.k-tour .shepherd-footer .k-tour-btn.k-tour-btn-ghost:not(:disabled):hover {
+          border-color: rgba(255,255,255,0.3); color: #ffffff;
+        }
+        .shepherd-element.k-tour .shepherd-footer .k-tour-btn.k-tour-btn-primary,
+        .shepherd-element.k-tour .shepherd-footer .k-tour-btn.k-tour-btn-primary:not(:disabled):hover {
+          background: linear-gradient(90deg, #e8c872, #caa146); border: 0;
+          color: #0e0c16; font-weight: 600; padding: 6px 16px;
+          box-shadow: 0 2px 12px rgba(232,200,114,0.3);
+        }
+        .shepherd-element.k-tour .shepherd-footer .k-tour-btn.k-tour-btn-primary:not(:disabled):hover { filter: brightness(1.1); }
+
+        .shepherd-element.k-tour > .shepherd-arrow:before { background: #0e0c16 !important; background-color: #0e0c16 !important; border: 1.5px solid #ffffff; }
+        @media (max-width: 480px) {
+          .shepherd-element.k-tour .shepherd-content .shepherd-title { font-size: 20px; }
+          .shepherd-element.k-tour .shepherd-footer .k-tour-btn { padding: 6px 10px; font-size: 11px; }
         }
       `}</style>
 
