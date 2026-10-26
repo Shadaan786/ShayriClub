@@ -22,6 +22,7 @@ export default {
         "headline-md-mobile": ["Playfair Display"],
         "display-lg-mobile": ["Playfair Display"],
         "body-lg": ["DM Sans"],
+        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
 
         // --- Blocked Users / Admin Console theme (namespaced "admin-" to
         // avoid colliding with the Shayar tokens above, which reuse the
@@ -45,14 +46,23 @@ export default {
         "archival-urdu": ["Noto Nastaliq Urdu", "serif"],
         "archival-sans": ["Plus Jakarta Sans", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
       },
+          boxShadow: {
+      modal: '0 25px 50px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08), 0 0 35px -5px rgba(225,29,72,0.12)',
+      'danger-glow': '0 4px 20px -2px rgba(225,29,72,0.5), 0 2px 6px -1px rgba(225,29,72,0.3)',
+    },
       animation: {
         typewriter: 'typewriter 4s steps(28) forwards',
-        caret: 'typewriter 4s steps(28) forwards, blink 2s steps(28) infinite 2s'
+        caret: 'typewriter 4s steps(28) forwards, blink 2s steps(28) infinite 2s',
+        'modal-entry': 'modalIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
       keyframes: {
         scrollUp: {
           '0%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(-50%)' },
+          modalIn: {
+        from: { opacity: 0, transform: 'scale(0.96) translateY(8px)' },
+        to: { opacity: 1, transform: 'scale(1) translateY(0)' },
+      },
         },
         typewriter: {
           to: {

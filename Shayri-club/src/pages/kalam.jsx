@@ -731,7 +731,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { MyContext } from "../ContextProvider";
-import { Footer } from "@/Bg";
 import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
 import Shepherd from "shepherd.js";
 import "shepherd.js/dist/css/shepherd.css";
@@ -1133,6 +1132,394 @@ const buildKalamTour = ({ onComplete }) => {
   tour.on("complete", removeBlur);
   tour.on("cancel", removeBlur);
   return tour;
+};
+
+// ── Footer icons (inline SVG, no library needed) ────────────────────────────
+const Ico = ({ className = "", children }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    {children}
+  </svg>
+);
+const SparklesIcon = ({ className }) => (
+  <Ico className={className}>
+    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+    <path d="M20 3v4" /><path d="M22 5h-4" /><path d="M4 17v2" /><path d="M5 18H3" />
+  </Ico>
+);
+const MailIcon = ({ className }) => (
+  <Ico className={className}>
+    <rect x="2" y="4" width="20" height="16" rx="2" />
+    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+  </Ico>
+);
+const ArrowRightIcon = ({ className }) => (
+  <Ico className={className}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></Ico>
+);
+const ArrowUpIcon = ({ className }) => (
+  <Ico className={className}><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></Ico>
+);
+const ChevronDownIcon = ({ className }) => (
+  <Ico className={className}><path d="m6 9 6 6 6-6" /></Ico>
+);
+const GlobeIcon = ({ className }) => (
+  <Ico className={className}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+    <path d="M2 12h20" />
+  </Ico>
+);
+const HeadphonesIcon = ({ className }) => (
+  <Ico className={className}>
+    <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" />
+  </Ico>
+);
+const ShieldCheckIcon = ({ className }) => (
+  <Ico className={className}>
+    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+    <path d="m9 12 2 2 4-4" />
+  </Ico>
+);
+const InstagramIcon = ({ className }) => (
+  <Ico className={className}>
+    <rect x="3" y="3" width="18" height="18" rx="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+  </Ico>
+);
+const TwitterIcon = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
+const YoutubeIcon = ({ className }) => (
+  <Ico className={className}>
+    <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+    <path d="m10 15 5-3-5-3z" />
+  </Ico>
+);
+const MicIcon = ({ className }) => (
+  <Ico className={className}>
+    <rect x="9" y="2" width="6" height="12" rx="3" />
+    <path d="M5 10v1a7 7 0 0 0 14 0v-1" />
+    <line x1="12" y1="18" x2="12" y2="22" />
+  </Ico>
+);
+const GithubIcon = ({ className }) => (
+  <Ico className={className}>
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </Ico>
+);
+
+// ── Themed footer: original layout & typography, Kalam colour theme ─────────
+const KalamFooter = () => {
+  const Navigate = useNavigate();
+
+  return (
+    <>
+      {/* ==================== ENHANCED PROFESSIONAL FOOTER ==================== */}
+      <footer className="relative mt-20 border-t border-[#d2aa5a]/20 bg-gradient-to-b from-[#0a0812] via-[#07060d] to-[#050408] overflow-hidden font-sans">
+        {/* Ambient glow behind footer */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 0%, rgba(120, 60, 180, 0.18) 0%, rgba(210, 170, 90, 0.06) 35%, transparent 70%)",
+          }}
+        ></div>
+
+        {/* Decorative Top Divider Accent */}
+        <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#d2aa5a]/40 to-transparent"></div>
+
+        {/* Top Pre-Footer Callout / Literary Newsletter Section */}
+        <div className="relative border-b border-white/5 bg-white/[0.015]">
+          <div className="max-w-7xl mx-auto px-6 py-12 lg:py-14">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center justify-between">
+              <div className="lg:col-span-6 space-y-2">
+                <div className="flex items-center gap-2 text-[#d2aa5a] text-xs font-semibold tracking-wider uppercase">
+                  <SparklesIcon className="w-3.5 h-3.5" />
+                  The Weekly Bayt &amp;courier Dispatch
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-serif text-[#f0ebe3] font-medium">
+                  Curated couplets, literary contests &amp; essays.
+                </h3>
+                <p className="text-sm text-[#f0ebe3]/55 max-w-lg">
+                  Join 42,000+ literary enthusiasts who receive handpicked gazals, poetry writing prompts, and festival invites every Sunday morning.
+                </p>
+              </div>
+              <div className="lg:col-span-6">
+                <form
+                  className="flex flex-col sm:flex-row gap-3 max-w-lg lg:ml-auto"
+                  onSubmit={(e) => e.preventDefault()}
+                >
+                  <div className="relative flex-1">
+                    <MailIcon className="w-4 h-4 text-[#f0ebe3]/55 absolute left-4 top-1/2 -translate-y-1/2" />
+                    <input
+                      className="w-full bg-[#0f0c18]/80 text-[#f0ebe3] placeholder-[#f0ebe3]/30 text-sm rounded-xl pl-11 pr-4 py-3.5 border border-[#d2aa5a]/25 focus:border-[#d2aa5a] focus:outline-none focus:ring-2 focus:ring-[#d2aa5a]/20 transition-all"
+                      placeholder="Enter your email for the gazette..."
+                      required
+                      type="email"
+                    />
+                  </div>
+                  <button
+                    className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#e8c872] via-[#d9b45a] to-[#caa146] hover:brightness-110 text-[#0e0c16] font-semibold text-sm transition-all shadow-md shadow-[#d2aa5a]/10 flex items-center justify-center gap-2 whitespace-nowrap active:scale-[0.98]"
+                    type="submit"
+                  >
+                    <span>Subscribe</span>
+                    <ArrowRightIcon className="w-4 h-4" />
+                  </button>
+                </form>
+                <p className="text-[11px] text-[#f0ebe3]/30 mt-2 lg:text-right">
+                  Zero spam. Unsubscribe with one click anytime.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Multi-Column Footer Grid */}
+        <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+            {/* Brand & Mission Column (Col 1-4) */}
+            <div className="lg:col-span-4 space-y-5">
+              <div className="flex items-center gap-3">
+                <h1 className="relative inline-block text-4xl sm:text-5xl leading-none font-black tracking-wide cursor-default group">
+                  {/* Soft Glow layer behind text */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-[#f0c060] via-[#e8a0b0] to-[#f0a080] bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-75"
+                    style={{ fontFamily: "'Playfair Display', serif" }}
+                  >
+                    Alfaz
+                  </span>
+
+                  {/* Main text with composite Urdu & Script flourish */}
+                  <span className="relative inline-block">
+                    <span
+                      className="bg-gradient-to-r from-[#f0d890] to-[#f0c060] bg-clip-text text-transparent"
+                      style={{ fontFamily: "'Dancing Script', cursive" }}
+                    >
+                      A
+                    </span>
+                    <bdi
+                      className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-[#e8a0b0] via-[#d4a0c0] to-[#f0a080] bg-clip-text text-transparent"
+                      style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+                    >
+                      لف
+                    </bdi>
+                    <span
+                      className="bg-gradient-to-r from-[#f0c060] to-[#f0d890] bg-clip-text text-transparent"
+                      style={{ fontFamily: "'Dancing Script', cursive" }}
+                    >
+                      az
+                    </span>
+                  </span>
+                </h1>
+                {/* <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                  Shayri Club
+                </span> */}
+              </div>
+
+              <p className="text-[#f0ebe3]/55 text-sm leading-relaxed max-w-sm">
+                A sanctuary for poets, shayars, and novelists to immortalize their words, connect through soulful recitations, and celebrate the nuance of multilingual literature.
+              </p>
+
+              {/* Community Trust Badges */}
+              <div className="flex items-center gap-4 pt-1">
+                <div className="flex -space-x-2">
+                  <img alt="Poet Avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#07060d] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                  <img alt="Writer Avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#07060d] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                  <img alt="Contributor" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#07060d] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                  <div className="flex items-center justify-center h-8 w-8 rounded-full ring-2 ring-[#07060d] bg-[#d2aa5a]/20 text-[#e8c872] text-[10px] font-bold">
+                    +18k
+                  </div>
+                </div>
+                <div className="text-xs text-[#f0ebe3]/55">
+                  <span className="text-[#f0ebe3] font-medium">18,500+</span> Published Writers
+                </div>
+              </div>
+
+              {/* Social Icon Links with Tooltip/Hover Glow */}
+              <div className="flex items-center gap-2.5 pt-2">
+                <a aria-label="Instagram" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#d2aa5a]/10 border border-white/5 hover:border-[#d2aa5a]/30 text-[#f0ebe3]/55 hover:text-[#e8c872] flex items-center justify-center transition-all" href="#">
+                  <InstagramIcon className="w-4 h-4" />
+                </a>
+                <a aria-label="Twitter / X" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#d2aa5a]/10 border border-white/5 hover:border-[#d2aa5a]/30 text-[#f0ebe3]/55 hover:text-[#e8c872] flex items-center justify-center transition-all" href="#">
+                  <TwitterIcon className="w-4 h-4" />
+                </a>
+                <a aria-label="YouTube" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#d2aa5a]/10 border border-white/5 hover:border-[#d2aa5a]/30 text-[#f0ebe3]/55 hover:text-[#e8c872] flex items-center justify-center transition-all" href="#">
+                  <YoutubeIcon className="w-4 h-4" />
+                </a>
+                <a aria-label="Spotify" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#d2aa5a]/10 border border-white/5 hover:border-[#d2aa5a]/30 text-[#f0ebe3]/55 hover:text-[#e8c872] flex items-center justify-center transition-all" href="#">
+                  <MicIcon className="w-4 h-4" />
+                </a>
+                <a aria-label="GitHub" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#d2aa5a]/10 border border-white/5 hover:border-[#d2aa5a]/30 text-[#f0ebe3]/55 hover:text-[#e8c872] flex items-center justify-center transition-all" href="#">
+                  <GithubIcon className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Column 2: Explore (Col 5-6) */}
+            <div className="lg:col-span-2 space-y-4">
+              <div className="flex items-center gap-2">
+                {/* <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span> */}
+                <h4 className="text-sm font-semibold text-[#f0ebe3] tracking-wider uppercase font-sans">Explore</h4>
+              </div>
+              <ul className="space-y-3 text-sm text-[#f0ebe3]/55">
+                <li>
+                  <a className="group flex items-center justify-between hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Kalam (Poetry)</span>
+                    {/* <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">Hot</span> */}
+                  </a>
+                </li>
+                <li>
+                  <a className="group flex items-center hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Community Circle</span>
+                  </a>
+                </li>
+                <li>
+                  <a className="group flex items-center hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Browse Categories</span>
+                  </a>
+                </li>
+                <li>
+                  <a className="group flex items-center hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Mushaira Live Rooms</span>
+                  </a>
+                </li>
+                <li>
+                  <a className="group flex items-center justify-between hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Audio Recitations</span>
+                    <HeadphonesIcon className="w-3.5 h-3.5 text-[#f0ebe3]/30 group-hover:text-[#d2aa5a]" />
+                  </a>
+                </li>
+                <li>
+                  <a className="group flex items-center hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Featured Shayars</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: Resources & Academy (Col 7-8) */}
+            <div className="lg:col-span-3 space-y-4">
+              <div className="flex items-center gap-2">
+                {/* <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span> */}
+                <h4 className="text-sm font-semibold text-[#f0ebe3] tracking-wider uppercase font-sans">Writers &amp; Guild</h4>
+              </div>
+              <ul className="space-y-3 text-sm text-[#f0ebe3]/55">
+                <li>
+                  <a className="group flex items-center hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">About Alfaz</span>
+                  </a>
+                </li>
+                <li>
+                  <a className="group flex items-center hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Editorial Guidelines</span>
+                  </a>
+                </li>
+                <li>
+                  <a className="group flex items-center justify-between hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Poetic Meters (Behr) Guide</span>
+                    {/* <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">Learn</span> */}
+                  </a>
+                </li>
+                <li>
+                  <a className="group flex items-center hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Publishing Grants &amp; Contests</span>
+                  </a>
+                </li>
+                <li>
+                  <a className="group flex items-center hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Help &amp; Creator Support</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4: Legal & System Status (Col 9-12) */}
+            <div className="lg:col-span-3 space-y-4">
+              <div className="flex items-center gap-2">
+                {/* <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> */}
+                <h4 className="text-sm font-semibold text-[#f0ebe3] tracking-wider uppercase font-sans">Legal &amp; Transparency</h4>
+              </div>
+              <ul className="space-y-3 text-sm text-[#f0ebe3]/55">
+                <li>
+                  <button
+                    onClick={() => Navigate('/privacyPolicy')}
+                    className="group flex items-center justify-between w-full text-left hover:text-[#f0ebe3] transition-colors duration-150"
+                  >
+                    <span className="group-hover:translate-x-1 transition-transform">Privacy Policy</span>
+                    <ShieldCheckIcon className="w-3.5 h-3.5 text-[#f0ebe3]/30 group-hover:text-[#78c8b4]" />
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => Navigate('/termsofservices')}
+                    className="group flex items-center w-full text-left hover:text-[#f0ebe3] transition-colors duration-150"
+                  >
+                    <span className="group-hover:translate-x-1 transition-transform">Terms of Service</span>
+                  </button>
+                </li>
+                <li>
+                  <a className="group flex items-center hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Copyright &amp; Intellectual Rights</span>
+                  </a>
+                </li>
+                <li>
+                  <a className="group flex items-center hover:text-[#f0ebe3] transition-colors duration-150" href="#">
+                    <span className="group-hover:translate-x-1 transition-transform">Contact &amp; Inquiries</span>
+                  </a>
+                </li>
+              </ul>
+
+              {/* System Status Card */}
+              <div className="mt-4 p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#78c8b4] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#78c8b4]"></span>
+                  </span>
+                  <span className="text-xs text-[#f0ebe3]/70 font-medium">All Systems Operational</span>
+                </div>
+                <span className="text-[11px] text-[#f0ebe3]/30">v2.4.0</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Bar: Copyright, Language Switcher, Regional note */}
+          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#f0ebe3]/30">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-center md:text-left">
+              <span>© 2025 <strong className="text-[#f0ebe3]/55 font-semibold">Alfaz • Shayri Club</strong>. All rights reserved.</span>
+              <span className="hidden sm:inline text-[#d2aa5a]/30">•</span>
+              <span className="text-[#f0ebe3]/55">Crafted with devotion for Urdu, Hindi &amp; English verse.</span>
+            </div>
+            <div className="flex items-center gap-6">
+              {/* Language Selector Mockup */}
+              <button className="inline-flex items-center gap-1.5 text-[#f0ebe3]/55 hover:text-[#e8c872] transition-colors">
+                <GlobeIcon className="w-3.5 h-3.5" />
+                <span>English (EN)</span>
+                <ChevronDownIcon className="w-3 h-3" />
+              </button>
+
+              {/* Back to top button */}
+              <a
+                className="inline-flex items-center gap-1 text-[#f0ebe3]/55 hover:text-[#f0ebe3] transition-colors"
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              >
+                <span>Back to top</span>
+                <ArrowUpIcon className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </>
+  );
 };
 
 const Kalam = () => {
@@ -2697,7 +3084,7 @@ fetchUserNotifications();
           </AnimatePresence>
 
           {/* ── Hero ─────────────────────────────────── */}
-          <div className="k-hero">
+          {/* <div className="k-hero">
             <div className="k-hero-inner">
               <div>
                 <div className="k-greeting">Good evening, Arif</div>
@@ -2720,7 +3107,7 @@ fetchUserNotifications();
                 <div className="k-stat"><div className="k-stat-num">9</div><div className="k-stat-label">Ghazals</div></div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* ── SPLIT LAYOUT ────────────────────────── */}
           <div className="k-split k-body-wrap">
@@ -3266,7 +3653,7 @@ fetchUserNotifications();
 </MyVerticallyCenteredModal>
 
           </div>
-          <Footer/>
+          <KalamFooter />
         </div>
       </div>
 

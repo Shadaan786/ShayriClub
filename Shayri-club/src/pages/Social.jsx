@@ -1510,7 +1510,7 @@ const buildGoogleFontsUrl = () => {
 export const Social = () => {
   const [kalamDat, setKalamDat] = useState([]);
   const [uid, setUid] = useState("");
-  const [kalamid, setKalamId] = useState("");
+  // const [kalamid, setKalamId] = useState("");
   const [isReady, setIsReady] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("kalams");
@@ -1540,6 +1540,9 @@ export const Social = () => {
   const {isKalamCommentModalOpen, setIsKalamCommentModalOpen, kalamComment} = useContext(ModalContext);
   const {isPlayerModalOpen, setIsPlayerModalOpen} = useContext(ModalContext);
   const {kalamTrack, setKalamTrack} = useContext(ModalContext);
+  const {isKalamMenuOpen, setIsKalamMenuOpen, menuPosition, kalamId} = useContext(ModalContext)
+  const [isConfirmReportKalamOpen, setIsConfirmReportKalamOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   // Add once near the top of the file (or in a shared hooks file)
 const useIsMobile = (breakpoint = 640) => {
@@ -1692,19 +1695,295 @@ const isMobile = useIsMobile();
   }
 
   // ── Sidebar (Browse active) — matches Social.jsx's black/gold/violet theme ──
-  const SocialSidebar = () => (
-    <aside className="s-sidebar">
-      <div className="s-sidebar-links">
-        <div className="s-sidebar-section">Navigate</div>
-        <a href="/" className="s-sidebar-link">Home</a>
-        <a href="/kalam" className="s-sidebar-link">Kalam</a>
-        <a href="/Social" className="s-sidebar-link active">Browse</a>
-        <a href="/Kotw" className="s-sidebar-link">Kalam of the Week</a>
-        <button onClick={() => Navigate('/spaces')} className="s-sidebar-link">Community</button>
-        <a href="/albumsLive" className="s-sidebar-link">Library</a>
+const SocialSidebar = () => (
+  <aside className="s-sidebar">
+    <div className="s-sidebar-links">
+      <div className="s-sidebar-section">Navigate</div>
+      <a href="/" className="s-sidebar-link">Home</a>
+      <a href="/kalam" className="s-sidebar-link">Kalam</a>
+      <a href="/Social" className="s-sidebar-link active">Browse</a>
+      <a href="/Kotw" className="s-sidebar-link">Kalam of the Week</a>
+      <button onClick={() => Navigate('/spaces')} className="s-sidebar-link">Community</button>
+      <a href="/albumsLive" className="s-sidebar-link">Library</a>
+    </div>
+
+    <div className="s-sidebar-footer">
+      <a href="/settings" className="s-sidebar-link">
+        <svg
+          className="s-sidebar-link-icon"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        Settings
+      </a>
+    </div>
+  </aside>
+);
+
+  const reportKalam=(reason, details=null)=>{
+
+    axiosInstance
+    .post('/api/reportkalam',{
+      kalamId,
+      reason,
+      details
+    },{withCredentials:true})
+    .then((response)=>{
+      console.log(response.data);
+      setKalamDat((prev)=>prev.filter((k)=>k._id !== kalamId));
+    })
+    .catch((error)=>{
+      console.error("Error while fetching report kalam api", error);
+    })
+  }
+
+  const handleNotInterested=()=>{
+    axiosInstance
+    .post('/api/notinterestedkalam',{
+      kalamId:kalamId
+    },{withCredentials: true})
+    .then((response)=>{
+      console.log(response.data);
+      setKalamDat((prev)=>prev.filter((k)=>k._id!==kalamId));
+    })
+    .catch((error)=>{
+      console.error("Error while fetching NOT_INTERESTED API", error)
+    })
+  }
+
+  const REASONS = [
+  {
+    value: "sexual",
+    title: "Explicit or Sexual Content",
+    desc: "Depictions of explicit nudity, sexual acts, or unsolicited suggestive imagery.",
+  },
+  {
+    value: "hate",
+    title: "Hate Speech & Harassment",
+    desc: "Targeted slurs, dehumanizing rhetoric, intimidation, or hateful attacks.",
+  },
+  {
+    value: "extremism",
+    title: "Extremism & Terrorism",
+    desc: "Promotion of violent extremist factions, terrorist ideology, or radical propaganda.",
+  },
+  {
+    value: "violence",
+    title: "Violence & Incitement to Harm",
+    desc: "Threats of physical harm, glorification of violence, or dangerous acts.",
+  },
+  {
+    value: "racism",
+    title: "Racism & Discrimination",
+    desc: "Degrading or marginalizing individuals based on race, ethnicity, or faith.",
+  },
+  {
+    value: "other",
+    title: "Other Violation",
+    desc: "Issue not captured above, such as copyright, impersonation, or privacy.",
+  },
+];
+ 
+const FlagIcon = ({ className }) => (
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+    <line x1="4" y1="22" x2="4" y2="15" />
+  </svg>
+);
+ 
+/**
+ * Content to render inside <MyVerticallyCenteredModal>.
+ * Props: kalamTitle, onClose, onSubmit({ reason, details })
+ */
+ function ReportKalamForm({ kalamTitle = "", onClose, onSubmit }) {
+  const [reason, setReason] = useState("sexual");
+  const [details, setDetails] = useState("");
+ 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit?.({ reason, details: reason === "other" ? details : null });
+  };
+ 
+  return (
+    <div className="font-sans relative w-full max-w-[540px] bg-[#12141c] text-[#f1f3f9] rounded-2xl border border-zinc-800/90 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden">
+      {/* Top highlight hairline */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+ 
+      {/* Header */}
+      <div className="flex items-start justify-between px-6 pt-6 pb-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 shrink-0 shadow-sm">
+            <FlagIcon className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-semibold tracking-tight text-white leading-tight">
+              Report Kalam
+            </h2>
+            <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+              Reviewing “{kalamTitle}” • Anonymous &amp; secure
+            </p>
+          </div>
+        </div>
+ 
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close dialog"
+          className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800/70 border border-transparent hover:border-zinc-700/60 transition-all cursor-pointer"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
       </div>
-    </aside>
+ 
+      {/* Form */}
+      <form className="px-6 pb-6 pt-1" onSubmit={handleSubmit}>
+        <div className="flex items-center justify-between mb-3">
+          <span className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+            Select Primary Violation
+          </span>
+          <span className="text-[11px] text-zinc-500">Required</span>
+        </div>
+ 
+        <div className="space-y-2.5">
+          {REASONS.map((r) => {
+            const selected = reason === r.value;
+            const isOther = r.value === "other";
+ 
+            return (
+              <label
+                key={r.value}
+                className={`relative flex ${
+                  isOther ? "flex-col gap-2" : "items-start gap-3.5"
+                } p-3.5 rounded-xl cursor-pointer border transition-all text-left select-none ${
+                  selected
+                    ? "bg-amber-500/[0.06] border-amber-500/50 shadow-sm"
+                    : "bg-zinc-900/60 hover:bg-zinc-800/40 border-zinc-800/80 hover:border-zinc-700/80"
+                }`}
+              >
+                <div className="flex items-start gap-3.5">
+                  <div className="pt-0.5 shrink-0">
+                    <input
+                      type="radio"
+                      name="report-reason"
+                      value={r.value}
+                      checked={selected}
+                      onChange={() => setReason(r.value)}
+                      className="sr-only"
+                    />
+                    <div
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+                        selected
+                          ? "border-amber-400 bg-amber-400"
+                          : "border-zinc-600 bg-transparent"
+                      }`}
+                    >
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full bg-zinc-950 ${
+                          selected ? "" : "hidden"
+                        }`}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex-1 pr-1">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-xs font-semibold ${
+                          selected ? "text-zinc-100" : "text-zinc-200"
+                        }`}
+                      >
+                        {r.title}
+                      </span>
+                    </div>
+                    <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">
+                      {r.desc}
+                    </p>
+                  </div>
+                </div>
+ 
+                {isOther && (
+                  <div className="mt-1 pt-1 border-t border-zinc-800/80">
+                    <textarea
+                      rows={2}
+                      value={details}
+                      onChange={(e) => setDetails(e.target.value)}
+                      placeholder="Describe the issue or provide details (optional)..."
+                      className="w-full bg-[#0b0c10] border border-zinc-800 rounded-lg p-2.5 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 resize-none transition-colors"
+                    />
+                  </div>
+                )}
+              </label>
+            );
+          })}
+        </div>
+ 
+        {/* Footer */}
+        <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-3.5 pt-4 border-t border-zinc-800/80">
+          <div className="flex items-center gap-1.5 text-zinc-400 text-xs self-start sm:self-center">
+            <svg
+              className="w-3.5 h-3.5 text-emerald-400/90 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <polyline points="9 12 11 14 15 10" />
+            </svg>
+            <span className="text-[11px]">Confidential &amp; anonymous</span>
+          </div>
+ 
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 sm:flex-none px-4 py-2 text-xs font-medium text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800/80 border border-zinc-800 rounded-lg transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-medium text-white bg-rose-600 hover:bg-rose-500 active:bg-rose-700 rounded-lg shadow-sm transition-all cursor-pointer"
+            >
+              <FlagIcon className="w-3.5 h-3.5" />
+              <span>Submit Report</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   );
+}
 
   return (
     <div
@@ -1863,10 +2142,26 @@ const isMobile = useIsMobile();
         @media (min-width: 1024px) { .s-sidebar { display: flex; } }
 
         .s-sidebar-links {
-          padding: 24px 20px;
-          display: flex;
-          flex-direction: column;
-        }
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* takes remaining space, pushing the footer down */
+}
+
+.s-sidebar-footer {
+  margin-top: auto;
+  padding: 12px 20px 20px;
+  border-top: 1px solid rgba(78,70,57,0.3);
+}
+
+.s-sidebar-footer .s-sidebar-link {
+  margin-bottom: 0;
+}
+
+.s-sidebar-link-icon {
+  margin-right: 10px;
+  flex-shrink: 0;
+}
 
         .s-sidebar-section {
           font-family: 'Inter', sans-serif;
@@ -1987,9 +2282,8 @@ const isMobile = useIsMobile();
               fontSize: 12,
               letterSpacing: "0.1em",
               fontWeight: 700,
-              color: "#e9c176",
-              borderBottom: "2px solid #e9c176",
-              paddingBottom: 4,
+              color: "#d1c5b4",
+              
               cursor: "pointer",
               textTransform: "uppercase",
             }}
@@ -2019,8 +2313,10 @@ const isMobile = useIsMobile();
                 fontSize: 12,
                 letterSpacing: "0.1em",
                 fontWeight: 500,
-                color: "#d1c5b4",
+                color: "#e9c176",
                 cursor: "pointer",
+                borderBottom: "2px solid #e9c176",
+                paddingBottom: 4,
                 textTransform: "uppercase",
                 position: "relative",
               }}
@@ -2049,12 +2345,12 @@ const isMobile = useIsMobile();
         {/* Right: search + publish + avatar */}
         <div className="flex items-center gap-6" style={{ justifySelf: "end" }}>
           <div className="s-nav-search relative hidden lg:flex items-center">
-      <span
+      {/* <span
         className="material-symbols-outlined absolute left-3"
         style={{ color: "#9a8f80", pointerEvents: "none" }}
       >
         search
-      </span>
+      </span> */}
       <input
         onFocus={() => setIsSearchFocused(true)}
         onBlur={() => setIsSearchFocused(false)}
@@ -2217,7 +2513,7 @@ const isMobile = useIsMobile();
                   
                   {
 
-                    console.log("likes!!!!!!!!!", item.createdBy.name)
+                    console.log("likes!!!!!!!!!")
                   }
                   <NewKalam
                     customStyles={item.customStyles}
@@ -2231,7 +2527,7 @@ const isMobile = useIsMobile();
                     isImage={item.customStyles.isImage}
                     imageSrc={item.customStyles.imageSrc}
                     authorName={item.createdBy.name}
-                  
+                    
                     isLiked2={likedKalams2.current.has(item._id)}
                   />
                 </div>
@@ -2272,7 +2568,7 @@ const isMobile = useIsMobile();
               {kalamDat.map((item) => (
                 <div key={item._id} className="w-full max-w-[520px]">
                   {
-                    setTimeout(() => { console.log("hhh", likedKalams2) }, 3000)
+                    setTimeout(() => { console.log("hhh", item.createdAt) }, 3000)
                   }
                   <NewKalam
                     customStyles={item.customStyles}
@@ -2286,6 +2582,8 @@ const isMobile = useIsMobile();
                     isImage={isImage}
                     isLiked2={likedKalams2.current.has(item._id)}
                     kalamAudio={item.kalamAudio}
+                    creationDate={item.createdAt}
+                    authorName={item.createdBy.name}
                   />
                 </div>
               ))}
@@ -2297,6 +2595,77 @@ const isMobile = useIsMobile();
 
         </div>
         </div>
+                  {/* ── Anchored kalam action popover (replaces centered modal) ── */}
+          {isKalamMenuOpen && (
+            <>
+              {/* invisible backdrop to catch outside clicks and close the menu */}
+              <div
+                onClick={() => setIsKalamMenuOpen(false)}
+                style={{ position: "fixed", inset: 0, zIndex: 150 }}
+              />
+
+              <div
+                style={{
+                  position: "fixed",
+                  top: menuPosition?.top ?? 0,
+                  right: menuPosition?.right ?? 0,
+                  zIndex: 151,
+                  minWidth: "140px",
+                  background: "rgba(14,13,20,0.98)",
+                  border: "0.5px solid rgba(210,170,90,0.25)",
+                  borderRadius: "10px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                  padding: "4px",
+                  animation: "popIn 0.12s ease",
+                }}
+              >
+                <button
+                  onClick={() => {setIsKalamMenuOpen(false); setIsReportModalOpen(true)}}
+                  style={{
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "10px 14px",
+                    background: "transparent",
+                    border: "none",
+                    borderRadius: "6px",
+                    color: "rgba(255,140,140,0.9)",
+                    fontSize: "12px",
+                    fontFamily: "'DM Mono', monospace",
+                    letterSpacing: "0.05em",
+                    cursor: "pointer",
+                    transition: "background 0.12s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(226,75,74,0.1)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+                >
+                  Report kalam
+                </button>
+                <button
+                  onClick={() => {setIsKalamMenuOpen(false); handleNotInterested()}}
+                  style={{
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "10px 14px",
+                    background: "transparent",
+                    border: "none",
+                    borderRadius: "6px",
+                    color: "rgba(255,140,140,0.9)",
+                    fontSize: "12px",
+                    fontFamily: "'DM Mono', monospace",
+                    letterSpacing: "0.05em",
+                    cursor: "pointer",
+                    transition: "background 0.12s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(226,75,74,0.1)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+                >
+                  Not interested
+                </button>
+              </div>
+            </>
+          )}
         <MyVerticallyCenteredModal isOpen={isKalamCommentModalOpen} onClose={()=>setIsKalamCommentModalOpen} height={"full"} width={"full"}>
 
           <div>
@@ -2304,6 +2673,22 @@ const isMobile = useIsMobile();
           </div>
 
         </MyVerticallyCenteredModal>
+<MyVerticallyCenteredModal
+  isOpen={isReportModalOpen}
+  onClose={() => setIsReportModalOpen(false)}
+>
+  <ReportKalamForm
+    kalamTitle= {kalamDat.find(item=>item._id === kalamId)?.name}
+    onClose={() => setIsReportModalOpen(false)}
+    onSubmit={({ reason, details }) => {
+      console.log("see", reason);
+      console.log("see2", details);
+      reportKalam(reason, details);
+      // send report to your API here
+      setIsReportModalOpen(false);
+    }}
+  />
+</MyVerticallyCenteredModal>
 
        <MyVerticallyCenteredModal
   isOpen={isPlayerModalOpen}

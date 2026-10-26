@@ -2,6 +2,8 @@ import { useState } from "react";
 import NewKalam2 from "./NewKalam2";
 import { useNavigate } from "react-router-dom";
 import { KalamComment } from "../KalamComment";
+import { ModalContext } from "../Contexts/ModalContext";
+import { useContext } from "react";
 
 /**
  * PostCard — fully self-contained, no external CSS framework or icon font required.
@@ -451,6 +453,7 @@ export default function PostCard({
   kalamId,
   index,
   postId,
+  isPostLiked=false
 }) {
   // Album embed fields (embed.imageUrl / embed.title / embed.description) are only
   // relevant — and only rendered — when isAlbumAvailable is true.
@@ -461,7 +464,8 @@ export default function PostCard({
 
   // Comments now live on the card itself instead of a shared modal/context.
   const [commentsOpen, setCommentsOpen] = useState(false);
-
+  const {setPostMenuPosition, setMenuPostId, setIsPostMenuOpen} = useContext(ModalContext);
+  const [isPostLiked2, setIsPostLiked2] = useState(isPostLiked);
   const toggleComments = () => {
     setCommentsOpen((open) => !open);
     onCommentClick?.();
@@ -485,7 +489,16 @@ export default function PostCard({
               <p className="pc-timestamp">{timestamp}</p>
             </div>
           </div>
-          <button aria-label="More options" onClick={onMoreClick} className="pc-icon-btn">
+          <button aria-label="More options"  className="pc-icon-btn"
+                    onClick={(e)=>{
+            const rect = e.currentTarget.getBoundingClientRect();
+            setPostMenuPosition({
+              top: rect.bottom + 6,
+              right: window.innerWidth - rect.right,
+            });
+            setIsPostMenuOpen(true);
+            setMenuPostId(postId);
+          }}>
             <MoreIcon />
           </button>
         </header>
@@ -534,7 +547,13 @@ export default function PostCard({
         {/* Footer */}
         <footer className="pc-footer">
           <div className="pc-footer-left">
-            <button className="pc-metric-btn" onClick={onLikeClick}>
+            <button
+              className={`pc-metric-btn${isPostLiked2 ? " pc-metric-active" : ""}`}
+              onClick={()=>{
+                onLikeClick(postId);
+                setIsPostLiked2(prev=>!prev);
+              }}
+            >
               <HeartIcon />
               <span>{likeCount} Likes</span>
             </button>

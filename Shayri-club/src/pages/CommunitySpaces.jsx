@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import PostCard from "./components/PostCard";
 import Icon from "./components/icons/Icon";
 import axiosInstance from "@/Apis/axiosInstance";
 import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
 import NewKalam from "./components/NewKalam";
+import { ModalContext } from "./Contexts/ModalContext";
 /**
  * CommunitySPaces — fully self-contained React port of the "Aura Poetry" global feed.
  * No Tailwind or icon-font dependency: all styling lives in the injected <style> block
@@ -254,6 +255,36 @@ const styles = `
   box-shadow: 0 0 8px rgba(212,175,55,0.2);
 }
 
+/* ── Navbar icon alignment fixes ───────────────────────────── */
+.cs-header-icons { align-items: center; gap: 6px; }
+.cs-header-icons button {
+  width: 36px; height: 36px;
+  align-items: center; justify-content: center;
+  border-radius: 9999px;
+  line-height: 0;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+.cs-header-icons button:hover { background: rgba(212,175,55,0.1); }
+.cs-header-icons button svg,
+.cs-header-icons button > * { display: block; }
+.cs-header-right { gap: 12px; }
+.cs-header-divider { margin: 0 2px; flex-shrink: 0; }
+.cs-avatar-sm { display: block; flex-shrink: 0; }
+.cs-menu-btn {
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: rgba(212,175,55,0.8);
+  line-height: 0; cursor: pointer; flex-shrink: 0;
+}
+.cs-menu-btn > * { display: block; }
+@media (min-width: 1024px) { .cs-menu-btn { display: none; } }
+
+/* ── Keep search / bell / avatar on the far right when the center nav is hidden ── */
+@media (max-width: 1024px) {
+  .cs-header { grid-template-columns: 1fr auto; }
+  .cs-header-right { justify-self: end; margin-left: auto; }
+}
+
 /* Layout */
 .cs-layout {
   flex: 1;
@@ -309,6 +340,26 @@ const styles = `
   border-left: 2px solid var(--primary-container);
   font-weight: 500;
 }
+
+/* ── Sidebar icon + bottom-pinned settings ─────────────────── */
+.cs-nav-icon {
+  width: 20px; height: 20px;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  line-height: 0;
+}
+.cs-nav-icon svg { display: block; }
+.cs-nav-link span:not(.cs-nav-icon) { line-height: 1.2; }
+.cs-sidebar-left .cs-nav { flex: 1 1 auto; }
+.cs-sidebar-bottom {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(212,175,55,0.15);
+  display: flex; flex-direction: column; gap: 8px;
+  flex-shrink: 0;
+}
+.cs-sidebar-bottom .cs-nav-section { margin: 0 0 4px 12px; }
+
 /* Main — offset to make room for the fixed sidebars */
 .cs-main {
   flex: 1;
@@ -331,6 +382,11 @@ const styles = `
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+  .cs-main-composer {
+  padding-bottom: 32px;
+  border-bottom: 1px solid transparent;
+  border-image: linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent) 1;
 }
 .cs-composer-row { display: flex; gap: 16px; }
 .cs-avatar-md { width: 40px; height: 40px; border-radius: 9999px; border: 1px solid rgba(212,175,55,0.4); object-fit: cover; flex-shrink: 0; }
@@ -753,9 +809,386 @@ const styles = `
 }
 .cs-modal-confirm-btn:hover:not(:disabled) { background: var(--primary-container); color: var(--surface-container-lowest); }
 .cs-modal-confirm-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ---------------- Post menu (dropdown) ---------------- */
+.cs-postmenu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: transparent;
+}
+.cs-postmenu {
+  position: fixed;
+  z-index: 91;
+  width: 190px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: linear-gradient(180deg, rgba(26,27,31,0.98) 0%, rgba(13,14,18,0.99) 100%);
+  border: 1px solid rgba(212,175,55,0.25);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(212,175,55,0.02);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.cs-postmenu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--on-surface-variant);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.cs-postmenu-item svg { flex-shrink: 0; display: block; }
+.cs-postmenu-item:hover {
+  background: rgba(212,175,55,0.1);
+  color: var(--primary-container);
+}
+.cs-postmenu-item.danger:hover {
+  background: rgba(239,68,68,0.12);
+  color: #f87171;
+}
+
+/* ---------------- Report modal ---------------- */
+.cs-report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 16px;
+}
+.cs-report-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  text-align: left;
+  border-radius: 12px;
+  border: 1px solid rgba(212,175,55,0.15);
+  background: rgba(13,14,18,0.5);
+  color: var(--on-surface);
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cs-report-option:hover {
+  border-color: rgba(212,175,55,0.4);
+  background: rgba(212,175,55,0.04);
+}
+.cs-report-option.selected {
+  border-color: var(--primary-container);
+  background: rgba(212,175,55,0.08);
+  box-shadow: 0 0 0 1px rgba(212,175,55,0.4), 0 4px 20px rgba(212,175,55,0.1);
+}
+.cs-report-radio {
+  width: 18px; height: 18px;
+  margin-top: 2px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(212,175,55,0.5);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s ease;
+}
+.cs-report-option.selected .cs-report-radio { border-color: var(--primary-container); }
+.cs-report-radio-dot {
+  width: 8px; height: 8px;
+  border-radius: 9999px;
+  background: var(--primary-container);
+  box-shadow: 0 0 8px rgba(212,175,55,0.6);
+}
+.cs-report-option-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.cs-report-option-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  color: var(--primary-container);
+  letter-spacing: 0.01em;
+}
+.cs-report-option-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(208,197,175,0.7);
+}
+.cs-report-other-input {
+  width: 100%;
+  min-height: 90px;
+  margin-top: 4px;
+  padding: 12px 14px;
+  resize: vertical;
+  border-radius: 10px;
+  border: 1px solid rgba(212,175,55,0.25);
+  background: rgba(13,14,18,0.7);
+  color: var(--on-surface);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cs-report-other-input::placeholder { color: rgba(208,197,175,0.4); }
+.cs-report-other-input:focus {
+  border-color: var(--primary-container);
+  box-shadow: 0 0 0 1px rgba(212,175,55,0.3);
+}
+.cs-report-counter {
+  align-self: flex-end;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(208,197,175,0.5);
+  font-family: monospace;
+}
+
+/* ---------------- Selection modal — gold-theme additions ---------------- */
+.cs-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--on-surface);
+}
+.cs-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5,5,8,0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.cs-modal-inner.cs-modal-inner-wide {
+  position: relative;
+  max-width: 760px;
+  max-height: 90vh;
+}
+.cs-modal-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cs-modal-header-main { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.cs-modal-header-icon {
+  width: 40px; height: 40px;
+  border-radius: 9999px;
+  background: rgba(212,175,55,0.1);
+  border: 1px solid rgba(212,175,55,0.4);
+  box-shadow: 0 0 10px rgba(212,175,55,0.2);
+  color: var(--primary-container);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.cs-modal-header-main .cs-modal-title { margin-bottom: 4px; }
+.cs-modal-close {
+  width: 32px; height: 32px;
+  border-radius: 9999px;
+  border: none;
+  background: none;
+  color: rgba(212,175,55,0.7);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+.cs-modal-close:hover { color: var(--primary-container); background: rgba(212,175,55,0.1); }
+.cs-modal-tabs { flex-wrap: wrap; align-items: center; }
+.cs-modal-tab-count {
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  background: rgba(212,175,55,0.08);
+  border: 1px solid rgba(212,175,55,0.2);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-align: center;
+  color: rgba(208,197,175,0.7);
+}
+.cs-modal-tab.active .cs-modal-tab-count {
+  background: rgba(212,175,55,0.2);
+  border-color: rgba(212,175,55,0.4);
+  color: var(--primary-container);
+}
+.cs-modal-search {
+  margin-left: auto;
+  width: 220px;
+  max-width: 100%;
+  padding: 10px 14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(212,175,55,0.2);
+  background: rgba(13,14,18,0.7);
+  color: var(--on-surface);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cs-modal-search::placeholder { color: rgba(208,197,175,0.4); }
+.cs-modal-search:focus {
+  border-color: var(--primary-container);
+  box-shadow: 0 0 0 1px rgba(212,175,55,0.3);
+}
+@media (max-width: 560px) {
+  .cs-modal-search { width: 100%; margin-left: 0; }
+  .cs-modal-header, .cs-modal-footer { padding-left: 20px; padding-right: 20px; }
+  .cs-modal-tabs { padding-left: 20px; padding-right: 20px; }
+  .cs-modal-body { padding-left: 20px; padding-right: 20px; }
+}
+.cs-modal-hint {
+  font-size: 11px;
+  color: rgba(212,175,55,0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin: 0 0 16px 4px;
+}
+.cs-modal-grid-kalam { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.cs-modal-grid-album { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.cs-modal-kalam-wrap { padding: 12px; }
+.cs-modal-kalam-wrap > * { pointer-events: none; }
+.cs-modal-album-cover { position: relative; }
+.cs-modal-album-cover img { transition: transform 0.5s ease; }
+.cs-modal-card:hover .cs-modal-album-cover img { transform: scale(1.05); }
+.cs-modal-track-badge {
+  position: absolute;
+  left: 8px; bottom: 8px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: rgba(13,14,18,0.8);
+  border: 1px solid rgba(212,175,55,0.3);
+  color: var(--primary-container);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.cs-modal-selected-tag {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  padding: 10px 12px 0 12px;
+  border-top: 1px solid rgba(212,175,55,0.12);
+}
+.cs-modal-selected-tag span {
+  padding: 2px 10px;
+  border-radius: 9999px;
+  background: rgba(212,175,55,0.12);
+  border: 1px solid rgba(212,175,55,0.4);
+  color: var(--primary-container);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.cs-modal-album-selected-wrap { padding: 0 12px 12px 12px; }
+.cs-modal-footer { justify-content: space-between; }
+.cs-modal-footer-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.cs-modal-selected-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 7px 14px;
+  border-radius: 9999px;
+  background: rgba(13,14,18,0.7);
+  border: 1px solid rgba(212,175,55,0.25);
+  font-size: 12px;
+  color: var(--on-surface-variant);
+}
+.cs-modal-selected-chip strong {
+  color: var(--primary-container);
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cs-modal-selected-chip .cs-modal-chip-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cs-modal-nothing { font-size: 12px; color: rgba(208,197,175,0.5); font-style: italic; font-family: 'Playfair Display', serif; }
 `;
 
 /* ---------------------------------------------------------------------------- */
+
+/* Self-contained sidebar icons (inline SVG) — each nav link gets its own distinct icon. */
+const NAV_ICON_PATHS = {
+  home: (
+    <>
+      <path d="M3 11.5 12 4l9 7.5" />
+      <path d="M5 10v10h14V10" />
+      <path d="M10 20v-6h4v6" />
+    </>
+  ),
+  kalam: (
+    <>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </>
+  ),
+  browse: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m15.5 8.5-2 5-5 2 2-5Z" />
+    </>
+  ),
+  kotw: (
+    <path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z" />
+  ),
+  community: (
+    <>
+      <circle cx="9" cy="8" r="3.2" />
+      <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+      <path d="M16 5.2a3 3 0 0 1 0 5.6" />
+      <path d="M18 14.3c1.9.8 3 2.6 3 5.7" />
+    </>
+  ),
+  library: (
+    <>
+      <path d="M4 4h4v16H4z" />
+      <path d="M10 4h4v16h-4z" />
+      <path d="m15.5 5.5 3.6-.9 3 14.4-3.6.9z" />
+    </>
+  ),
+  settings: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" />
+    </>
+  ),
+};
+
+const NavIcon = ({ name, size = 18 }) => (
+  <span className="cs-nav-icon" aria-hidden="true">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {NAV_ICON_PATHS[name] || NAV_ICON_PATHS.home}
+    </svg>
+  </span>
+);
 
 const GLOBAL_NAV_LINKS = [
   { text: "Kalam", href: "/kalam" },
@@ -768,12 +1201,12 @@ const NAV_SECTIONS = [
   {
     label: "Network",
     links: [
-      { icon: "book", text: "Home", navigate: '/' },
-      { icon: "group", text: "kalam", navigate: '/kalam' },
-      { icon: "festival", text: "Browse", navigate: '/social' },
-      { icon: "festival", text: "Kalam of the Week", navigate: '/kotw' },
-      { icon: "festival", text: "Community", active: true },
-      { icon: "festival", text: "Library", navigate: '/albumsLive' },
+      { icon: "home", text: "Home", navigate: '/' },
+      { icon: "kalam", text: "kalam", navigate: '/kalam' },
+      { icon: "browse", text: "Browse", navigate: '/social' },
+      { icon: "kotw", text: "Kalam of the Week", navigate: '/kotw' },
+      { icon: "community", text: "Community", active: true },
+      { icon: "library", text: "Library", navigate: '/albumsLive' },
     ],
   },
   // {
@@ -797,6 +1230,42 @@ const BOTTOM_NAV_ITEMS = [
   { icon: "group", label: "Poets" },
   { icon: "settings", label: "Options" },
 ];
+
+/* Report categories shown in the Report modal. */
+const REPORT_REASONS = [
+  {
+    id: "explicit_sexual",
+    title: "Explicit or Sexual Content",
+    description: "Reports material featuring nudity, sexual acts, or unwanted suggestive media.",
+  },
+  {
+    id: "hate_harassment",
+    title: "Hate Speech & Harassment",
+    description: "Flags targeted slurs, bullying, intimidation, or dehumanizing remarks.",
+  },
+  {
+    id: "extremism_terrorism",
+    title: "Extremism & Terrorism",
+    description: "Addresses the promotion of violent extremist groups or radical propaganda.",
+  },
+  {
+    id: "violence_harm",
+    title: "Violence & Incitement to Harm",
+    description: "Targets direct threats of physical injury or dangerous acts.",
+  },
+  {
+    id: "racism_discrimination",
+    title: "Racism & Discrimination",
+    description: "Reports content that degrades individuals based on race, faith, or ethnicity.",
+  },
+  {
+    id: "other",
+    title: "Other Violation",
+    description: "Covers general issues like copyright infringement, impersonation, privacy breaches, or anything else.",
+  },
+];
+
+const REPORT_DETAILS_MAX = 500;
 
 const DEFAULT_POSTS = [
   {
@@ -855,6 +1324,16 @@ export default function CommunitySPaces({
   const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [isNotificationModalOpen, setIsNotificationmodalOpened] = useState(false);
+  const likedPosts = useRef(new Set());
+  const [modalSearch, setModalSearch] = useState("");
+
+  // Report modal state
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportPostId, setReportPostId] = useState(null);
+  const [reportCategory, setReportCategory] = useState(null); // one of REPORT_REASONS ids
+  const [reportDetails, setReportDetails] = useState("");
+
+  const {isPostMenuOpen, setIsPostMenuOpen, postMenuPosition, menuPostId} = useContext(ModalContext);
     
   
   // Which tab of the picker is active, and which item is currently selected.
@@ -877,6 +1356,30 @@ export default function CommunitySPaces({
         console.error("Error while fetching user posts", error);
       });
   };
+
+  const likePost=(postId)=>{
+    axiosInstance
+    .post(`/api/likePost?postId=${postId}`,{
+      postId: postId
+    },{withCredentials: true})
+    .then((response)=>{
+      console.log('response', response.data.data);
+    })
+    .catch((error)=>{
+      console.error("Error while fetching like post req", error);
+    })
+  }
+
+  const fetchLikedPosts=()=>{
+    axiosInstance
+    .get('/api/likedPosts',{withCredentials: true})
+    .then((response)=>{
+      console.log("response",response.data)
+      response.data.data.forEach((item)=>{
+        likedPosts.current.add(item._id)
+      })
+    })
+  }
   const fetchUserNotifications=()=>{
     axiosInstance
     .get('/api/offlineNotifications',{
@@ -891,6 +1394,7 @@ export default function CommunitySPaces({
   useEffect(() => {
     fetchPosts();
     fetchUserNotifications();
+    fetchLikedPosts();
   }, []);
 
   const fetchUserKalams = () => {
@@ -990,56 +1494,324 @@ export default function CommunitySPaces({
   const LeftSidebar = () => (
     <aside className="cs-sidebar-left">
       <nav className="cs-nav">
-        {NAV_SECTIONS.map((section) => (
+        {NAV_SECTIONS.filter((section) => section.label !== "System").map((section) => (
           <React.Fragment key={section.label}>
             <div className="cs-nav-section">{section.label}</div>
             {section.links.map((link) => (
               <a key={link.text} href={link.navigate} className={`cs-nav-link${link.active ? " active" : ""}`}>
-                <Icon name={link.icon} size={18} />
+                <NavIcon name={link.icon} size={18} />
                 <span>{link.text}</span>
               </a>
             ))}
           </React.Fragment>
         ))}
       </nav>
+
+      {/* Settings pinned to the bottom of the sidebar */}
+      <div className="cs-sidebar-bottom">
+        {NAV_SECTIONS.filter((section) => section.label === "System").map((section) => (
+          <React.Fragment key={section.label}>
+            <div className="cs-nav-section">{section.label}</div>
+            {section.links.map((link) => (
+              <a key={link.text} href={link.navigate} className={`cs-nav-link${link.active ? " active" : ""}`}>
+                <NavIcon name={link.icon} size={18} />
+                <span>{link.text}</span>
+              </a>
+            ))}
+          </React.Fragment>
+        ))}
+      </div>
     </aside>
   );
 
-  const Composer = ({ userAvatarUrl, placeholder = "Pen your verses for the world...", onPublish }) => {
+/* ===== Composer (replace the old block from the stray "/**" comment through its closing "};") =====
+     Uses only your existing state/handlers. Called exactly as before: Composer(userAvatarUrl, onPublish) */
+
+  // Material Symbols glyph (font is already @imported in your styles). Named MSIcon so it does NOT shadow your imported <Icon />.
+  const MSIcon = ({ name, className = "" }) => (
+    <span className={`material-symbols-outlined leading-none select-none ${className}`}>{name}</span>
+  );
+
+  const Composer = (userAvatarUrl, onPublish, placeholder = "Pen your verses for the world, weave couplets, or share marginalia into midnight embers...") => {
+    const [typography, setTypography] = useState("serif");
+    const [isKalamPreviewOpen, setIsKalamPreviewOpen] = useState(false);
+
+    // ----- derive the 3 states from your existing state -----
+    const attachedAlbum = album ? userAlbums.find((a) => a._id === album) : null;
+    const attachedKalam = !album && kalam ? userKalams.find((k) => k._id === kalam) : null;
+    const attached = isAttached && !!(album || kalam);          // State 2 or 3
+    const isAlbum = attached && !!album;                         // State 2 = album, State 3 = kalam
+
+    const itemTitle = isAlbum
+      ? attachedAlbum?.title || attachedAlbum?.name || "Album"
+      : attachedKalam?.name || "Kalam";
+    const itemImage = isAlbum
+      ? attachedAlbum?.albumCover || attachedAlbum?.coverUrl
+      : attachedKalam?.customStyles?.imageSrc;
+    const itemSub = isAlbum
+      ? `${attachedAlbum?.kalamCollection?.length ?? 0} Tracks`
+      : attachedKalam?.category || "";
+
+    const kalamSnippet = (() => {
+      const raw = typeof attachedKalam?.content === "string" ? attachedKalam.content : "";
+      const words = raw
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .split(" ")
+        .filter(Boolean);
+      if (!words.length) return "";
+      return words.slice(0, 8).join(" ") + (words.length > 8 ? "…" : "");
+    })();
+
+    const trimmed = value.trim();
+    const words = trimmed ? trimmed.split(/\s+/).length : 0;
+    const verses = trimmed ? value.split("\n").filter((l) => l.trim()).length : 0;
+    const isActive = !!trimmed || attached;                      // State 1 = not active
+    const canPublish = isActive;
+
+    const openPicker = () => {
+      setIsSelectionModalOpen(true);
+      fetchUserAlbums();
+      fetchUserKalams();
+    };
+
+    const serifFont = "[font-family:'Playfair_Display',serif]";
+    const sansFont = "[font-family:'Manrope','DM_Sans',sans-serif]";
+
     return (
-      <div className="cs-composer">
-        <div className="cs-composer-row">
-          <img className="cs-avatar-md" src={userAvatarUrl} alt="My avatar" />
-          <div className="cs-composer-body">
-            <textarea
-              className="cs-textarea"
-              placeholder={placeholder}
-              rows={2}
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-            />
-            <div className="cs-composer-toolbar">
-              <div className="cs-toolbar-icons">
-                {!isAttached && (
+      <>
+      <div
+        className={`relative rounded-xl bg-[#181c22] border p-5 sm:p-6 transition-all ${
+          isActive ? "border-[#ffb59e]/30 shadow-2xl" : "border-[#31353c]/30 shadow-lg"
+        }`}
+      >
+        {isActive && (
+          <div className="absolute inset-0 bg-gradient-to-b from-[#ffb59e]/5 via-transparent to-transparent pointer-events-none rounded-xl" />
+        )}
+
+        <div className="relative z-10 flex items-start gap-4">
+          {/* Avatar */}
+          <div className="relative flex-shrink-0">
+            <div
+              className={`w-12 h-12 rounded-full overflow-hidden bg-[#262a31] ring-2 ${
+                isActive ? "ring-[#ffb59e]/60 shadow-lg" : "ring-[#a48b84]/30"
+              }`}
+            >
+              <img className="w-full h-full object-cover" src={userAvatarUrl} alt="My avatar" />
+            </div>
+            <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-[#181c22]" />
+          </div>
+
+          <div className="flex-grow flex flex-col gap-2 min-w-0">
+            {/* Top row */}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              {!isActive ? (
+                <div className="ml-auto flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#1c2026] text-xs text-[#dcc1b9]">
+                  <MSIcon name="public" className="text-[14px] text-[#ffb59e]" />
+                  <span>Public Salon</span>
+                </div>
+              ) : (
+                <div className="ml-auto flex items-center gap-2">
+                  <div className="flex items-center gap-1 bg-[#1c2026] rounded-lg p-1 border border-[#31353c]/40">
+                    {["serif", "sans"].map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setTypography(t)}
+                        className={`px-2 py-0.5 rounded text-[11px] font-medium uppercase tracking-wide transition-all ${
+                          typography === t
+                            ? "bg-[#dd7351] text-[#521300]"
+                            : "text-[#dcc1b9] hover:text-[#dfe2eb]"
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
                   <button
-                    onClick={() => {
-                      setIsSelectionModalOpen(true);
-                      fetchUserAlbums();
-                      fetchUserKalams();
-                    }}
+                    type="button"
+                    title="Add stanza separator"
+                    onClick={() => setValue(value + "\n\n")}
+                    className="p-1.5 rounded-lg bg-[#1c2026] hover:bg-[#262a31] text-[#dcc1b9] hover:text-[#dfe2eb] transition-colors"
                   >
-                    Attach
+                    <MSIcon name="format_line_spacing" className="text-[18px]" />
                   </button>
-                )}
-                {isAttached && <button onClick={handleDeAttach}>remove</button>}
+                </div>
+              )}
+            </div>
+
+            {/* Textarea */}
+            <div
+              className={`pl-3.5 border-l-2 transition-colors focus-within:border-[#ffb59e] ${
+                isActive ? "border-[#ffb59e]/70" : "border-[#31353c]/60"
+              }`}
+            >
+              <textarea
+                className={`w-full bg-transparent border-0 p-0 text-[#dfe2eb] placeholder:text-[#a48b84]/50 focus:outline-none focus:ring-0 resize-none text-[1.25rem] leading-[2.25rem] tracking-[0.015em] ${
+                  typography === "serif" ? serifFont : sansFont
+                } ${isActive ? "min-h-[140px]" : "min-h-[80px]"}`}
+                aria-label="Pen your verses for the world"
+                placeholder={placeholder}
+                rows={isActive ? 4 : 2}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+              />
+            </div>
+
+            {/* State 2 (album) / State 3 (kalam) attachment chip */}
+            {attached && (
+              <div className="pt-1">
+                <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-[#1c2026] border border-[#ffb59e]/40 shadow-sm hover:border-[#ffb59e]/70 transition-all duration-200">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="relative w-12 h-12 rounded-lg bg-[#ffb59e]/20 overflow-hidden flex-shrink-0 border border-[#ffb59e]/30 shadow flex items-center justify-center">
+                      {itemImage ? (
+                        <img className="w-full h-full object-cover" src={itemImage} alt={itemTitle} />
+                      ) : (
+                        <MSIcon name={isAlbum ? "auto_stories" : "history_edu"} className="text-[22px] text-[#ffb59e]" />
+                      )}
+                      {itemImage && (
+                        <div className="absolute bottom-1 right-1 w-3.5 h-3.5 rounded-full bg-[#0a0e14]/80 flex items-center justify-center">
+                          <MSIcon name={isAlbum ? "auto_stories" : "history_edu"} className="text-[10px] text-[#ffb59e]" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[0.875rem] text-[#dfe2eb] font-semibold truncate max-w-[220px]">
+                          {itemTitle}
+                        </span>
+                        {/* <span className="px-2 py-0.5 rounded bg-[#ffb59e]/20 text-[#ffb59e] font-mono text-[10px] border border-[#ffb59e]/30 font-medium">
+                          {isAlbum ? "Folio Album" : "Kalam"}
+                        </span>
+                        <span className="px-1.5 py-0.5 rounded bg-emerald-400/10 text-emerald-400 font-mono text-[10px] border border-emerald-400/20 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          Attached
+                        </span> */}
+                      </div>
+                      {isAlbum ? (
+                        itemSub && <span className="text-xs text-[#a48b84] mt-0.5 truncate">{itemSub}</span>
+                      ) : (
+                        kalamSnippet && (
+                          <button
+                            type="button"
+                            onClick={() => setIsKalamPreviewOpen(true)}
+                            title="Preview kalam"
+                            className="text-xs text-[#a48b84] hover:text-[#ffb59e] mt-0.5 truncate max-w-[260px] text-left italic hover:underline underline-offset-2 transition-colors"
+                          >
+                            {kalamSnippet}
+                          </button>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={openPicker}
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#262a31] hover:bg-[#31353c] text-[#dfe2eb] text-xs font-semibold transition-colors border border-[#31353c]/50"
+                    >
+                      <MSIcon name="swap_horiz" className="text-[15px] text-[#ffb59e]" />
+                      <span>{isAlbum ? "Change Album" : "Change Kalam"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Remove attachment"
+                      onClick={handleDeAttach}
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[#a48b84] hover:text-[#ffb4ab] hover:bg-[#262a31] border border-transparent hover:border-[#ffb4ab]/30 text-xs font-semibold transition-colors"
+                    >
+                      <MSIcon name="close" className="text-[15px]" />
+                      <span>Detach</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <button className="cs-publish-btn" onClick={() => { onPublish?.(value); handlePublish(); }}>
-                Publish
-              </button>
+            )}
+
+            {/* Toolbar */}
+            <div
+              className={`flex flex-wrap items-center justify-between gap-2 pt-4 mt-2 border-t ${
+                isActive ? "border-[#31353c]/40" : "border-[#31353c]/30"
+              }`}
+            >
+              <div className="flex items-center gap-1.5">
+                {!attached ? (
+                  <button
+                    type="button"
+                    onClick={openPicker}
+                    className="group flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#1c2026] hover:bg-[#262a31] text-[#e5c158] hover:text-[#f8e7a2] border border-[#d4af37]/40 hover:border-[#d4af37]/80 shadow-[0_0_15px_-3px_rgba(212,175,55,0.15)] hover:shadow-[0_0_20px_0px_rgba(212,175,55,0.3)] transition-all duration-200 text-xs font-semibold"
+                  >
+                    <MSIcon name="attach_file" className="text-[18px] text-[#e5c158] group-hover:rotate-12 transition-transform duration-200" />
+                    <span className="whitespace-nowrap">Attach Album / Kalam</span>
+                    <MSIcon name="expand_more" className="text-[14px] text-[#d4af37]/60 group-hover:text-[#e5c158]" />
+                  </button>
+                ) : (
+                  <div
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#262a31]/40 text-[#a48b84] border border-[#31353c]/30 cursor-not-allowed opacity-60 text-xs font-semibold"
+                    title="Only one attachment per verse. Detach first to attach the other type."
+                  >
+                    <MSIcon name="block" className="text-[16px]" />
+                    <span className="whitespace-nowrap">{isAlbum ? "Add Kalam" : "Attach Album"}</span>
+                    <span className="text-[10px] font-mono text-[#56423d] hidden sm:inline">(1 attachment max)</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-4">
+                <span className="font-mono text-xs text-[#a48b84]">
+                  {isActive
+                    ? `${words} ${words === 1 ? "word" : "words"} • ${verses} ${verses === 1 ? "verse" : "verses"}`
+                    : "0 words"}
+                </span>
+                <button
+                  type="button"
+                  disabled={!canPublish}
+                  onClick={() => { onPublish?.(value); handlePublish(); }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    canPublish
+                      ? "bg-[#ffb59e] text-[#5e1700] shadow-lg shadow-[#ffb59e]/20 hover:bg-[#dd7351] hover:text-[#521300] active:scale-95"
+                      : "bg-[#262a31] text-[#a48b84] cursor-not-allowed opacity-70"
+                  }`}
+                >
+                  <MSIcon name="send" className="text-[18px]" />
+                  <span>Publish</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Kalam preview */}
+      <MyVerticallyCenteredModal
+        isOpen={isKalamPreviewOpen && attached && !isAlbum}
+        onClose={() => setIsKalamPreviewOpen(false)}
+      >
+        <div className="relative w-full max-w-xl max-h-[85vh] overflow-y-auto rounded-2xl bg-[#0F172A] border border-slate-800/80 p-4 shadow-2xl [scrollbar-width:thin] [scrollbar-color:#334155_transparent]">
+          <button
+            type="button"
+            onClick={() => setIsKalamPreviewOpen(false)}
+            aria-label="Close preview"
+            className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+          >
+            ✕
+          </button>
+          {attachedKalam && (
+            <NewKalam
+              title={attachedKalam.name}
+              content={attachedKalam.content}
+              type={attachedKalam.category}
+              imageSrc={attachedKalam.customStyles?.imageSrc}
+              kalId={attachedKalam._id}
+              customStyles={attachedKalam.customStyles}
+              actionStrip={false}
+            />
+          )}
+        </div>
+      </MyVerticallyCenteredModal>
+      </>
     );
   };
 
@@ -1062,11 +1834,147 @@ export default function CommunitySPaces({
     </nav>
   );
 
+  /* ---------------------- Post menu (uses ModalContext values) ---------------------- */
+  const PostMenu = () => {
+    if (!isPostMenuOpen) return null;
+
+    const MENU_HEIGHT = 110;
+
+    // postMenuPosition is { top, right } — set from the PostCard menu button's bounding rect.
+    const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+    const top = Math.max(8, Math.min(postMenuPosition?.top ?? 0, vh - MENU_HEIGHT - 8));
+    const right = Math.max(8, postMenuPosition?.right ?? 8);
+
+    const closeMenu = () => setIsPostMenuOpen(false);
+
+    const handleReportPost = () => {
+      console.log("report post", menuPostId);
+      // Open the report modal for this post (reset any previous selection first)
+      setReportPostId(menuPostId);
+      setReportCategory(null);
+      setReportDetails("");
+      setIsReportModalOpen(true);
+      closeMenu();
+    };
+
+    const handleNotInterested = () => {
+      console.log("not interested in post", menuPostId);
+      closeMenu();
+    };
+
+    return (
+      <>
+        <div
+          className="cs-postmenu-backdrop"
+          onClick={closeMenu}
+          onContextMenu={(e) => { e.preventDefault(); closeMenu(); }}
+        />
+        <div
+          className="cs-postmenu"
+          role="menu"
+          style={{ top, right }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button className="cs-postmenu-item" role="menuitem" onClick={()=>{handleNotInterestedPost(); handleNotInterested()}}>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="m5.6 5.6 12.8 12.8" />
+            </svg>
+            Not interested
+          </button>
+          <button className="cs-postmenu-item danger" role="menuitem" onClick={handleReportPost}>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 21V4" />
+              <path d="M5 4h11l-2 4 2 4H5" />
+            </svg>
+            Report
+          </button>
+        </div>
+      </>
+    );
+  };
+
   const handleDeAttach = () => {
     console.log("deAttach function ran!!!");
     album ? setAlbum(null) : setKalam(null);
     setIsAttached(false);
   };
+
+  /* ---------------------- Report modal handlers ---------------------- */
+  const closeReportModal = () => {
+    setIsReportModalOpen(false);
+    setReportCategory(null);
+    setReportDetails("");
+  };
+
+  const handleSubmitReport = () => {
+    if (!reportCategory) return;
+
+    const payload = {
+      postId: reportPostId,
+      reason: reportCategory,
+      // The text box is only used for "Other Violation"
+      detail: reportCategory === "Other Violation" ? reportDetails.trim() : null,
+    };
+
+    axiosInstance
+    .post('/api/reportpost',{
+      payload
+    },
+  {withCredentials: true})
+
+  .then((response)=>{
+    console.log("responsssse", response.data);
+    setUserPosts((prev)=>prev.filter((k)=>k._id!==menuPostId));
+  })
+  .catch((error)=>{
+    console.error("Error while fetching report post request", error);
+  })
+
+    console.log("submit report", payload);
+
+    // TODO: hook up your backend endpoint here, e.g.
+    // axiosInstance.post('/api/reportPost', payload, { withCredentials: true });
+
+    closeReportModal();
+  };
+
+  const handleNotInterestedPost=()=>{
+
+    axiosInstance
+    .post('/api/notinterestedpost',{
+      postId: menuPostId
+    },{withCredentials: true})
+
+    .then((response)=>{
+      console.log("see respomse", response.data);
+      setUserPosts((prev)=>prev.filter((k)=>k._id!==menuPostId));
+    })
+    .catch((error)=>{
+      console.error("Error while fetching not interested post", error);
+    })
+
+  }
 
   return (
     <div className="cs-root">
@@ -1117,11 +2025,12 @@ export default function CommunitySPaces({
               {userPosts.map((item) =>
                 item.featuredAlbum ? (
                   <PostCard
+                    isPostLiked={likedPosts.current.has(item._id)}
                     key={item._id}
                     postId={item._id}
                     albumId={item.featuredAlbum._id}
                     postText={item.text}
-                    onLike={onLike}
+                    onLikeClick={likePost}
                     onComment={onComment}
                     timestamp={item.createdAt}
                     authorAvatarUrl={item.postBy.profilePic}
@@ -1132,17 +2041,18 @@ export default function CommunitySPaces({
                     embed={{
                       title: item.featuredAlbum.name,
                       imageUrl:
-                        "https://lh3.googleusercontent.com/aida-public/AB6AXuC4PS-qi6gnp_PNKrnxCkocGWy3gWcR_d68oTzb1hkAUc-2oatuSV1L11_4FSkXlX79mMcBo4d8XjStPMd5AmIqmzYOIiTSFWtkiCyuv9YEOQQhazV5Xqzqr58bLNtuMbIartDk7HH5VpwLxS92nxfw5iYgJkUWv3ZMdo_AwL7yBZzUu65_3MVN2pbS5HtYsLumkSV-YqJjU7Q-RuwQBMWoLW4vtlhN_TSo_NAuTsIYL9K_v-9MY-ZT",
+                        item.featuredAlbum.albumCover,
                       description: "This is description",
                       ctaLabel: "Listen Now",
                     }}
                   />
                 ) : item.featurdKalam ? (
                   <PostCard
+                    isPostLiked={likedPosts.current.has(item._id)}
                     key={item._id}
                     postId={item._id}
                     postText={item.text}
-                    onLike={onLike}
+                    onLikeClick={likePost}
                     onComment={onComment}
                     timestamp={item.createdAt}
                     authorAvatarUrl={item.postBy.profilePic}
@@ -1161,10 +2071,11 @@ export default function CommunitySPaces({
                   />
                 ) : (
                   <PostCard
+                    isPostLiked={likedPosts.current.has(item._id)}
                     key={item._id}
                     postText={item.text}
                     postId={item._id}
-                    onLike={onLike}
+                    onLikeClick={likePost}
                     onComment={onComment}
                     timestamp={item.createdAt}
                     authorAvatarUrl={item.postBy.profilePic}
@@ -1187,101 +2098,222 @@ export default function CommunitySPaces({
         </main>
 
         <MyVerticallyCenteredModal isOpen={isSelectionModalOpen} onClose={() => setIsSelectionModalOpen(false)}>
-          <div className="cs-modal-inner">
-            <div className="cs-modal-header">
-              <h2 className="cs-modal-title">Add to your verse</h2>
-              <p className="cs-modal-subtitle">Attach a Kalam or an Album to your post</p>
-            </div>
+       {isSelectionModalOpen && (() => {
+  const q = modalSearch.trim().toLowerCase();
+  const filteredKalams = userKalams.filter(
+    (k) => !q || `${k.name || ""} ${k.category || ""}`.toLowerCase().includes(q)
+  );
+  const filteredAlbums = userAlbums.filter(
+    (a) => !q || `${a.title || a.name || ""}`.toLowerCase().includes(q)
+  );
+  const selectedKalam = userKalams.find((k) => k._id === kalam);
+  const selectedAlbum = userAlbums.find((a) => a._id === album);
+  const selectedName = selectedKalam
+    ? selectedKalam.name
+    : selectedAlbum
+    ? selectedAlbum.title || selectedAlbum.name
+    : "";
+  const closeModal = () => setIsSelectionModalOpen(false);
 
-            <div className="cs-modal-tabs">
-              <button
-                className={`cs-modal-tab${modalTab === "kalam" ? " active" : ""}`}
-                onClick={() => setModalTab("kalam")}
-              >
-                <Icon name="book" size={16} />
-                Kalams
-              </button>
-              <button
-                className={`cs-modal-tab${modalTab === "album" ? " active" : ""}`}
-                onClick={() => setModalTab("album")}
-              >
-                <Icon name="image" size={16} />
-                Albums
-              </button>
-            </div>
+  const badge = () => (
+    <div className="cs-modal-check">
+      <Icon name="check" size={14} />
+    </div>
+  );
 
-            <div className="cs-modal-body">
-              {modalTab === "kalam" ? (
-                userKalams.length === 0 ? (
-                  <div className="cs-modal-empty">No kalams found yet.</div>
-                ) : (
-                  <div className="cs-modal-grid">
-                    {userKalams.map((item) => (
+  return (
+    <div className="cs-modal-overlay">
+      {/* Backdrop */}
+      <div className="cs-modal-backdrop" onClick={closeModal} />
+
+      {/* Modal */}
+      <div className="cs-modal-inner cs-modal-inner-wide">
+        {/* Header */}
+        <div className="cs-modal-header">
+          <div className="cs-modal-header-row">
+            <div className="cs-modal-header-main">
+              <div className="cs-modal-header-icon">
+                <Icon name="book" size={18} />
+              </div>
+              <div>
+                <h2 className="cs-modal-title">Add to your verse</h2>
+                <p className="cs-modal-subtitle">
+                  Attach a devotional Kalam recitation or audio Album to your post
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={closeModal}
+              title="Close dialog"
+              aria-label="Close dialog"
+              className="cs-modal-close"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Tabs + search */}
+        <div className="cs-modal-tabs">
+          <button
+            className={`cs-modal-tab${modalTab === "kalam" ? " active" : ""}`}
+            onClick={() => setModalTab("kalam")}
+          >
+            <Icon name="book" size={16} />
+            Kalams
+            <span className="cs-modal-tab-count">{userKalams.length}</span>
+          </button>
+          <button
+            className={`cs-modal-tab${modalTab === "album" ? " active" : ""}`}
+            onClick={() => setModalTab("album")}
+          >
+            <Icon name="image" size={16} />
+            Albums
+            <span className="cs-modal-tab-count">{userAlbums.length}</span>
+          </button>
+
+          <input
+            type="text"
+            value={modalSearch}
+            onChange={(e) => setModalSearch(e.target.value)}
+            placeholder="Search kalams or albums..."
+            className="cs-modal-search"
+          />
+        </div>
+
+        {/* Body */}
+        <div className="cs-modal-body">
+          {modalTab === "kalam" ? (
+            <div>
+              <div className="cs-modal-hint">Attach a single kalam to your verse</div>
+
+              {filteredKalams.length === 0 ? (
+                <div className="cs-modal-empty">
+                  {q ? "No kalams match your search." : "No kalams found yet."}
+                </div>
+              ) : (
+                <div className="cs-modal-grid cs-modal-grid-kalam">
+                  {filteredKalams.map((item) => {
+                    const sel = kalam === item._id;
+                    return (
                       <div
                         key={item._id}
-                        className={`cs-modal-card${kalam === item._id ? " selected" : ""}`}
                         onClick={() => handleSelectKalam(item._id)}
+                        className={`cs-modal-card${sel ? " selected" : ""}`}
                       >
-                        {kalam === item._id && (
-                          <div className="cs-modal-check">
-                            <Icon name="check" size={14} />
+                        {sel && badge()}
+                        <div className="cs-modal-kalam-wrap">
+                          <NewKalam
+                            title={item.name}
+                            content={item.content}
+                            type={item.category}
+                            imageSrc={item.customStyles?.imageSrc}
+                            kalId={item._id}
+                            customStyles={item.customStyles}
+                            actionStrip={false}
+                          />
+                        </div>
+                        {sel && (
+                          <div className="cs-modal-selected-tag">
+                            <span>Selected</span>
                           </div>
                         )}
-                        <NewKalam
-                          title={item.name}
-                          content={item.content}
-                          type={item.category}
-                          imageSrc={item.customStyles?.imageSrc}
-                          kalId={item._id}
-                          customStyles={item.customStyles}
-                        />
                       </div>
-                    ))}
-                  </div>
-                )
-              ) : userAlbums.length === 0 ? (
-                <div className="cs-modal-empty">No albums found yet.</div>
-              ) : (
-                <div className="cs-modal-grid">
-                  {userAlbums.map((item) => (
-                    <div
-                      key={item._id}
-                      className={`cs-modal-card cs-modal-card-album${album === item._id ? " selected" : ""}`}
-                      onClick={() => handleSelectAlbum(item._id)}
-                    >
-                      {album === item._id && (
-                        <div className="cs-modal-check">
-                          <Icon name="check" size={14} />
-                        </div>
-                      )}
-                      <div className="cs-modal-album-cover">
-                        <img src={item.imageUrl || item.coverUrl} alt={item.title || item.name} />
-                      </div>
-                      <div className="cs-modal-album-body">
-                        <p className="cs-modal-album-title">{item.title || item.name}</p>
-                        <p className="cs-modal-album-meta">
-                          {item.meta || `${item.tracks?.length ?? 0} Tracks`}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
+          ) : (
+            <div>
+              <div className="cs-modal-hint">
+                Attach an entire curated album compilation to your verse
+              </div>
 
-            <div className="cs-modal-footer">
-              <button className="cs-modal-cancel-btn" onClick={() => setIsSelectionModalOpen(false)}>
-                Cancel
-              </button>
-              <button
-                className="cs-modal-confirm-btn"
-                disabled={!kalam && !album}
-                onClick={() => { setIsSelectionModalOpen(false); setIsAttached(true); }}
-              >
-                Attach Selection
-              </button>
+              {filteredAlbums.length === 0 ? (
+                <div className="cs-modal-empty">
+                  {q ? "No albums match your search." : "No albums found yet."}
+                </div>
+              ) : (
+                <div className="cs-modal-grid cs-modal-grid-album">
+                  {filteredAlbums.map((item) => {
+                    const sel = album === item._id;
+                    return (
+                      <div
+                        key={item._id}
+                        onClick={() => handleSelectAlbum(item._id)}
+                        className={`cs-modal-card cs-modal-card-album${sel ? " selected" : ""}`}
+                      >
+                        {sel && badge()}
+
+                        <div className="cs-modal-album-cover">
+                          <img
+                            src={item.albumCover || item.coverUrl}
+                            alt={item.title || item.name}
+                          />
+                          <span className="cs-modal-track-badge">
+                            {item.tracks?.length ?? 0} Tracks
+                          </span>
+                        </div>
+
+                        <div className="cs-modal-album-body">
+                          <p className="cs-modal-album-title">
+                            {item.title || item.name}
+                          </p>
+                          <p className="cs-modal-album-meta">
+                            {item.meta || `${item.tracks?.length ?? 0} Tracks`}
+                          </p>
+                        </div>
+
+                        {sel && (
+                          <div className="cs-modal-selected-tag" style={{ margin: 0, padding: "10px 0 0 0" }}>
+                            <span>Selected</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="cs-modal-footer">
+          <div style={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+            {selectedName ? (
+              <div className="cs-modal-selected-chip">
+                <span className="cs-pulse-dot" style={{ width: 8, height: 8, borderRadius: 9999, background: "#d4af37", flexShrink: 0, boxShadow: "0 0 8px rgba(212,175,55,0.6)" }} />
+                <span className="cs-modal-chip-text">
+                  Selected: <strong>{selectedName}</strong>
+                </span>
+              </div>
+            ) : (
+              <span className="cs-modal-nothing">Nothing selected yet</span>
+            )}
           </div>
+
+          <div className="cs-modal-footer-actions">
+            <button
+              className="cs-modal-cancel-btn"
+              onClick={closeModal}
+            >
+              Cancel
+            </button>
+            <button
+              className="cs-modal-confirm-btn"
+              disabled={!kalam && !album}
+              onClick={() => { setIsSelectionModalOpen(false); setIsAttached(true); }}
+            >
+              Attach Selection
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+})()}
         </MyVerticallyCenteredModal>
         <MyVerticallyCenteredModal isOpen={isNotificationModalOpen} onClose={() => setIsNotificationmodalOpened(false)}>
                       <div
@@ -1301,7 +2333,7 @@ export default function CommunitySPaces({
                               )} */}
                             </h2>
                             <button
-                              onClick={() => setNotificationOpened(false)}
+                              onClick={() => setIsNotificationmodalOpened(false)}
                               className="w-8 h-8 flex items-center justify-center rounded-full text-[#d8c3ad] hover:text-[#ffc174] transition-colors active:scale-90"
                               aria-label="Close notifications"
                             >
@@ -1373,6 +2405,76 @@ export default function CommunitySPaces({
                         </div>
                       </div>
                     </MyVerticallyCenteredModal>
+
+        {/* Report modal — opened from the "Report" item of the post menu */}
+        <MyVerticallyCenteredModal isOpen={isReportModalOpen} onClose={closeReportModal}>
+          <div className="cs-modal-inner">
+            <div className="cs-modal-header">
+              <h2 className="cs-modal-title">Report this post</h2>
+              <p className="cs-modal-subtitle">Tell us what's wrong so we can review it</p>
+            </div>
+
+            <div className="cs-modal-body">
+              <div className="cs-report-list" role="radiogroup" aria-label="Report reason">
+                {REPORT_REASONS.map((reason) => {
+                  const isSelected = reportCategory === reason.title;
+                  return (
+                    <button
+                      key={reason.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      className={`cs-report-option${isSelected ? " selected" : ""}`}
+                      onClick={() => {setReportCategory(reason.id);setReportDetails(reason.description);setReportCategory(reason.title)}}
+                    >
+                      <span className="cs-report-radio" aria-hidden="true">
+                        {isSelected && <span className="cs-report-radio-dot" />}
+                      </span>
+                      <span className="cs-report-option-body">
+                        <span className="cs-report-option-title">{reason.title}</span>
+                        <span className="cs-report-option-desc">{reason.description}</span>
+                        {reason.id === "other" && isSelected && (
+                          <>
+                            <textarea
+                              className="cs-report-other-input"
+                              placeholder="Describe the issue in detail (optional)..."
+                              value={reportDetails}
+                              maxLength={REPORT_DETAILS_MAX}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => setReportDetails(e.target.value)}
+                              autoFocus
+                            />
+                            <span className="cs-report-counter">
+                              {reportDetails.length}/{REPORT_DETAILS_MAX}
+                            </span>
+                          </>
+                        )}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="cs-modal-footer">
+              <button className="cs-modal-cancel-btn" onClick={closeReportModal}>
+                Cancel
+              </button>
+              <button
+                className="cs-modal-confirm-btn"
+                disabled={!reportCategory}
+                onClick={handleSubmitReport}
+              >
+                Submit Report
+              </button>
+            </div>
+          </div>
+        </MyVerticallyCenteredModal>
+
+        {/* Post menu — driven by ModalContext (isPostMenuOpen / postMenuPosition / menuPostId) */}
+        {
+          PostMenu()
+        }
 
         {/* <RightSidebar userAvatarUrl={userAvatarUrl} onPublish={onPublish} /> */}
 

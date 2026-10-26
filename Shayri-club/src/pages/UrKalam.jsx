@@ -1119,7 +1119,8 @@ import { ModalContextprovider } from "./Contexts/ModalContext";
 import { useContext } from "react";
 import { ModalContext } from "./Contexts/ModalContext";
 import axios from "axios";
-import Footer from "./Footer";
+import { Footer } from "@/Bg";
+import { Trash2, Music2, X } from "lucide-react";
 
 // ── Type → badge / icon mapping (same spirit as Kalam.jsx's SINF_OPTIONS) ──
 const TYPE_META = {
@@ -1204,9 +1205,10 @@ const UrKalam = () => {
     .get('/api/savedKalams',{
       withCredentials: true
     }).then((response)=>{
+      console.log("debug", response.data)
       setSavedKalams(response.data)
       response.data.forEach((item)=>{
-        savedKalams2.current.add(item.savedKalam._id)
+        savedKalams2.current.add(item?.savedKalam?._id)
       })
 
       console.log("dhan",savedKalams2.current)
@@ -1882,7 +1884,7 @@ const UrKalam = () => {
           )}
 
           {/* ── Hero ── */}
-          <div className="uk-hero">
+          {/* <div className="uk-hero">
             <div className="uk-hero-inner">
               <div>
                 <div className="uk-eyebrow">Collection</div>
@@ -1906,7 +1908,7 @@ const UrKalam = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* ── Body ── */}
           <div className="uk-body">
@@ -1929,6 +1931,9 @@ const UrKalam = () => {
                 </div>
 
                 <div className="uk-grid">
+                  {
+                    console.log("see name", kalams[0])
+                  }
                   {kalams.map((item) => (
                     <div key={item._id} className="uk-grid-item">
                       <NewKalam
@@ -1940,6 +1945,9 @@ const UrKalam = () => {
                         kalId={item._id}
                         customStyles={item.customStyles}
                         isSaved={savedKalams2.current.has(item._id)}
+                        authorName={item.createdBy.name}
+                        creationDate={item.createdAt}
+                        actionStrip={false}
                       />
                     </div>
                   ))}
@@ -2004,30 +2012,73 @@ const UrKalam = () => {
               </div>
             </>
           )}
+                              <Footer/>
 
-          <MyVerticallyCenteredModal isOpen={confirmModalOpen} onClose={() => setConfirmModalOpen(false)}>
-            <div className="uk-confirm">
-              <div className="uk-confirm-icon">⚠</div>
-              <h2 className="uk-confirm-title">Delete this kalam?</h2>
-              <p className="uk-confirm-sub">
-                This kalam will be permanently removed from your collection. This action can't be undone.
-              </p>
-              <div className="uk-confirm-actions">
-                <button className="uk-btn-cancel" onClick={() => setConfirmModalOpen(false)}>
-                  Cancel
-                </button>
-                <button
-                  className="uk-btn-danger"
-                  onClick={() => {
-                    handleDelete();
-                    setConfirmModalOpen(false);
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </MyVerticallyCenteredModal>
+<MyVerticallyCenteredModal isOpen={confirmModalOpen} onClose={() => setConfirmModalOpen(false)}>
+  <div
+    id="deleteModal"
+    className="animate-modal-entry relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/95 shadow-modal backdrop-blur-md font-sans text-slate-100 antialiased"
+  >
+    {/* Close button */}
+    <button
+      type="button"
+      aria-label="Close dialog"
+      onClick={() => setConfirmModalOpen(false)}
+      className="absolute top-4 right-4 rounded-full p-1.5 text-slate-400 transition-colors duration-150 hover:bg-slate-800/80 hover:text-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500/40"
+    >
+      <X className="h-4 w-4" aria-hidden="true" />
+    </button>
+
+    <div className="p-6 sm:p-7">
+      {/* Header */}
+      <div className="flex items-start gap-3.5">
+        <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-800/80 text-rose-400">
+          <Trash2 className="h-5 w-5" strokeWidth={1.85} />
+        </div>
+        <div className="flex-1 space-y-1.5 pr-6">
+          <h2 className="text-lg font-semibold tracking-tight text-white">Delete this kalam?</h2>
+          <p className="text-sm leading-relaxed text-slate-400">
+            This item will be permanently removed from your collection. This action cannot be reversed.
+          </p>
+        </div>
+      </div>
+
+      {/* Item preview */}
+      <div className="mt-5 flex items-center gap-3 rounded-xl border border-slate-800/80 bg-slate-950/60 p-3.5">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-700/50 bg-slate-800/70 text-slate-300">
+          <Music2 className="h-4 w-4" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xs font-medium text-slate-200">Tajdar-e-Haram • Live Recitation</p>
+          <p className="mt-0.5 text-[11px] text-slate-400">Audio • 14:20 • Added 3 days ago</p>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="mt-6 flex flex-col-reverse gap-2.5 sm:flex-row sm:items-center sm:justify-end">
+        <button
+          type="button"
+          onClick={() => setConfirmModalOpen(false)}
+          className="w-full rounded-lg border border-slate-700/60 bg-slate-800/60 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800 hover:text-white active:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500/30 sm:w-auto"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            handleDelete();
+            setConfirmModalOpen(false);
+          }}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-rose-500/30 bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-rose-500 active:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500/50 sm:w-auto"
+        >
+          <Trash2 className="h-4 w-4" />
+          <span>Delete Kalam</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</MyVerticallyCenteredModal>
+          
         </div>
           <MyVerticallyCenteredModal isOpen={isNotificationModalOpen} onClose={() => setIsNotificationmodalOpened(false)}>
                       <div
@@ -2119,6 +2170,7 @@ const UrKalam = () => {
                         </div>
                       </div>
                     </MyVerticallyCenteredModal>
+
       </div>
     </>
   );

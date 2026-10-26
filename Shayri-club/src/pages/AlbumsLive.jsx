@@ -1323,7 +1323,7 @@ const AlbumsLive = () => {
                                 <h2 className="text-lg sm:text-2xl font-bold mb-0.5 sm:mb-2">Recently Added</h2>
                                 <p className="text-xs sm:text-base truncate" style={{ color: COLORS.onSurfaceVariant }}>Fresh tracks from your favorite genres.</p>
                             </div>
-                            <Link to="/albums?query=motivation" className="flex-shrink-0 text-[10px] sm:text-xs font-semibold tracking-widest uppercase hover:underline whitespace-nowrap" style={{ color: COLORS.primary }}>
+                            <Link to="/albums?query=all" className="flex-shrink-0 text-[10px] sm:text-xs font-semibold tracking-widest uppercase hover:underline whitespace-nowrap" style={{ color: COLORS.primary }}>
                                 View All
                             </Link>
                         </div>

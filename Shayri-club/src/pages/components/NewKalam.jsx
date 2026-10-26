@@ -1168,7 +1168,9 @@ const NewKalam=({
       isSaved,
       customStyles,
       authorName,
-      kalamAudio
+      kalamAudio,
+      creationDate,
+      actionStrip = true
 })=>{
 
   // console.log("checking_isLiked",isLiked2)
@@ -2134,7 +2136,7 @@ const buildGoogleFontsUrl = () => {
           <button onClick={()=>Navigate(`/profile?userId=${mUid}`)}>
           <span style={{
             fontFamily: "'Playfair Display', serif",
-            fontSize: "13px",
+            fontSize: "20px",
             fontWeight: "600",
             fontStyle: "italic",
             color: "rgba(240,235,227,0.92)",
@@ -2152,7 +2154,9 @@ const buildGoogleFontsUrl = () => {
             textTransform: "uppercase",
             lineHeight: 1,
           }}>
-            {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+            {/* Converting iso time format to date format */}
+           
+            {new Date(creationDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
           </span>
         </div>
 
@@ -2255,7 +2259,7 @@ const buildGoogleFontsUrl = () => {
       </div>
 
      {/* ── Action Strip ── */}
-      <div className="k-action-strip">
+      {actionStrip && <div className="k-action-strip">
 
         {/* Like */}
         <button
@@ -2284,9 +2288,10 @@ const buildGoogleFontsUrl = () => {
         </button>
 
         {/* Play */}
-       { kalamAudio && <button
+         <button
           className="k-action-btn"
           aria-label="Play"
+          disabled={!kalamAudio}
           onClick={()=>{setKalamTrack([{
             _id:kalId,
             title: "see",
@@ -2299,10 +2304,10 @@ const buildGoogleFontsUrl = () => {
           <PlayIcon
             size={18}
             duration={1}
-            color="rgba(240,235,227,0.85)"
+            color={kalamAudio?"rgba(240,235,227,0.85)":"rgba(128, 128, 128, 1.0)"}
           />
         </button>
-}
+
 
         {/* Share */}
         <button
@@ -2324,7 +2329,7 @@ const buildGoogleFontsUrl = () => {
           <BookmarkIcon isSaved={isSaved2} onClick={()=>{savingKalam();(isSaved2)?setIsSaved2(false):setIsSaved2(true)}} />
         </div>
 
-      </div>
+      </div>}
 
       </div>
       {/* ── End Preview Card + Action Strip Wrapper ── */}

@@ -3449,6 +3449,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { AlbumsPanel } from "../new"; // adjust path to wherever profileAlbums.jsx lives;
 import { useSearchParams } from "react-router-dom";
 import { Edit } from "lucide-react";
+import PostCard from "./PostCard"; // adjust path to wherever PostCard.jsx lives
 
 /* ------------------------------------------------------------------ */
 /*  Fonts + Material Symbols — injected once, so this file can be     */
@@ -3785,6 +3786,268 @@ function AlbumsGrid({ userId }) {
         </div>
       ))}
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Posts feed — NEW. Shown inside the "Home" tab, below the          */
+/*  Repertoire. Renders each post with the existing PostCard.         */
+/*                                                                    */
+/*  >>> Adjust the 3 constants below to match your backend. <<<       */
+/* ------------------------------------------------------------------ */
+
+const POSTS_PAGE_SIZE = 5;
+const getUserPostsUrl = (userId, page) =>
+  `/api/userposts?userId=${userId}&page=${page}&limit=${POSTS_PAGE_SIZE}`; // ← your "posts of a user" endpoint
+const LIKE_POST_URL = "/api/likePost"; // ← your "like / unlike a post" endpoint
+
+function timeAgo(dateString) {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  if (Number.isNaN(d.getTime())) return "";
+  const seconds = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (seconds < 60) return "Just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hr${hours === 1 ? "" : "s"} ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days} day${days === 1 ? "" : "s"} ago`;
+  return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+}
+
+function PostSkeleton() {
+  return (
+    <div className="w-full max-w-[672px] rounded-[20px] p-5 border border-[#ffe6ac]/10 bg-[#1e1f23]/60 animate-pulse">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-10 h-10 rounded-full bg-[#2e2735]" />
+        <div className="flex-1 space-y-2">
+          <div className="h-3 w-32 rounded bg-[#2e2735]" />
+          <div className="h-2.5 w-20 rounded bg-[#2e2735]/70" />
+        </div>
+      </div>
+      <div className="space-y-2.5 mb-6">
+        <div className="h-3 w-full rounded bg-[#2e2735]/80" />
+        <div className="h-3 w-5/6 rounded bg-[#2e2735]/80 mx-auto" />
+        <div className="h-3 w-2/3 rounded bg-[#2e2735]/80 mx-auto" />
+      </div>
+      <div className="h-8 w-full rounded bg-[#2e2735]/50" />
+    </div>
+  );
+}
+
+function PostsSection({ userId, userName, profileLink, isOwnProfile, onWriteStanza }) {
+  const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const normalise = (res) => {
+    const data = res?.data.content;
+    console.log("see data norm]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]", data)
+    const list = Array.isArray(data) ? data : data?.posts || [];
+    return list;
+  };
+
+  // First page (re-runs when the profile being viewed changes)
+  useEffect(() => {
+    if (!userId) {
+      setPosts([]);
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    setPage(1);
+    axiosInstance
+      .get(getUserPostsUrl(userId, 1), { withCredentials: true })
+      .then((res) => {
+        if (cancelled) return;
+        const list = normalise(res);
+        setPosts(list);
+        setHasMore(list.length >= POSTS_PAGE_SIZE);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPosts([]);
+          setHasMore(false);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  const loadMore = async () => {
+    const next = page + 1;
+    setLoadingMore(true);
+    try {
+      const res = await axiosInstance.get(getUserPostsUrl(userId, next), {
+        withCredentials: true,
+      });
+      const list = normalise(res);
+      setPosts((prev) => [...prev, ...list]);
+      setPage(next);
+      setHasMore(list.length >= POSTS_PAGE_SIZE);
+    } catch (err) {
+      console.error("Failed to load more posts", err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+                                                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", posts)
+
+
+  // Optimistic like — PostCard flips its own heart; we keep the count in sync.
+  const handleLikePost = async (postId) => {
+    let wasLiked = false;
+    setPosts((prev) =>
+      prev.map((p) => {
+        if ((p._id || p.id) !== postId) return p;
+        wasLiked = !!(p.isLiked ?? p.isPostLiked);
+        const current = p.likesCount ?? p.likeCount ?? 0;
+        return {
+          ...p,
+          isLiked: !wasLiked,
+          isPostLiked: !wasLiked,
+          likesCount: Math.max(0, current + (wasLiked ? -1 : 1)),
+          likeCount: Math.max(0, current + (wasLiked ? -1 : 1)),
+        };
+      })
+    );
+    try {
+      await axiosInstance.post(LIKE_POST_URL, { postId }, { withCredentials: true });
+    } catch (err) {
+      console.error("Failed to like post", err);
+    }
+  };
+
+  return (
+    <section>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-8">
+        <div>
+          <h3 className="text-[11px] text-[#ffe6ac] mb-1 uppercase tracking-widest">
+            Journal
+          </h3>
+          <h2 className="font-display text-[28px] sm:text-[32px] md:text-[40px]">Latest Posts</h2>
+        </div>
+        {isOwnProfile && (
+          <button
+            onClick={() => onWriteStanza?.()}
+            className="self-start sm:self-auto flex items-center gap-2 px-4 py-2 bg-[#ffe6ac]/10 border border-[#ffe6ac]/20 rounded-full text-[#ffe6ac] text-[12px] hover:bg-[#ffe6ac]/20 transition-all"
+          >
+            <Icon name="add_notes" className="!text-[18px]" />
+            New Post
+          </button>
+        )}
+      </div>
+
+      {loading ? (
+        <div className="flex flex-col items-center gap-6">
+          <PostSkeleton />
+          <PostSkeleton />
+        </div>
+      ) : posts.length === 0 ? (
+        <div className="glass-panel rounded-3xl py-14 px-6 text-center max-w-3xl mx-auto">
+          <div className="mx-auto mb-5 w-14 h-14 rounded-full bg-[#ffe6ac]/10 border border-[#ffe6ac]/20 flex items-center justify-center">
+            <Icon name="edit_note" className="!text-[28px] text-[#ffe6ac]" />
+          </div>
+          <p className="font-display text-[22px] md:text-[26px] text-[#ffe6ac] mb-3">
+            {isOwnProfile ? "You haven't posted yet" : "No posts yet"}
+          </p>
+          <p className="text-[#d0c5b0] text-[14px] md:text-[15px] max-w-md mx-auto leading-relaxed">
+            {isOwnProfile
+              ? "Share a couplet, a thought, or an album with your readers and it will appear here."
+              : "When this poet shares something, you'll find it here."}
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-6 md:gap-8">
+          {
+                                              console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", posts)
+
+          }
+          {posts.map((post, i) => {
+            const postId = post._id || post.id;
+            const author = post.author || post.user || {};
+            const album = post.album || post.albumData || null;
+            const kalam = post.kalam || post.kalamData || null;
+            const isAlbumAvailable = !!(album || post.albumId);
+            const isKalamAvailable = !isAlbumAvailable && !!(kalam || post.kalamId);
+
+
+            return (
+              <PostCard
+                key={postId || i}
+                index={i}
+                postId={postId}
+                authorName={author.name || post.authorName || post.userName || userName}
+                authorAvatarUrl={author.profilePic || post.authorAvatarUrl || post.profilePic || profileLink}
+                timestamp={timeAgo(post.createdAt || post.date)}
+                verified={!!(author.verified || post.verified)}
+                postText={post.text || post.postText || post.content || ""}
+                likeCount={post.likesCount ?? post.likeCount ?? 0}
+                commentCount={post.commentsCount ?? post.commentCount ?? 0}
+                isPostLiked={!!(post.isLiked ?? post.isPostLiked)}
+                onLikeClick={handleLikePost}
+                onShareClick={() => {
+                  const url = `${window.location.origin}/post?postId=${postId}`;
+                  if (navigator.share) {
+                    navigator.share({ url }).catch(() => {});
+                  } else {
+                    navigator.clipboard?.writeText(url).catch(() => {});
+                  }
+                }}
+                isAlbumAvailable={isAlbumAvailable}
+                albumId={album?._id || post.albumId}
+                embed={
+                  album
+                    ? {
+                        imageUrl: album.albumCover,
+                        title: album.name,
+                        description: `${album.kalamCollection?.length || 0} Kalams${
+                          album.category ? ` · ${album.category}` : ""
+                        }`,
+                        ctaLabel: "Open Album",
+                        onCtaClick: undefined,
+                      }
+                    : undefined
+                }
+                isKalamAvailable={isKalamAvailable}
+                kalamId={kalam?._id || post.kalamId}
+                kalId={kalam?._id || post.kalamId}
+                title={kalam?.title}
+                content={kalam?.content}
+                muid={kalam?.userId || author._id || userId}
+                isLiked2={kalam?.isLiked}
+                isSaved={kalam?.isSaved}
+              />
+            );
+          })}
+
+          {hasMore && (
+            <button
+              onClick={loadMore}
+              disabled={loadingMore}
+              className="mt-2 px-8 py-2.5 rounded-full text-[12px] uppercase tracking-widest border border-[#ffe6ac]/30 text-[#ffe6ac] hover:bg-[#ffe6ac]/10 transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              {loadingMore ? (
+                <>
+                  <span className="w-3.5 h-3.5 rounded-full border-2 border-[#ffe6ac]/30 border-t-[#ffe6ac] animate-spin" />
+                  Loading…
+                </>
+              ) : (
+                "Load More Posts"
+              )}
+            </button>
+          )}
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -4277,7 +4540,7 @@ export function PoetProfileDashboard({
                         initialsFromName(userName)
                       )}
                     </div>
-
+                    
                     {/* ---------------- Profile picture edit menu (mobile always, desktop on hover) ---------------- */}
                     {isOwnProfile && (
                       <div
@@ -4480,6 +4743,17 @@ export function PoetProfileDashboard({
 
                   <AlbumsGrid userId={userId} />
                 </section>
+              )}
+
+              {/* ---------------- Posts (Home only) — NEW ---------------- */}
+              {activeTab === "home" && (
+                <PostsSection
+                  userId={userId}
+                  userName={userName}
+                  profileLink={profileLink}
+                  isOwnProfile={isOwnProfile}
+                  onWriteStanza={onWriteStanza}
+                />
               )}
 
               {/* ---------------- Verse in Focus (Home + Kalams) ---------------- */}
