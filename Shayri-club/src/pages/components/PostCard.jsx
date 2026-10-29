@@ -566,7 +566,7 @@ export default function PostCard({
               <span>{commentCount} Comments</span>
             </button>
           </div>
-          <button aria-label="Share" className="pc-icon-btn" onClick={onShareClick}>
+          <button aria-label="Share" className="pc-icon-btn" onClick={()=>onShareClick(postId)}>
             <ShareIcon />
           </button>
         </footer>
