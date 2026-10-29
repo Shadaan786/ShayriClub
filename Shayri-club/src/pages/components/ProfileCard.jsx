@@ -3796,9 +3796,11 @@ function AlbumsGrid({ userId }) {
 /*  >>> Adjust the 3 constants below to match your backend. <<<       */
 /* ------------------------------------------------------------------ */
 
-const POSTS_PAGE_SIZE = 5;
-const getUserPostsUrl = (userId, page) =>
-  `/api/userposts?userId=${userId}&page=${page}&limit=${POSTS_PAGE_SIZE}`; // ← your "posts of a user" endpoint
+// No backend pagination: all posts come back in one response (response.data.content).
+// The first POSTS_PAGE_SIZE are shown, the rest appear when "Load More Posts" is clicked.
+const POSTS_PAGE_SIZE = 10;
+const getUserPostsUrl = (userId) =>
+  `/api/userposts?userId=${userId}`; // ← your "posts of a user" endpoint
 const LIKE_POST_URL = "/api/likePost"; // ← your "like / unlike a post" endpoint
 
 function timeAgo(dateString) {
@@ -3818,7 +3820,7 @@ function timeAgo(dateString) {
 
 function PostSkeleton() {
   return (
-    <div className="w-full max-w-[672px] rounded-[20px] p-5 border border-[#ffe6ac]/10 bg-[#1e1f23]/60 animate-pulse">
+    <div className="w-full max-w-[900px] rounded-[20px] p-5 border border-[#ffe6ac]/10 bg-[#1e1f23]/60 animate-pulse">
       <div className="flex items-center gap-3 mb-5">
         <div className="w-10 h-10 rounded-full bg-[#2e2735]" />
         <div className="flex-1 space-y-2">
@@ -3837,20 +3839,19 @@ function PostSkeleton() {
 }
 
 function PostsSection({ userId, userName, profileLink, isOwnProfile, onWriteStanza }) {
+  // `posts` holds ALL posts returned by the backend; `visibleCount` controls how many are shown.
   const [posts, setPosts] = useState([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(POSTS_PAGE_SIZE);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
 
   const normalise = (res) => {
     const data = res?.data.content;
-    console.log("see data norm]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]", data)
+    console.log("see data norm]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]", data)
     const list = Array.isArray(data) ? data : data?.posts || [];
     return list;
   };
 
-  // First page (re-runs when the profile being viewed changes)
+  // Fetch everything once (re-runs when the profile being viewed changes)
   useEffect(() => {
     if (!userId) {
       setPosts([]);
@@ -3859,19 +3860,17 @@ function PostsSection({ userId, userName, profileLink, isOwnProfile, onWriteStan
     }
     let cancelled = false;
     setLoading(true);
-    setPage(1);
+    setVisibleCount(POSTS_PAGE_SIZE);
     axiosInstance
-      .get(getUserPostsUrl(userId, 1), { withCredentials: true })
+      .get(getUserPostsUrl(userId), { withCredentials: true })
       .then((res) => {
         if (cancelled) return;
         const list = normalise(res);
         setPosts(list);
-        setHasMore(list.length >= POSTS_PAGE_SIZE);
       })
       .catch(() => {
         if (!cancelled) {
           setPosts([]);
-          setHasMore(false);
         }
       })
       .finally(() => {
@@ -3882,23 +3881,12 @@ function PostsSection({ userId, userName, profileLink, isOwnProfile, onWriteStan
     };
   }, [userId]);
 
-  const loadMore = async () => {
-    const next = page + 1;
-    setLoadingMore(true);
-    try {
-      const res = await axiosInstance.get(getUserPostsUrl(userId, next), {
-        withCredentials: true,
-      });
-      const list = normalise(res);
-      setPosts((prev) => [...prev, ...list]);
-      setPage(next);
-      setHasMore(list.length >= POSTS_PAGE_SIZE);
-    } catch (err) {
-      console.error("Failed to load more posts", err);
-    } finally {
-      setLoadingMore(false);
-    }
+  // Client-side "Load More" — reveals the rest of the posts that were already fetched
+  const hasMore = posts.length > visibleCount;
+  const loadMore = () => {
+    setVisibleCount(posts.length);
   };
+  const visiblePosts = posts.slice(0, visibleCount);
                                                 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", posts)
 
 
@@ -3971,7 +3959,7 @@ function PostsSection({ userId, userName, profileLink, isOwnProfile, onWriteStan
                                               console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", posts)
 
           }
-          {posts.map((post, i) => {
+          {visiblePosts.map((post, i) => {
             const postId = post._id || post.id;
             const author = post.author || post.user || {};
             const album = post.album || post.albumData || null;
@@ -3981,6 +3969,11 @@ function PostsSection({ userId, userName, profileLink, isOwnProfile, onWriteStan
 
 
             return (
+              /* Width wrapper: widens the card to 900px and forces PostCard's root to fill it */
+              <div
+                key={postId || i}
+                className="w-full max-w-[900px] [&>*]:!w-full [&>*]:!max-w-full"
+              >
               <PostCard
                 key={postId || i}
                 index={i}
@@ -4026,23 +4019,16 @@ function PostsSection({ userId, userName, profileLink, isOwnProfile, onWriteStan
                 isLiked2={kalam?.isLiked}
                 isSaved={kalam?.isSaved}
               />
+              </div>
             );
           })}
 
           {hasMore && (
             <button
               onClick={loadMore}
-              disabled={loadingMore}
-              className="mt-2 px-8 py-2.5 rounded-full text-[12px] uppercase tracking-widest border border-[#ffe6ac]/30 text-[#ffe6ac] hover:bg-[#ffe6ac]/10 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="mt-2 px-8 py-2.5 rounded-full text-[12px] uppercase tracking-widest border border-[#ffe6ac]/30 text-[#ffe6ac] hover:bg-[#ffe6ac]/10 transition-colors flex items-center gap-2"
             >
-              {loadingMore ? (
-                <>
-                  <span className="w-3.5 h-3.5 rounded-full border-2 border-[#ffe6ac]/30 border-t-[#ffe6ac] animate-spin" />
-                  Loading…
-                </>
-              ) : (
-                "Load More Posts"
-              )}
+              Load More Posts
             </button>
           )}
         </div>
@@ -4115,6 +4101,7 @@ export function PoetProfileDashboard({
   onUnfollow,
   followersList = [],
   onFollowersOpen,
+  onShare,
 
   onSearchUser,
   onSelectSearchResult,
@@ -4155,6 +4142,7 @@ export function PoetProfileDashboard({
   const [savingVerse, setSavingVerse] = useState(false);
 
   const Navigate = useNavigate();
+  const profileUrl = SearchParams.get
 
   useEffect(() => {
     setCurrentVerse(spotlightVerse || null);
@@ -4708,7 +4696,7 @@ export function PoetProfileDashboard({
                   {isFollowing ? "Following" : "Follow Poet"}
                 </button>
               )}
-              <button className="w-10 h-10 rounded-full border border-[#ffe6ac]/20 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] transition-colors bg-[#17111d]/40 backdrop-blur-sm">
+              <button onClick={()=>onShare(userId)} className="w-10 h-10 rounded-full border border-[#ffe6ac]/20 flex items-center justify-center text-[#d0c5b0] hover:text-[#ffe6ac] transition-colors bg-[#17111d]/40 backdrop-blur-sm">
                 <Icon name="share" className="!text-[20px]" />
               </button>
             </div>
