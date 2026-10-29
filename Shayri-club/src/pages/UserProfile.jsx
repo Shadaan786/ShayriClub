@@ -779,6 +779,13 @@ const UserProfile=()=>{
       )
     }
 
+    const shareProfile=(userId)=>{
+      if(navigator.canShare){
+        navigator
+        .share({url:`http://localhost:5173/profile?userId=${userId}`,text: "Hey! take a look of my Alfaz profile"})
+      }
+    }
+
 
   return(
     <>
@@ -799,6 +806,7 @@ const UserProfile=()=>{
     onUnfollow={triggerUnfollow}
     followersList={allFollowers.current}
     onFollowersOpen={fetchFollowers}
+    onShare={shareProfile}
 
     onSearchUser={handleSearchUser}
     onSelectSearchResult={handleSelectSearchResult}
