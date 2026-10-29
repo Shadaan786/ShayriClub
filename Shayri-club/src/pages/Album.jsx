@@ -1992,6 +1992,7 @@ import {
   SlidersHorizontal,
   Image as ImageIcon,
   Heart,
+  Camera,
 } from "lucide-react";
 import axios from "axios";
 
@@ -2032,6 +2033,11 @@ export const Album = () => {
   const [isSelf, setIsSelf] = useState(false);
   const creatorId = useRef("");
 
+  // New: state for the album cover / background icon menus
+  const [coverMenuOpen, setCoverMenuOpen] = useState(false);
+  const [bgMenuOpen, setBgMenuOpen] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
+
   const MAX_H = 300;
   const MIN_H = 110;
   const [headerH, setHeaderH] = useState(MAX_H);
@@ -2051,6 +2057,18 @@ export const Album = () => {
     };
     el.addEventListener("scroll", handleScroll);
     return () => el.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // New: close the cover / background menus when clicking anywhere outside them
+  useEffect(() => {
+    const handleOutside = (e) => {
+      if (!e.target.closest("[data-media-menu]")) {
+        setCoverMenuOpen(false);
+        setBgMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
 
 
@@ -2214,6 +2232,56 @@ export const Album = () => {
       withCredentials: true
     })
   }
+
+  // ── New: album cover icon handlers ─────────────────────────────
+  // Same request as handleImage (same endpoint + fields), but takes the File directly
+  // and uploads immediately when picked from the icon menu.
+  const handleAlbumCoverUpload = (coverFile) => {
+    if (!coverFile) return;
+
+    setAlbumCover(URL.createObjectURL(coverFile)); // instant local preview
+    setCoverUploading(true);
+
+    const formData = new FormData();
+    formData.append("albumCover", coverFile);
+    formData.append("fileType", "albumCover");
+    formData.append("albumId", albumId);
+
+    axiosInstance
+      .post("/api/GalleryCover", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true
+      })
+      .then(() => {
+        console.log("album cover uploaded successfully");
+      })
+      .catch((error) => {
+        console.error("Error while uploading album cover", error);
+      })
+      .finally(() => setCoverUploading(false));
+  };
+
+  // NOTE: adjust this endpoint to match your backend delete route
+  const handleAlbumCoverDelete = () => {
+    console.log("album cover",albumCover)
+    axiosInstance
+      .post(`/api/deletealbumcover?albumId=${albumId}`,{albumCoverLink:albumCover, albumId:albumId}, { withCredentials: true })
+      .then(() => {
+        setAlbumCover("");
+      })
+      .catch((error) => console.error("Error while deleting album cover", error));
+  };
+
+  // NOTE: adjust this endpoint to match your backend delete route
+  const handleAlbumBgDelete = () => {
+    axiosInstance
+      .post(`/api/deletealbumbgcover?albumId=${albumId}`,{albumBgCoverLink: albumBgCover,albumId: albumId}, { withCredentials: true })
+      .then(() => {
+        setAlbumBg("");
+        setAlbumBgCover("");
+      })
+      .catch((error) => console.error("Error while deleting album background", error));
+  };
 
   // ── Shared Modals ──────────────────────────────────────────────
   const AddKalamModal = (
@@ -2637,36 +2705,115 @@ export const Album = () => {
               {
                 console.log("isSelf",isSelf)
               }
-              {isSelf && <label
-                htmlFor="album-bg-upload"
-                className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-black/40 border border-amber-400/25 backdrop-blur-md flex items-center justify-center text-amber-300 hover:bg-black/60 hover:border-amber-400/50 cursor-pointer transition"
-                title="Change background"
-              >
-                {bgUploading ? (
-                  <div className="w-3.5 h-3.5 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin" />
-                ) : (
-                  <ImageIcon className="w-4 h-4" />
-                )}
-              </label>}
+              {isSelf && (
+                <div data-media-menu className="absolute top-4 right-4 z-20">
+                  <button
+                    type="button"
+                    onClick={() => { setBgMenuOpen((v) => !v); setCoverMenuOpen(false); }}
+                    className="w-9 h-9 rounded-full bg-black/40 border border-amber-400/25 backdrop-blur-md flex items-center justify-center text-amber-300 hover:bg-black/60 hover:border-amber-400/50 cursor-pointer transition"
+                    title="Album background"
+                  >
+                    {bgUploading ? (
+                      <div className="w-3.5 h-3.5 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin" />
+                    ) : (
+                      <ImageIcon className="w-4 h-4" />
+                    )}
+                  </button>
+
+                  {bgMenuOpen && isExpanded && (
+                    <div className="absolute top-full right-0 mt-2 w-56 rounded-xl bg-[#120e06]/95 border border-amber-400/20 backdrop-blur-xl shadow-2xl shadow-black/60 p-1.5 z-30">
+                      <label
+                        htmlFor="album-bg-upload"
+                        onClick={() => setTimeout(() => setBgMenuOpen(false), 0)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/75 hover:text-amber-200 hover:bg-white/[0.05] cursor-pointer transition"
+                      >
+                        <UploadCloud className="w-4 h-4 text-amber-300/80" />
+                        <span>{albumBg ? "Upload album background" : "Upload album background"}</span>
+                      </label>
+                      {albumBg && (
+                        <button
+                          type="button"
+                          onClick={() => { setBgMenuOpen(false); handleAlbumBgDelete(); }}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400/80 hover:text-red-300 hover:bg-red-500/10 transition text-left"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span>Delete album background</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="relative z-10 flex items-end justify-between h-full gap-6">
                 {/* Left: Album cover + name below it */}
                 <div className="flex flex-col items-start gap-3 min-w-0">
-                  <div
-                    className="rounded-2xl overflow-hidden border border-amber-400/20 shadow-xl shrink-0 bg-white/[0.04] flex items-center justify-center transition-all duration-200"
-                    style={{
-                      width: isExpanded ? "168px" : "56px",
-                      height: isExpanded ? "168px" : "56px",
-                    }}
-                  >
-                    {albumCover ? (
-                      <img
-                        src={albumCover}
-                        alt={currentAlbumName}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <BookOpen className="w-6 h-6 text-white/20" />
+                  <div data-media-menu className="relative shrink-0">
+                    <div
+                      className="rounded-2xl overflow-hidden border border-amber-400/20 shadow-xl shrink-0 bg-white/[0.04] flex items-center justify-center transition-all duration-200"
+                      style={{
+                        width: isExpanded ? "168px" : "56px",
+                        height: isExpanded ? "168px" : "56px",
+                      }}
+                    >
+                      {albumCover ? (
+                        <img
+                          src={albumCover}
+                          alt={currentAlbumName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <BookOpen className="w-6 h-6 text-white/20" />
+                      )}
+                    </div>
+
+                    {/* Hidden input for album cover icon */}
+                    <input
+                      id="album-cover-icon-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleAlbumCoverUpload(e.target.files[0])}
+                    />
+
+                    {isSelf && isExpanded && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => { setCoverMenuOpen((v) => !v); setBgMenuOpen(false); }}
+                          className="absolute -bottom-2 -right-2 z-20 w-8 h-8 rounded-full bg-black/60 border border-amber-400/30 backdrop-blur-md flex items-center justify-center text-amber-300 hover:bg-black/80 hover:border-amber-400/60 cursor-pointer transition"
+                          title="Album cover"
+                        >
+                          {coverUploading ? (
+                            <div className="w-3.5 h-3.5 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin" />
+                          ) : (
+                            <Camera className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+
+                        {coverMenuOpen && (
+                          <div className="absolute bottom-0 right-0 sm:right-auto sm:left-full sm:ml-4 w-48 rounded-xl bg-[#120e06]/95 border border-amber-400/20 backdrop-blur-xl shadow-2xl shadow-black/60 p-1.5 z-30">
+                            <label
+                              htmlFor="album-cover-icon-upload"
+                              onClick={() => setTimeout(() => setCoverMenuOpen(false), 0)}
+                              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/75 hover:text-amber-200 hover:bg-white/[0.05] cursor-pointer transition"
+                            >
+                              <UploadCloud className="w-4 h-4 text-amber-300/80" />
+                              <span>{albumCover ? "Change album cover" : "Upload album cover"}</span>
+                            </label>
+                            {albumCover && (
+                              <button
+                                type="button"
+                                onClick={() => { setCoverMenuOpen(false); handleAlbumCoverDelete(); }}
+                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400/80 hover:text-red-300 hover:bg-red-500/10 transition text-left"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                <span>Delete album cover</span>
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
 
