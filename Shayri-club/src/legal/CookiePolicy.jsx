@@ -348,7 +348,7 @@ const COOKIE_SECTIONS = [
         type: "p",
         text: "If you have any questions about this Cookie Policy or how Alfaz uses cookies and similar technologies, you may contact us at:",
       },
-      { type: "contact", email: "shadaan@alfaz.live" },
+      { type: "contact", email: "alfaz.platform@gmail.com" },
       { type: "p", text: "We will make reasonable efforts to respond to legitimate inquiries." },
     ],
   },
@@ -385,8 +385,9 @@ const COOKIE_SECTIONS = [
 const NAV_LINKS = [
   { id: "privacy", label: "Privacy Policy", href: "/privacypolicy", available: true },
   { id: "terms", label: "Terms of Service", href: "/termsofservices", available: true },
-  { id: "cookies", label: "Cookie Policy", href: "/cookiepolicy", available: true },
+  { id: "cookies", label: "Cookie Policy", available: true },
   { id: "community", label: "Community Guidelines", href: "/communityguidelines", available: true },
+  { id: "cancellation", label: "Cancellation & Refund Policy", href: "/cancellation&refundpolicy", available: true },
 ];
 
 function SealMark({ size = 40 }) {
@@ -528,7 +529,7 @@ export default function CookiePolicy() {
         {/* Content */}
         <main className="max-w-[680px] min-w-0">
           <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex items-center gap-2 text-[12px] text-[#8a7d5c] mb-3">
-            <span>Last updated: "Insert Date"</span>
+            <span>Last updated: 4 November 2026</span>
             <span aria-hidden="true">·</span>
             <span>Operated from India</span>
           </div>
@@ -644,7 +645,7 @@ export default function CookiePolicy() {
             className="mt-16 pt-6 border-t text-[12.5px] text-[#8a7d5c] flex items-center gap-2"
           >
             <SealMark size={18} />
-            <span>Alfaz · alfaz.live · shadaan@alfaz.live</span>
+            <span>Alfaz · alfaz.live · alfaz.platform@gmail.com</span>
           </footer>
         </main>
       </div>

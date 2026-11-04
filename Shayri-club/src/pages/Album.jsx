@@ -2119,7 +2119,9 @@ export const Album = () => {
        axiosInstance
     .get('/api/userId')
     .then((response)=>{
-            
+            if(response.data.redirectUrl){
+              Navigate(response.data.redirectUrl);
+            }
       setUserId(response.data._id);
       console.log("See set it", creatorId.current)
       if(response.data._id === creatorId.current){

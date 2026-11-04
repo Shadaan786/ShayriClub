@@ -1938,6 +1938,9 @@ export default function CommunitySPaces({
         withCredentials: true,
       })
       .then((response) => {
+        if(response.data.redirectUrl){
+          Navigate(response.data.redirectUrl)
+        }
         setUserPosts(response.data.content);
         console.log("see fetched posts", response.data.content);
       })

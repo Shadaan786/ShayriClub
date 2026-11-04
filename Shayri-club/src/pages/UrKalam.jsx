@@ -1111,7 +1111,7 @@
 
 // export default UrKalam;
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import axiosInstance from "@/Apis/axiosInstance";
 import NewKalam from "./components/NewKalam";
 import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
@@ -1164,6 +1164,9 @@ const UrKalam = () => {
         withCredentials: true
       })
       .then((response) => {
+        if(response.data.redirectUrl){
+          navigate(response.data.redirectUrl);
+        }
         setUserId(response.data._id);
         setProfilePic(response.data.profilePic);
       })

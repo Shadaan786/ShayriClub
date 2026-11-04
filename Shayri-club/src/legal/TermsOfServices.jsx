@@ -1257,7 +1257,7 @@ const TERMS_SECTIONS = [
         type: "p",
         text: "If you have a concern, dispute, or issue regarding Alfaz, we encourage you to first contact us so we can attempt to resolve the matter informally. You may contact Alfaz using:",
       },
-      { type: "contact", email: "shadaan@alfaz.live" },
+      { type: "contact", email: "alfaz.platform@gmail.com" },
       { type: "p", text: "We will make reasonable efforts to review and respond to legitimate concerns." },
     ],
   },
@@ -1397,7 +1397,7 @@ const TERMS_SECTIONS = [
         type: "p",
         text: "If you have questions about these Terms or wish to contact Alfaz regarding legal, policy, copyright, privacy, moderation, or account-related matters, you may contact us at:",
       },
-      { type: "contact", email: "shadaan@alfaz.live" },
+      { type: "contact", email: "alfaz.platform@gmail.com" },
       { type: "p", text: "As Alfaz grows, additional contact methods may be made available through the Services." },
     ],
   },
@@ -1427,9 +1427,10 @@ const TERMS_SECTIONS = [
 
 const NAV_LINKS = [
   { id: "privacy", label: "Privacy Policy", href: "/privacypolicy", available: true },
-  { id: "terms", label: "Terms of Service", href: "/termsofservices", available: true },
+  { id: "terms", label: "Terms of Service", available: true },
   { id: "cookies", label: "Cookie Policy", href: "/cookiepolicy", available: true },
   { id: "community", label: "Community Guidelines", href: "/communityguidelines", available: true },
+  { id: "cancellation", label: "Cancellation & Refund Policy", href: "/cancellation&refundpolicy", available: true },
 ];
 
 function SealMark({ size = 40 }) {
@@ -1571,7 +1572,7 @@ export default function TermsOfService() {
         {/* Content */}
         <main className="max-w-[680px] min-w-0">
           <div style={{ fontFamily: "'Inter', sans-serif" }} className="flex items-center gap-2 text-[12px] text-[#8a7d5c] mb-3">
-            <span>Last updated: "To be announced upon launch"</span>
+            <span>Last updated: 4 Novemer 2026</span>
             <span aria-hidden="true">·</span>
             <span>Operated from India</span>
           </div>
@@ -1687,7 +1688,7 @@ export default function TermsOfService() {
             className="mt-16 pt-6 border-t text-[12.5px] text-[#8a7d5c] flex items-center gap-2"
           >
             <SealMark size={18} />
-            <span>Alfaz · alfaz.live · shadaan@alfaz.live</span>
+            <span>Alfaz · alfaz.live · alfaz.platform@gmail.com</span>
           </footer>
         </main>
       </div>

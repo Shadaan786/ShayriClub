@@ -11,11 +11,11 @@
  * tailwind.config.js (see your merged config) and render <AlfazHelpCenter />.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import logo from '../../public/logo2.svg'
 
-const SUPPORT_EMAIL = "shadaan@alfaz.live";
+const SUPPORT_EMAIL = "alfaz.platform@gmail.com";
 const APP_URL = "https://alfaz.live";
-const LOGO_URL =
-  "https://lh3.googleusercontent.com/aida/AEtjO1UB8xgu6ff-wm5z7Qy-xx12uCgoyyXq2KiLINr11N4g-P_1_3BnnpT9-UQySaeA2nIuys6kOPmcejKENdLDHtCrD1f92jPKA3D2A3vU8a7f64QTZ-1ozThs-tuJHae-zA64RFYaDTW-BX0wAS-thAhZhPW9mjQoZ7z4heFB1wHF9G2qp10CeDX1Zg5d3WC3xTj4lkgU_-qJqdg2WHyMDCZcg7cyeotwMPLnqmqfST0y";
+const LOGO_URL = logo;
 
 /* -------------------------------------------------------------------------- */
 /*  CONTENT  (from Alfaz_Help_Center2.txt)                                     */
@@ -30,8 +30,8 @@ const PATH = (v) => ({ t: "path", v });
 
 const NAV = [
   { path: "knowledge-base", label: "Knowledge Base" },
-  { path: "guides", label: "Guides" },
-  { path: "community-guidelines", label: "Community Guidelines" },
+  { path: "privacypolicy", label: "Guides" },
+  { path: "communityguidelines", label: "Community Guidelines" },
   { path: "contact-support", label: "Contact Support" },
 ];
 
@@ -2346,7 +2346,7 @@ export default function AlfazHelpCenter() {
       <KnowledgeBase query={query} setQuery={setQuery} searchRef={searchRef} navigate={navigate} />
     );
   } else if (path === "guides") {
-    page = <Guides focus={focus} navigate={navigate} />;
+    page = <Guides foc  us={focus} navigate={navigate} />;
   } else if (path === "community-guidelines") {
     page = <CommunityGuidelines />;
   } else if (path === "contact-support") {

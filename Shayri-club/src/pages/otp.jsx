@@ -497,7 +497,7 @@ const OtpVerification = () => {
     const [agreeTerms, setAgreeTerms] = useState(false);
     const canSubmit = agreeCookies && agreeTerms;
     const mainTime = new Date();
-    mainTime.setSeconds(mainTime.getSeconds() + 30); // 5 minutes timer
+    mainTime.setSeconds(mainTime.getSeconds() + 300); // 5 minutes timer
 
     const time2 = new Date();
     time2.setSeconds(time2.getSeconds() + 60); // 1 minute timer
@@ -533,6 +533,9 @@ const OtpVerification = () => {
                 //     setText("Sorry, invalid secret pin")
 
                 // }
+                if(Response.data.success){
+                    Navigate('/')
+                }
             }).catch((error) => {
                 console.error("Error while sending post request to otp endpoint", error);
             })

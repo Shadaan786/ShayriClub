@@ -1585,6 +1585,9 @@ const isMobile = useIsMobile();
     .get('/api/userId',{
       withCredentials: true
     }).then((response)=>{
+      if(response.data.redirectUrl){
+        Navigate(response.data.redirectUrl)
+      }
       setUid(response.data._id)
       setProfilePic(response.data.profilePic);
     })

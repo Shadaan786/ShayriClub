@@ -570,7 +570,7 @@ const SignupApi = () => {
                 <input
                   id="email"
                   className="field-input"
-                  type="text"
+                  type="email"
                   placeholder="you@example.com"
                   value={userID}
                   autoComplete="email"

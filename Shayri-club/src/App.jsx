@@ -67,6 +67,7 @@ import ServerError500 from './pages/Error pages/ServerError500';
 import TooManyRequests from './pages/Error pages/TooManyRequests403';
 import HelpCenter from './legal/HelpCenter';
 import AboutUs from './legal/AboutUs';
+import RefundPolicy from './legal/Cancellation&refeunPolicy';
 
 
 function App() {
@@ -171,6 +172,7 @@ onMessage(messaging, (data) => {
       <Route path='/403' element= {<TooManyRequests/>}/>
       <Route path='/helpcenter' element= {<HelpCenter/>}/>
       <Route path='/aboutus' element= {<AboutUs/>}/>
+      <Route path='/cancellation&refundpolicy' element= {<RefundPolicy/>}/>
 
       {/* <ContextProvider>
         <Kalam/>

@@ -4257,7 +4257,7 @@ export function PoetProfileDashboard({
     formData.append("userId", userId);
 
     axiosInstance
-    .post('/upload/profileCover', formData,{
+    .post('/api/upload/profileCover', formData,{
       headers:{"Content-Type": "multipart/form-data"},
       withCredentials: true
     })

@@ -33,11 +33,11 @@ const STORY_IMG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuBGuDHciiofeVEHQZFF4Aocp_Qyk9znWACVFdKQ2WpIJ-gUW1Rkvw3psGa2kUacDCbRwfLy-bJ-9jhl6XXktG8GuSwZItCpy2L1LbyCjw1BWUrGeNY7pyMUAtzwhK_uI638q9n0KS6tPr-qnvUGcKT7CNTG1hPhr6wr0tQrNggkrSCZ_PBQ_qSOrKHQ-rs8uegd9-11AeKChJlG6s6Ha7_UfYloem1vLrmmgx5JwAs";
 
 const NAV_LINKS = [
-  { path: "explore", label: "Explore" },
+  { path: "/albumslive", label: "Explore" },
   { path: "writers", label: "Writers" },
   { path: "shayari-and-poems", label: "Shayari & Poems" },
   { path: "collections", label: "Collections" },
-  { path: "about-us", label: "About Us" },
+//   { path: "about-us", label: "About Us" },
 ];
 
 const STORY_PARAGRAPHS = [
@@ -133,7 +133,8 @@ const Header = () => (
           <img alt="Alfaz Brand Wordmark" className="h-8 w-auto object-contain" src={logo} />
           <span className="font-ab-headline-sm text-ab-headline-sm text-ab-primary tracking-tight">Alfaz</span>
         </a>
-        <nav className="hidden xl:flex items-center gap-ab-space-lg" data-active-classes="text-ab-secondary border-b border-ab-secondary">
+         <span className="font-ab-headline-sm text-ab-headline-lg text-ab-primary tracking-tight">About Us</span>
+        {/* <nav className="hidden xl:flex items-center gap-ab-space-lg" data-active-classes="text-ab-secondary border-b border-ab-secondary">
           {NAV_LINKS.map(({ path, label }) => (
             <a
               key={path}
@@ -144,13 +145,13 @@ const Header = () => (
               {label}
             </a>
           ))}
-        </nav>
+        </nav> */}
       </div>
       <div className="flex items-center gap-ab-space-md">
         <a
           className="hidden sm:inline-flex items-center justify-center px-ab-space-md py-ab-space-sm border border-ab-outline-variant rounded-ab-lg font-ab-label-md text-ab-label-md text-ab-on-surface hover:bg-ab-surface-container hover:text-ab-on-surface transition-all"
           data-path="write-a-piece"
-          href="#"
+          href="/Signup/Login"
         >
           Write a Piece
         </a>
@@ -492,8 +493,8 @@ export default function AboutUs() {
                       </div>
                       <div>
                         <span className="font-ab-label-caps text-ab-label-caps uppercase tracking-wider text-ab-on-primary-container block mb-1">Contact Inquiries</span>
-                        <a className="font-ab-body-md text-ab-body-md text-ab-secondary-fixed hover:underline inline-flex items-center gap-1" href="mailto:shadaan@alfaz.live">
-                          shadaan@alfaz.live
+                        <a className="font-ab-body-md text-ab-body-md text-ab-secondary-fixed hover:underline inline-flex items-center gap-1" href="mailto:alfaz.platform@gmail.com">
+                          alfaz.platform@gmail.com
                           <span className="material-symbols-outlined text-[14px]">mail</span>
                         </a>
                       </div>
@@ -525,7 +526,7 @@ export default function AboutUs() {
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

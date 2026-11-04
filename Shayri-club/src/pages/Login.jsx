@@ -503,7 +503,7 @@ const Login = () => {
               <input
                 id="email"
                 className="field-input"
-                type="text"
+                type='email'
                 placeholder="you@example.com"
                 autoComplete="username"
                 onChange={(e) => setId(e.target.value)}
