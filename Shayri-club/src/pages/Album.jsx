@@ -1993,6 +1993,20 @@ import {
   Image as ImageIcon,
   Heart,
   Camera,
+  // ── icons added for the new footer ──
+  Sparkles as SparklesIcon,
+  Mail as MailIcon,
+  ArrowRight as ArrowRightIcon,
+  Instagram as InstagramIcon,
+  Twitter as TwitterIcon,
+  Youtube as YoutubeIcon,
+  Mic as MicIcon,
+  Github as GithubIcon,
+  Headphones as HeadphonesIcon,
+  ShieldCheck as ShieldCheckIcon,
+  Globe as GlobeIcon,
+  ChevronDown as ChevronDownIcon,
+  ArrowUp as ArrowUpIcon,
 } from "lucide-react";
 import axios from "axios";
 
@@ -2038,6 +2052,10 @@ export const Album = () => {
   const [bgMenuOpen, setBgMenuOpen] = useState(false);
   const [coverUploading, setCoverUploading] = useState(false);
 
+  // Footer-overlap: <main> is pinned (sticky) once its end reaches the bottom of the scroll area
+  const mainRef = useRef(null);
+  const [mainStickyTop, setMainStickyTop] = useState(0);
+
   const MAX_H = 300;
   const MIN_H = 110;
   const [headerH, setHeaderH] = useState(MAX_H);
@@ -2070,6 +2088,28 @@ export const Album = () => {
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
+
+  // New: keep <main> pinned when its bottom reaches the bottom of the scroll area,
+  // so the footer can scroll up over it. Sticky "top" = viewportHeight - mainHeight (negative when main is taller).
+  useEffect(() => {
+    const mainEl = mainRef.current;
+    const scrollEl = scrollRef.current;
+    if (!mainEl || !scrollEl) return;
+    const HEADER_OFFSET = 64; // pt-16 (top app bar)
+    const update = () => {
+      const top = Math.min(HEADER_OFFSET, scrollEl.clientHeight - mainEl.offsetHeight);
+      setMainStickyTop(top);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(mainEl);
+    ro.observe(scrollEl);
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [dataArrived, length]);
 
 
 
@@ -2428,7 +2468,7 @@ export const Album = () => {
         ))}
       </nav>
       <div className="mt-auto space-y-1 border-t border-amber-400/10 pt-4">
-        <button className="w-full flex items-center gap-3 px-4 py-3 text-white/40 hover:text-white/80 hover:bg-white/[0.04] transition-all duration-200 rounded-lg">
+        <button onClick={()=>Navigate('/helpcenter')} className="w-full flex items-center gap-3 px-4 py-3 text-white/40 hover:text-white/80 hover:bg-white/[0.04] transition-all duration-200 rounded-lg">
           <HelpCircle className="w-4.5 h-4.5" />
           <span className="text-sm">Support</span>
         </button>
@@ -2677,7 +2717,7 @@ export const Album = () => {
         className="h-full overflow-y-auto pt-16 md:pl-60"
         style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(251,191,36,0.20) transparent" }}
       >
-        <main className="flex flex-col lg:flex-row gap-6 px-4 md:px-8 py-8 relative">
+        <main ref={mainRef} className="flex flex-col lg:flex-row gap-6 px-4 md:px-8 pt-8 pb-40 sticky" style={{ top: `${mainStickyTop}px` }}>
           {/* Center content */}
           <div className="flex-1 space-y-8 max-w-5xl mx-auto w-full min-w-0">
             {/* Collapsing header */}
@@ -2951,79 +2991,314 @@ export const Album = () => {
             <div className="sticky top-24">{VisibilityPanelContent}</div>
           </aside>
         </main>
-        <footer className="mt-32 pb-8 border-t bg-[#120e06] backdrop-blur-lg border-b border-amber-400/20">
-  <div className="max-w-7xl mx-auto px-4 pt-12">
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-      <div>
-         <h1
-          className="relative inline-block text-3xl sm:text-5xl leading-none font-black tracking-wide cursor-default group"
-        >
-          {/* soft glow layer behind the text */}
-          <span
-            aria-hidden="true"
-            className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-amber-400 via-rose-400 to-orange-400 bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-70"
-            style={{ fontFamily: "Playfair Display" }}
-          >
-            Alfaz
-          </span>
 
-          {/* main text, floating */}
-          <span className="relative inline-block">
-            <span
-              className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
-              style={{ fontFamily: "'Dancing Script', cursive" }}
-            >
-              A
-            </span>
-            <bdi
-              className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
-              style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
-            >
-              لف
-            </bdi>
-            <span
-              className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
-              style={{ fontFamily: "'Dancing Script', cursive" }}
-            >
-              az
-            </span>
-          </span>
-        </h1>
+        {/* ==================== ENHANCED PROFESSIONAL FOOTER ====================
+            - md:-ml-60 cancels the scroll container's md:pl-60, so the footer spans the full width
+            - relative z-[45] places it above the fixed sidebar (z-40) so it slides over it
+            - <main> is `sticky` with a measured negative top (see mainStickyTop): when its end reaches the
+              bottom of the scroll area it stays pinned, and this footer (later in the DOM, higher z-index)
+              scrolls up OVER it
+            - no top margin on purpose, the footer overlaps the pinned content */}
+        <footer className="relative z-[45] md:-ml-60 border-t border-amber-400/20 bg-gradient-to-b from-[#120e06] via-[#0d0a04] to-[#080602] overflow-hidden">
+          {/* Ambient Golden Glow behind footer */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(circle at 50% 0%, rgba(249, 189, 34, 0.10) 0%, rgba(26, 8, 40, 0.35) 35%, transparent 70%)",
+            }}
+          ></div>
 
-        <p className="text-gray-400 text-sm">
-          A sanctuary for mystic poets to share their kalam with seekers everywhere.
-        </p>
-      </div>
-      <div>
-        <h4 className="text-white font-semibold mb-4">Explore</h4>
-        <ul className="space-y-2 text-gray-400 text-sm">
-          <li className="hover:text-amber-300 cursor-pointer transition">Kalam</li>
-          <li className="hover:text-amber-300 cursor-pointer transition">Albums</li>
-          <li className="hover:text-amber-300 cursor-pointer transition">Browse</li>
-        </ul>
-      </div>
-      <div>
-        <h4 className="text-white font-semibold mb-4">Resources</h4>
-        <ul className="space-y-2 text-gray-400 text-sm">
-          <li className="hover:text-amber-300 cursor-pointer transition">About Us</li>
-          <li className="hover:text-amber-300 cursor-pointer transition">Guidelines</li>
-          <li className="hover:text-amber-300 cursor-pointer transition">Help Center</li>
-        </ul>
-      </div>
-      <div>
-        <h4 className="text-white font-semibold mb-4">Legal</h4>
-        <ul className="space-y-2 text-gray-400 text-sm">
-          <li className="hover:text-amber-300 cursor-pointer transition">Privacy Policy</li>
-          <li className="hover:text-amber-300 cursor-pointer transition">Terms of Service</li>
-          <li className="hover:text-amber-300 cursor-pointer transition">Contact</li>
-        </ul>
-      </div>
-    </div>
-    <div className="text-center text-gray-500 text-sm pt-8 border-t border-white/5">
-      © 2025 Alfaz. All rights reserved.
-    </div>
-  </div>
-</footer>
+          {/* Decorative Top Divider Accent */}
+          <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-amber-400/40 to-transparent"></div>
+
+          {/* Top Pre-Footer Callout / Literary Newsletter Section */}
+          <div className="relative border-b border-amber-400/10 bg-white/[0.015]">
+            <div className="max-w-7xl mx-auto px-6 py-12 lg:py-14">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center justify-between">
+                <div className="lg:col-span-6 space-y-2">
+                  <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold tracking-wider uppercase">
+                    <SparklesIcon className="w-3.5 h-3.5" />
+                    The Weekly Bayt &amp;courier Dispatch
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-serif text-white font-medium">
+                    Curated couplets, literary contests &amp; essays.
+                  </h3>
+                  <p className="text-sm text-white/45 max-w-lg">
+                    Join 42,000+ literary enthusiasts who receive handpicked gazals, poetry writing prompts, and festival invites every Sunday morning.
+                  </p>
+                </div>
+                <div className="lg:col-span-6">
+                  <form
+                    className="flex flex-col sm:flex-row gap-3 max-w-lg lg:ml-auto"
+                    onSubmit={(e) => e.preventDefault()}
+                  >
+                    <div className="relative flex-1">
+                      <MailIcon className="w-4 h-4 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" />
+                      <input
+                        className="w-full bg-[#1a0828]/60 text-white placeholder-white/30 text-sm rounded-xl pl-11 pr-4 py-3.5 border border-amber-400/25 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/20 transition-all"
+                        placeholder="Enter your email for the gazette..."
+                        required
+                        type="email"
+                      />
+                    </div>
+                    <button
+                      className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 hover:brightness-110 text-black font-semibold text-sm transition-all shadow-md shadow-amber-400/10 flex items-center justify-center gap-2 whitespace-nowrap active:scale-[0.98]"
+                      type="submit"
+                    >
+                      <span>Subscribe</span>
+                      <ArrowRightIcon className="w-4 h-4" />
+                    </button>
+                  </form>
+                  <p className="text-[11px] text-white/35 mt-2 lg:text-right">
+                    Zero spam. Unsubscribe with one click anytime.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Multi-Column Footer Grid */}
+          <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+              {/* Brand & Mission Column (Col 1-4) */}
+              <div className="lg:col-span-4 space-y-5">
+                <div className="flex items-center gap-3">
+                  <h1 className="relative inline-block text-4xl sm:text-5xl leading-none font-black tracking-wide cursor-default group">
+                    {/* Soft Glow layer behind text */}
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-amber-400 via-rose-400 to-orange-400 bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-75"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      Alfaz
+                    </span>
+
+                    {/* Main text with composite Urdu & Script flourish */}
+                    <span className="relative inline-block">
+                      <span
+                        className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
+                        style={{ fontFamily: "'Dancing Script', cursive" }}
+                      >
+                        A
+                      </span>
+                      <bdi
+                        className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
+                        style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+                      >
+                        لف
+                      </bdi>
+                      <span
+                        className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
+                        style={{ fontFamily: "'Dancing Script', cursive" }}
+                      >
+                        az
+                      </span>
+                    </span>
+                  </h1>
+                  {/* <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                    Shayri Club
+                  </span> */}
+                </div>
+
+                <p className="text-white/45 text-sm leading-relaxed max-w-sm">
+                  A sanctuary for poets, shayars, and novelists to immortalize their words, connect through soulful recitations, and celebrate the nuance of multilingual literature.
+                </p>
+
+                {/* Community Trust Badges */}
+                <div className="flex items-center gap-4 pt-1">
+                  <div className="flex -space-x-2">
+                    <img alt="Poet Avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#120e06] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                    <img alt="Writer Avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#120e06] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                    <img alt="Contributor" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#120e06] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                    <div className="flex items-center justify-center h-8 w-8 rounded-full ring-2 ring-[#120e06] bg-amber-400/20 text-amber-300 text-[10px] font-bold">
+                      +18k
+                    </div>
+                  </div>
+                  <div className="text-xs text-white/45">
+                    <span className="text-amber-200 font-medium">18,500+</span> Published Writers
+                  </div>
+                </div>
+
+                {/* Social Icon Links with Tooltip/Hover Glow */}
+                <div className="flex items-center gap-2.5 pt-2">
+                  <a aria-label="Instagram" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-amber-400/10 border border-white/5 hover:border-amber-400/30 text-white/45 hover:text-amber-300 flex items-center justify-center transition-all" href="#">
+                    <InstagramIcon className="w-4 h-4" />
+                  </a>
+                  <a aria-label="Twitter / X" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-amber-400/10 border border-white/5 hover:border-amber-400/30 text-white/45 hover:text-amber-300 flex items-center justify-center transition-all" href="#">
+                    <TwitterIcon className="w-4 h-4" />
+                  </a>
+                  <a aria-label="YouTube" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-amber-400/10 border border-white/5 hover:border-amber-400/30 text-white/45 hover:text-amber-300 flex items-center justify-center transition-all" href="#">
+                    <YoutubeIcon className="w-4 h-4" />
+                  </a>
+                  <a aria-label="Spotify" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-amber-400/10 border border-white/5 hover:border-amber-400/30 text-white/45 hover:text-amber-300 flex items-center justify-center transition-all" href="#">
+                    <MicIcon className="w-4 h-4" />
+                  </a>
+                  <a aria-label="GitHub" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-amber-400/10 border border-white/5 hover:border-amber-400/30 text-white/45 hover:text-amber-300 flex items-center justify-center transition-all" href="#">
+                    <GithubIcon className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Column 2: Explore (Col 5-6) */}
+              <div className="lg:col-span-2 space-y-4">
+                <div className="flex items-center gap-2">
+                  {/* <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span> */}
+                  <h4 className="text-sm font-semibold text-amber-200 tracking-wider uppercase font-sans">Explore</h4>
+                </div>
+                <ul className="space-y-3 text-sm text-white/45">
+                  <li>
+                    <a className="group flex items-center justify-between hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Kalam (Poetry)</span>
+                      {/* <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">Hot</span> */}
+                    </a>
+                  </li>
+                  <li>
+                    <a className="group flex items-center hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Community Circle</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a className="group flex items-center hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Browse Categories</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a className="group flex items-center hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Mushaira Live Rooms</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a className="group flex items-center justify-between hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Audio Recitations</span>
+                      <HeadphonesIcon className="w-3.5 h-3.5 text-white/35 group-hover:text-amber-400" />
+                    </a>
+                  </li>
+                  <li>
+                    <a className="group flex items-center hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Featured Shayars</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 3: Resources & Academy (Col 7-8) */}
+              <div className="lg:col-span-3 space-y-4">
+                <div className="flex items-center gap-2">
+                  {/* <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span> */}
+                  <h4 className="text-sm font-semibold text-amber-200 tracking-wider uppercase font-sans">Writers &amp; Guild</h4>
+                </div>
+                <ul className="space-y-3 text-sm text-white/45">
+                  <li>
+                    <a className="group flex items-center hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">About Alfaz</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a className="group flex items-center hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Editorial Guidelines</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a className="group flex items-center justify-between hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Poetic Meters (Behr) Guide</span>
+                      {/* <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">Learn</span> */}
+                    </a>
+                  </li>
+                  <li>
+                    <a className="group flex items-center hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Publishing Grants &amp; Contests</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a className="group flex items-center hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Help &amp; Creator Support</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 4: Legal & System Status (Col 9-12) */}
+              <div className="lg:col-span-3 space-y-4">
+                <div className="flex items-center gap-2">
+                  {/* <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> */}
+                  <h4 className="text-sm font-semibold text-amber-200 tracking-wider uppercase font-sans">Legal &amp; Transparency</h4>
+                </div>
+                <ul className="space-y-3 text-sm text-white/45">
+                  <li>
+                    <button
+                      onClick={() => Navigate('/privacyPolicy')}
+                      className="group flex items-center justify-between w-full text-left hover:text-amber-200 transition-colors duration-150"
+                    >
+                      <span className="group-hover:translate-x-1 transition-transform">Privacy Policy</span>
+                      <ShieldCheckIcon className="w-3.5 h-3.5 text-white/35 group-hover:text-emerald-400" />
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => Navigate('/termsofservices')}
+                      className="group flex items-center w-full text-left hover:text-amber-200 transition-colors duration-150"
+                    >
+                      <span className="group-hover:translate-x-1 transition-transform">Terms of Service</span>
+                    </button>
+                  </li>
+                  <li>
+                    <a className="group flex items-center hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Copyright &amp; Intellectual Rights</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a className="group flex items-center hover:text-amber-200 transition-colors duration-150" href="#">
+                      <span className="group-hover:translate-x-1 transition-transform">Contact &amp; Inquiries</span>
+                    </a>
+                  </li>
+                </ul>
+
+                {/* System Status Card */}
+                <div className="mt-4 p-3 rounded-xl bg-white/[0.02] border border-amber-400/10 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span className="text-xs text-white/70 font-medium">All Systems Operational</span>
+                  </div>
+                  <span className="text-[11px] text-white/35">v2.4.0</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Bar: Copyright, Language Switcher, Regional note */}
+            <div className="pt-8 border-t border-amber-400/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/35">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-center md:text-left">
+                <span>© 2025 <strong className="text-white/55 font-semibold">Alfaz • Shayri Club</strong>. All rights reserved.</span>
+                <span className="hidden sm:inline text-white/15">•</span>
+                <span className="text-white/45">Crafted with devotion for Urdu, Hindi &amp; English verse.</span>
+              </div>
+              <div className="flex items-center gap-6">
+                {/* Language Selector Mockup */}
+                <button className="inline-flex items-center gap-1.5 text-white/45 hover:text-amber-300 transition-colors">
+                  <GlobeIcon className="w-3.5 h-3.5" />
+                  <span>English (EN)</span>
+                  <ChevronDownIcon className="w-3 h-3" />
+                </button>
+
+                {/* Back to top button */}
+                <a
+                  className="inline-flex items-center gap-1 text-white/45 hover:text-amber-200 transition-colors"
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  <span>Back to top</span>
+                  <ArrowUpIcon className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
 
       {/* ── Floating Action Button ── */}

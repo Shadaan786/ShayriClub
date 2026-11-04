@@ -4,6 +4,22 @@ import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
+// ── icons added for the new footer ──
+import {
+    Sparkles as SparklesIcon,
+    Mail as MailIcon,
+    ArrowRight as ArrowRightIcon,
+    Instagram as InstagramIcon,
+    Twitter as TwitterIcon,
+    Youtube as YoutubeIcon,
+    Mic as MicIcon,
+    Github as GithubIcon,
+    Headphones as HeadphonesIcon,
+    ShieldCheck as ShieldCheckIcon,
+    Globe as GlobeIcon,
+    ChevronDown as ChevronDownIcon,
+    ArrowUp as ArrowUpIcon,
+} from "lucide-react";
 
 /**
  * Color tokens pulled from the Library page's Material-3 dark theme mock,
@@ -36,6 +52,13 @@ const SORT_OPTIONS = [
     { value: "year", label: "Release Year" },
 ];
 
+const GLOBAL_NAV_LINKS = [
+    { text: "Kalam", to: "/kalam" },
+    { text: "Community", to: "/spaces" },
+    { text: "Browse", to: "/Social" },
+    { text: "Library", to: "/albumsLive", active: true },
+];
+
 const ExploreAlbums = () => {
     const [albums, setAlbums] = useState([]);
     const [total, setTotal] = useState(0);
@@ -47,10 +70,16 @@ const ExploreAlbums = () => {
     const [activeGenre, setActiveGenre] = useState(null);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [SearchParams] = useSearchParams();
+    const [user, setUser] = useState("");
 
     const navQuery = SearchParams.get('query');
     
     const Navigate = useNavigate();
+
+    // Footer-overlap: the content block is pinned (sticky) once its end reaches the bottom of the scroll area
+    const rootRef = useRef(null);
+    const wrapRef = useRef(null);
+    const [wrapStickyTop, setWrapStickyTop] = useState(0);
 
     if(navQuery){
         console.log(true);
@@ -96,8 +125,20 @@ const ExploreAlbums = () => {
             });
     };
 
+    const getUserInfo=()=>{
+        axiosInstance
+        .get('/api/userId',{withCredentials:true})
+
+        .then((response)=>{
+            setUser(response.data);
+        }).catch((error)=>{
+            console.error("Error while getting user info", error);
+        })
+    }
+
     useEffect(() => {
         handleFetch();
+        getUserInfo();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -118,6 +159,27 @@ const ExploreAlbums = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [albums, initialLoading, hasMore]);
+
+    // New: keep the content block pinned when its bottom reaches the bottom of the scroll area,
+    // so the footer can scroll up over it. Sticky "top" = viewportHeight - contentHeight (negative when content is taller).
+    useEffect(() => {
+        const wrapEl = wrapRef.current;
+        const rootEl = rootRef.current;
+        if (!wrapEl || !rootEl) return;
+        const update = () => {
+            const top = Math.min(0, rootEl.clientHeight - wrapEl.offsetHeight);
+            setWrapStickyTop(top);
+        };
+        update();
+        const ro = new ResizeObserver(update);
+        ro.observe(wrapEl);
+        ro.observe(rootEl);
+        window.addEventListener("resize", update);
+        return () => {
+            ro.disconnect();
+            window.removeEventListener("resize", update);
+        };
+    }, []);
 
     const fetchMore = () => {
         if (initialLoading) return;
@@ -167,6 +229,7 @@ const ExploreAlbums = () => {
     return (
         <div
             id="scrollable-explore-albums"
+            ref={rootRef}
             className="w-full overflow-y-auto overflow-x-hidden"
             style={{
                 height: "100svh",
@@ -183,6 +246,14 @@ const ExploreAlbums = () => {
                     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
                     vertical-align: middle;
                     line-height: 1;
+                }
+
+                .k-avatar {
+                    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+                    background: rgba(83,74,183,0.18); border: 0.5px solid rgba(210,170,90,0.3);
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 11px; font-weight: 500; color: rgba(210,170,90,0.8); cursor: pointer;
+                    overflow: hidden;
                 }
 
                 .ea-glass-card {
@@ -224,89 +295,114 @@ const ExploreAlbums = () => {
 
             {/* ── Top Navigation ── */}
             <header
-                className="fixed top-0 left-0 w-full z-50"
-                style={{ background: "rgba(5,20,36,0.7)", backdropFilter: "blur(40px)", borderBottom: `1px solid ${COLORS.borderSubtle}` }}
-            >
-                <div className="ea-header-inner flex justify-between items-center h-20 px-4 md:px-6 w-full max-w-[1440px] mx-auto">
-                    <div className="flex items-center gap-4 md:gap-8">
-                        <button
-                            onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden mr-1 w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
-                            style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
-                            aria-label="Open sidebar"
+                            className="fixed top-0 left-0 w-full z-50"
+                            style={{ background: "rgba(5,20,36,0.7)", backdropFilter: "blur(40px)", borderBottom: `1px solid ${COLORS.borderSubtle}` }}
                         >
-                            <span className="material-symbols-outlined text-lg">menu</span>
-                        </button>
-                        <span className="font-extrabold text-xl md:text-3xl tracking-tight">Library</span>
-
-                        <nav className="ea-nav-links hidden md:flex gap-6">
-                            <Link to="/artists" className="ea-nav-link">Artists</Link>
-                            <Link to="/albums" className="font-bold pb-1" style={{ color: COLORS.primary, borderBottom: `2px solid ${COLORS.primary}` }}>
-                                Albums
-                            </Link>
-                            <Link to="/playlists" className="ea-nav-link">Playlists</Link>
-                            <Link to="/genres" className="ea-nav-link">Genres</Link>
-                        </nav>
-                    </div>
-
-                    <div className="flex items-center gap-2 md:gap-4">
-                        <div
-                            className="ea-nav-search hidden sm:flex items-center relative"
-                        >
-                            <span
-                                className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2"
-                                style={{ color: COLORS.onSurfaceVariant }}
+                            <div
+                                className="items-center h-16 md:h-20 px-3 sm:px-6 w-full max-w-[1440px] mx-auto"
+                                style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "1fr auto 1fr",
+                                    columnGap: 16,
+                                }}
                             >
-                                search
-                            </span>
-                            <input
-                                type="text"
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                                placeholder="Search collection..."
-                                className="rounded-full py-2 pl-10 pr-4 text-sm w-64 outline-none transition-all"
-                                style={{ background: "rgba(39,54,71,0.4)", border: "none", color: COLORS.onSurface }}
-                            />
-                        </div>
-                        <button
-                            onClick={() => setMobileSearchOpen((prev) => !prev)}
-                            className="sm:hidden w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
-                            style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
-                            aria-label="Toggle search"
-                        >
-                            <span className="material-symbols-outlined text-lg" style={{ color: COLORS.onSurfaceVariant }}>search</span>
-                        </button>
-                        <button style={{ color: COLORS.onSurfaceVariant }} className="flex-shrink-0">
-                            <span className="material-symbols-outlined" style={{ fontSize: 28 }}>account_circle</span>
-                        </button>
-                    </div>
-                </div>
+                                <div className="flex items-center gap-2 sm:gap-4" style={{ minWidth: 0 }}>
+                                    <button
+                                        onClick={() => setSidebarOpen(true)}
+                                        className="lg:hidden mr-1 sm:mr-2 w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
+                                        style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
+                                        aria-label="Open sidebar"
+                                    >
+                                        <span className="material-symbols-outlined text-lg">menu</span>
+                                    </button>
+            
+                                    <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
+                                        {/* <img src="/logo2.svg" alt="Alfaz Logo" className="h-7 sm:h-8 w-auto" /> */}
+                                        {/* <span className="relative inline-block leading-none font-black tracking-wide">
+                                            <span className="relative inline-block text-xl sm:text-2xl md:text-3xl">
+                                                <span
+                                                    className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
+                                                    style={{ fontFamily: "'Dancing Script', cursive" }}
+                                                >
+                                                    A
+                                                </span>
+                                                <bdi
+                                                    className="inline-block -mx-0.5 translate-y-[2px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
+                                                    style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+                                                >
+                                                    لف
+                                                </bdi>
+                                                <span
+                                                    className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
+                                                    style={{ fontFamily: "'Dancing Script', cursive" }}
+                                                >
+                                                    az
+                                                </span>
+                                            </span>
+                                        </span> */}
+                                        <span className="font-extrabold text-xl md:text-3xl tracking-tight">Library</span>
+                                    </Link>
+                                </div>
+            
+                                <nav className="lib-nav-links hidden md:flex items-center gap-8" style={{ justifySelf: "center" }}>
+                                    {GLOBAL_NAV_LINKS.map((link) =>
+                                        link.active ? (
+                                            <Link
+                                                key={link.text}
+                                                to={link.to}
+                                                className="font-bold pb-1"
+                                                style={{ color: COLORS.primary, borderBottom: `2px solid ${COLORS.primary}` }}
+                                            >
+                                                {link.text}
+                                            </Link>
+                                        ) : (
+                                            <Link key={link.text} to={link.to} className="lib-nav-link">
+                                                {link.text}
+                                            </Link>
+                                        )
+                                    )}
+                                </nav>
+            
+                                <div className="flex items-center gap-2 sm:gap-4" style={{ justifySelf: "end" }}>
+                                    <button
+                                        className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
+                                        style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
+                                        aria-label="Search"
+                                        onClick={() => Navigate("/search")}
+                                    >
+                                        <span className="material-symbols-outlined text-lg" style={{ color: COLORS.onSurfaceVariant }}>search</span>
+                                    </button>
+                                    <div
+                                        className="lib-nav-search hidden lg:flex items-center rounded-full px-4 py-2"
+                                        style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
+                                    >
+                                        <span className="material-symbols-outlined text-sm mr-2" style={{ color: COLORS.onSurfaceVariant }}>search</span>
+                                        <input
+                                            type="text"
+                                            placeholder="Search albums..."
+                                            onChange={(e) => (searchQuery.current = e.target.value)}
+                                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                                            className="bg-transparent border-none focus:ring-0 text-sm w-48 outline-none"
+                                            style={{ color: COLORS.onSurface }}
+                                        />
+                                        <button onClick={()=>Navigate(`/albums?query=${searchQuery.current}`)}>
+                                            search
+                                        </button>
+                                    </div>
+                                    {/* <button className="material-symbols-outlined" style={{ color: COLORS.onSurface }}>account_circle</button> */}
+                                    <div className="k-avatar">
+                                <img onClick={() => Navigate(`/profile?userId=${user._id}`)} className="rounded-full h-full" src={user.profilePic} alt="profilePic" />
+                                </div>
+                                </div>
+                            </div>
+                        </header>
 
-                {/* Mobile search row — toggled by the search icon above */}
-                {mobileSearchOpen && (
-                    <div className="ea-mobile-search-bar items-center relative px-4 pb-3 sm:hidden">
-                        <span
-                            className="material-symbols-outlined absolute left-7 top-1/2 -translate-y-1/2"
-                            style={{ color: COLORS.onSurfaceVariant }}
-                        >
-                            search
-                        </span>
-                        <input
-                            autoFocus
-                            type="text"
-                            value={searchValue}
-                            onChange={(e) => setSearchValue(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                            placeholder="Search collection..."
-                            className="rounded-full py-2 pl-10 pr-4 text-sm w-full outline-none transition-all"
-                            style={{ background: "rgba(39,54,71,0.4)", border: "none", color: COLORS.onSurface }}
-                        />
-                    </div>
-                )}
-            </header>
-
-            <div className="ea-content-offset flex pt-20">
+            {/* Content block (sidebar + main): pinned via sticky so the footer can scroll over it */}
+            <div
+                ref={wrapRef}
+                className="ea-content-offset flex pt-20 pb-8 sticky"
+                style={{ top: `${wrapStickyTop}px` }}
+            >
                 {/* ── Sidebar (desktop) ── */}
                 <aside
                     className="ea-sidebar hidden lg:flex flex-col fixed left-0 top-20 z-40 overflow-y-auto"
@@ -389,7 +485,7 @@ const ExploreAlbums = () => {
                                 <span className="material-symbols-outlined">settings</span>
                                 <span>Settings</span>
                             </Link>
-                            <Link to="/support" className="ea-sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" style={{ color: COLORS.onSurfaceVariant }}>
+                            <Link to="/helpcenter" className="ea-sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" style={{ color: COLORS.onSurfaceVariant }}>
                                 <span className="material-symbols-outlined">help</span>
                                 <span>Support</span>
                             </Link>
@@ -497,10 +593,15 @@ const ExploreAlbums = () => {
                                         className="ea-glass-card relative aspect-square mb-4 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.02] group-hover:-translate-y-1"
                                     >
                                         
-                                        <div
+                                        {item.albumCover && <div
                                             className="w-full h-full bg-cover bg-center"
                                             style={{ backgroundImage: `url('${item.albumCover}')` }}
-                                        />
+                                        />}
+
+                                        {item.defaultAlbumCover && <div
+                                            className="w-full h-full bg-cover bg-center"
+                                             style={{ background: `linear-gradient(135deg, ${item.defaultAlbumCover.color1}, ${item.defaultAlbumCover.color2})` }}
+                                        />}
                                         
                                         <div
                                             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
@@ -541,6 +642,318 @@ const ExploreAlbums = () => {
                     </InfiniteScroll>
                 </main>
             </div>
+
+            {/* ==================== ENHANCED PROFESSIONAL FOOTER (themed to Library's navy/lavender palette) ====================
+                - lives OUTSIDE the sidebar/main block, so it spans the full width (and covers the fixed sidebar)
+                - relative z-[45] places it above the sidebar (z-40); the content block above is `sticky`
+                  with a measured negative top (see wrapStickyTop), so it stays pinned when its end
+                  reaches the bottom and this footer scrolls up OVER it
+                - pb-16 on mobile keeps the last line clear of the fixed bottom nav */}
+            {/* Footer only appears once every album has been loaded (hasMore === false) */}
+            {!hasMore && (
+            <footer
+                className="relative z-[45] border-t border-[#cfbcff]/20 bg-gradient-to-b from-[#051424] via-[#04101d] to-[#020a13] overflow-hidden pb-16 lg:pb-0"
+            >
+                {/* Ambient Glow behind footer */}
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background:
+                            "radial-gradient(circle at 50% 0%, rgba(207, 188, 255, 0.12) 0%, rgba(231, 195, 101, 0.04) 35%, transparent 70%)",
+                    }}
+                ></div>
+
+                {/* Decorative Top Divider Accent */}
+                <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#cfbcff]/40 to-transparent"></div>
+
+                {/* Top Pre-Footer Callout / Literary Newsletter Section */}
+                <div className="relative border-b border-white/5 bg-white/[0.015]">
+                    <div className="max-w-7xl mx-auto px-6 py-12 lg:py-14">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center justify-between">
+                            <div className="lg:col-span-6 space-y-2">
+                                <div className="flex items-center gap-2 text-[#cfbcff] text-xs font-semibold tracking-wider uppercase">
+                                    <SparklesIcon className="w-3.5 h-3.5" />
+                                    The Weekly Bayt &amp;courier Dispatch
+                                </div>
+                                <h3 className="text-2xl sm:text-3xl font-serif text-[#d4e4fa] font-medium">
+                                    Curated couplets, literary contests &amp; essays.
+                                </h3>
+                                <p className="text-sm text-[#cbc4d2]/70 max-w-lg">
+                                    Join 42,000+ literary enthusiasts who receive handpicked gazals, poetry writing prompts, and festival invites every Sunday morning.
+                                </p>
+                            </div>
+                            <div className="lg:col-span-6">
+                                <form
+                                    className="flex flex-col sm:flex-row gap-3 max-w-lg lg:ml-auto"
+                                    onSubmit={(e) => e.preventDefault()}
+                                >
+                                    <div className="relative flex-1">
+                                        <MailIcon className="w-4 h-4 text-[#cbc4d2]/70 absolute left-4 top-1/2 -translate-y-1/2" />
+                                        <input
+                                            className="w-full bg-[#122131]/80 text-[#d4e4fa] placeholder-[#cbc4d2]/40 text-sm rounded-xl pl-11 pr-4 py-3.5 border border-[#cfbcff]/25 focus:border-[#cfbcff] focus:outline-none focus:ring-2 focus:ring-[#cfbcff]/20 transition-all"
+                                            placeholder="Enter your email for the gazette..."
+                                            required
+                                            type="email"
+                                        />
+                                    </div>
+                                    <button
+                                        className="px-6 py-3.5 rounded-xl bg-[#cfbcff] hover:brightness-110 text-[#381e72] font-semibold text-sm transition-all shadow-md shadow-[#cfbcff]/10 flex items-center justify-center gap-2 whitespace-nowrap active:scale-[0.98]"
+                                        type="submit"
+                                    >
+                                        <span>Subscribe</span>
+                                        <ArrowRightIcon className="w-4 h-4" />
+                                    </button>
+                                </form>
+                                <p className="text-[11px] text-[#cbc4d2]/50 mt-2 lg:text-right">
+                                    Zero spam. Unsubscribe with one click anytime.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Main Multi-Column Footer Grid */}
+                <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+                        {/* Brand & Mission Column (Col 1-4) */}
+                        <div className="lg:col-span-4 space-y-5">
+                            <div className="flex items-center gap-3">
+                                <h1 className="relative inline-block text-4xl sm:text-5xl leading-none font-black tracking-wide cursor-default group">
+                                    {/* Soft Glow layer behind text */}
+                                    <span
+                                        aria-hidden="true"
+                                        className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-amber-400 via-rose-400 to-orange-400 bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-75"
+                                        style={{ fontFamily: "'Playfair Display', serif" }}
+                                    >
+                                        Alfaz
+                                    </span>
+
+                                    {/* Main text with composite Urdu & Script flourish */}
+                                    <span className="relative inline-block">
+                                        <span
+                                            className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
+                                            style={{ fontFamily: "'Dancing Script', cursive" }}
+                                        >
+                                            A
+                                        </span>
+                                        <bdi
+                                            className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
+                                            style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+                                        >
+                                            لف
+                                        </bdi>
+                                        <span
+                                            className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
+                                            style={{ fontFamily: "'Dancing Script', cursive" }}
+                                        >
+                                            az
+                                        </span>
+                                    </span>
+                                </h1>
+                                {/* <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                                    Shayri Club
+                                </span> */}
+                            </div>
+
+                            <p className="text-[#cbc4d2]/70 text-sm leading-relaxed max-w-sm">
+                                A sanctuary for poets, shayars, and novelists to immortalize their words, connect through soulful recitations, and celebrate the nuance of multilingual literature.
+                            </p>
+
+                            {/* Community Trust Badges */}
+                            <div className="flex items-center gap-4 pt-1">
+                                <div className="flex -space-x-2">
+                                    <img alt="Poet Avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#051424] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                                    <img alt="Writer Avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#051424] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                                    <img alt="Contributor" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#051424] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                                    <div className="flex items-center justify-center h-8 w-8 rounded-full ring-2 ring-[#051424] bg-[#cfbcff]/20 text-[#cfbcff] text-[10px] font-bold">
+                                        +18k
+                                    </div>
+                                </div>
+                                <div className="text-xs text-[#cbc4d2]/70">
+                                    <span className="text-[#d4e4fa] font-medium">18,500+</span> Published Writers
+                                </div>
+                            </div>
+
+                            {/* Social Icon Links with Tooltip/Hover Glow */}
+                            <div className="flex items-center gap-2.5 pt-2">
+                                <a aria-label="Instagram" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <InstagramIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="Twitter / X" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <TwitterIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="YouTube" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <YoutubeIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="Spotify" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <MicIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="GitHub" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <GithubIcon className="w-4 h-4" />
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Column 2: Explore (Col 5-6) */}
+                        <div className="lg:col-span-2 space-y-4">
+                            <div className="flex items-center gap-2">
+                                {/* <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span> */}
+                                <h4 className="text-sm font-semibold text-[#d4e4fa] tracking-wider uppercase font-sans">Explore</h4>
+                            </div>
+                            <ul className="space-y-3 text-sm text-[#cbc4d2]/70">
+                                <li>
+                                    <a className="group flex items-center justify-between hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Kalam (Poetry)</span>
+                                        {/* <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">Hot</span> */}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Community Circle</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Browse Categories</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Mushaira Live Rooms</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center justify-between hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Audio Recitations</span>
+                                        <HeadphonesIcon className="w-3.5 h-3.5 text-[#cbc4d2]/50 group-hover:text-[#cfbcff]" />
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Featured Shayars</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Column 3: Resources & Academy (Col 7-8) */}
+                        <div className="lg:col-span-3 space-y-4">
+                            <div className="flex items-center gap-2">
+                                {/* <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span> */}
+                                <h4 className="text-sm font-semibold text-[#d4e4fa] tracking-wider uppercase font-sans">Writers &amp; Guild</h4>
+                            </div>
+                            <ul className="space-y-3 text-sm text-[#cbc4d2]/70">
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">About Alfaz</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Editorial Guidelines</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center justify-between hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Poetic Meters (Behr) Guide</span>
+                                        {/* <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">Learn</span> */}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Publishing Grants &amp; Contests</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Help &amp; Creator Support</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Column 4: Legal & System Status (Col 9-12) */}
+                        <div className="lg:col-span-3 space-y-4">
+                            <div className="flex items-center gap-2">
+                                {/* <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> */}
+                                <h4 className="text-sm font-semibold text-[#d4e4fa] tracking-wider uppercase font-sans">Legal &amp; Transparency</h4>
+                            </div>
+                            <ul className="space-y-3 text-sm text-[#cbc4d2]/70">
+                                <li>
+                                    <button
+                                        onClick={() => Navigate('/privacyPolicy')}
+                                        className="group flex items-center justify-between w-full text-left hover:text-[#cfbcff] transition-colors duration-150"
+                                    >
+                                        <span className="group-hover:translate-x-1 transition-transform">Privacy Policy</span>
+                                        <ShieldCheckIcon className="w-3.5 h-3.5 text-[#cbc4d2]/50 group-hover:text-emerald-400" />
+                                    </button>
+                                </li>
+                                <li>
+                                    <button
+                                        onClick={() => Navigate('/termsofservices')}
+                                        className="group flex items-center w-full text-left hover:text-[#cfbcff] transition-colors duration-150"
+                                    >
+                                        <span className="group-hover:translate-x-1 transition-transform">Terms of Service</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Copyright &amp; Intellectual Rights</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Contact &amp; Inquiries</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            {/* System Status Card */}
+                            <div className="mt-4 p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                                <div className="flex items-center gap-2.5">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                    <span className="text-xs text-[#cbc4d2] font-medium">All Systems Operational</span>
+                                </div>
+                                <span className="text-[11px] text-[#cbc4d2]/50">v2.4.0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bottom Bar: Copyright, Language Switcher, Regional note */}
+                    <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#cbc4d2]/50">
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-center md:text-left">
+                            <span>© 2025 <strong className="text-[#cbc4d2]/80 font-semibold">Alfaz • Shayri Club</strong>. All rights reserved.</span>
+                            <span className="hidden sm:inline text-[#cbc4d2]/20">•</span>
+                            <span className="text-[#cbc4d2]/70">Crafted with devotion for Urdu, Hindi &amp; English verse.</span>
+                        </div>
+                        <div className="flex items-center gap-6">
+                            {/* Language Selector Mockup */}
+                            <button className="inline-flex items-center gap-1.5 text-[#cbc4d2]/70 hover:text-[#cfbcff] transition-colors">
+                                <GlobeIcon className="w-3.5 h-3.5" />
+                                <span>English (EN)</span>
+                                <ChevronDownIcon className="w-3 h-3" />
+                            </button>
+
+                            {/* Back to top button */}
+                            <a
+                                className="inline-flex items-center gap-1 text-[#cbc4d2]/70 hover:text-[#cfbcff] transition-colors"
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    rootRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                                }}
+                            >
+                                <span>Back to top</span>
+                                <ArrowUpIcon className="w-3.5 h-3.5" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            )}
 
             {/* ── Now Playing bar ── */}
             {/* <footer

@@ -5,6 +5,8 @@ import axiosInstance from "@/Apis/axiosInstance";
 import { MyVerticallyCenteredModal } from "./components/Modals/MyModal";
 import NewKalam from "./components/NewKalam";
 import { ModalContext } from "./Contexts/ModalContext";
+import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 /**
  * CommunitySPaces — fully self-contained React port of the "Aura Poetry" global feed.
  * No Tailwind or icon-font dependency: all styling lives in the injected <style> block
@@ -1122,6 +1124,210 @@ const styles = `
   text-overflow: ellipsis;
 }
 .cs-modal-nothing { font-size: 12px; color: rgba(208,197,175,0.5); font-style: italic; font-family: 'Playfair Display', serif; }
+
+/* ---------------- Site footer (gold theme) ---------------- */
+.cs-footer {
+  position: relative;
+  z-index: 40; /* sits above the fixed sidebars (z-index 30) */
+  margin-top: 48px;
+  border-top: 1px solid rgba(212,175,55,0.2);
+  background: linear-gradient(to bottom, #0d0e12 0%, #0A0A0F 55%, #060608 100%);
+  overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--on-surface);
+}
+@media (max-width: 767px) { .cs-footer { padding-bottom: 80px; } } /* clear the mobile bottom nav */
+.cs-footer-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle at 50% 0%, rgba(212,175,55,0.12) 0%, rgba(242,202,80,0.04) 35%, transparent 70%);
+}
+.cs-footer-accent {
+  height: 1px; width: 100%;
+  background: linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent);
+}
+.cs-footer-container { max-width: 1400px; margin: 0 auto; padding-left: 24px; padding-right: 24px; position: relative; }
+
+/* Newsletter band */
+.cs-footer-news {
+  position: relative;
+  border-bottom: 1px solid rgba(212,175,55,0.1);
+  background: rgba(212,175,55,0.015);
+}
+.cs-footer-news-inner {
+  display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center;
+  padding-top: 48px; padding-bottom: 48px;
+}
+@media (min-width: 1024px) { .cs-footer-news-inner { grid-template-columns: 1fr 1fr; } }
+.cs-footer-news-copy { display: flex; flex-direction: column; gap: 8px; }
+.cs-footer-eyebrow {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--primary); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase;
+}
+.cs-footer-news-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 400; line-height: 1.25;
+  color: var(--on-surface); margin: 0;
+}
+@media (min-width: 640px) { .cs-footer-news-title { font-size: 30px; } }
+.cs-footer-news-text { font-size: 14px; line-height: 1.6; color: rgba(208,197,175,0.7); max-width: 32rem; margin: 0; }
+.cs-footer-form { display: flex; flex-direction: column; gap: 12px; max-width: 32rem; width: 100%; }
+@media (min-width: 640px) { .cs-footer-form { flex-direction: row; } }
+@media (min-width: 1024px) { .cs-footer-form { margin-left: auto; } }
+.cs-footer-input-wrap { position: relative; flex: 1; }
+.cs-footer-input-icon {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  color: rgba(208,197,175,0.6); display: flex; pointer-events: none;
+}
+.cs-footer-input {
+  width: 100%;
+  background: rgba(13,14,18,0.8);
+  color: var(--on-surface);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  border-radius: 12px;
+  padding: 14px 16px 14px 44px;
+  border: 1px solid rgba(212,175,55,0.25);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cs-footer-input::placeholder { color: rgba(208,197,175,0.4); }
+.cs-footer-input:focus { border-color: var(--primary-container); box-shadow: 0 0 0 2px rgba(212,175,55,0.2); }
+.cs-footer-submit {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 24px; border-radius: 12px; border: none;
+  background: linear-gradient(to right, #d4af37, #f2ca50, #d4af37);
+  color: #0A0A0F; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+  white-space: nowrap; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(212,175,55,0.15);
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+.cs-footer-submit:hover { filter: brightness(1.1); }
+.cs-footer-submit:active { transform: scale(0.98); }
+.cs-footer-fineprint { font-size: 11px; color: rgba(208,197,175,0.5); margin: 8px 0 0 0; }
+@media (min-width: 1024px) { .cs-footer-fineprint { text-align: right; } }
+
+/* Main grid */
+.cs-footer-main { position: relative; padding-top: 64px; padding-bottom: 48px; }
+.cs-footer-grid {
+  display: grid; grid-template-columns: 1fr; gap: 48px; margin-bottom: 64px;
+}
+@media (min-width: 768px) { .cs-footer-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px) {
+  .cs-footer-grid { grid-template-columns: repeat(12, 1fr); gap: 32px; }
+  .cs-footer-col-brand { grid-column: span 4; }
+  .cs-footer-col-sm { grid-column: span 2; }
+  .cs-footer-col-md { grid-column: span 3; }
+}
+.cs-footer-col { display: flex; flex-direction: column; gap: 20px; }
+.cs-footer-col-links { gap: 16px; }
+
+/* Brand */
+.cs-footer-wordmark {
+  position: relative; display: inline-block; margin: 0; cursor: default;
+  font-size: 40px; line-height: 1; font-weight: 900; letter-spacing: 0.02em;
+}
+@media (min-width: 640px) { .cs-footer-wordmark { font-size: 48px; } }
+.cs-footer-wordmark-glow {
+  position: absolute; inset: 0; filter: blur(14px); opacity: 0.4;
+  background: linear-gradient(90deg, #f2ca50, #d4af37, #f5e6c0);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  font-family: 'Playfair Display', serif;
+  transition: opacity 0.5s ease;
+}
+.cs-footer-wordmark:hover .cs-footer-wordmark-glow { opacity: 0.75; }
+.cs-footer-wordmark-text { position: relative; display: inline-block; }
+.cs-footer-wordmark-text .cs-gnav-wm-ur { transform: translateY(3px); }
+.cs-footer-about { font-size: 14px; line-height: 1.7; color: rgba(208,197,175,0.7); max-width: 24rem; margin: 0; }
+.cs-footer-trust { display: flex; align-items: center; gap: 16px; padding-top: 4px; }
+.cs-footer-avatars { display: flex; }
+.cs-footer-avatars > * { margin-left: -8px; }
+.cs-footer-avatars > *:first-child { margin-left: 0; }
+.cs-footer-avatar {
+  display: inline-block; height: 32px; width: 32px; border-radius: 9999px;
+  object-fit: cover; border: 2px solid #0d0e12;
+  box-shadow: 0 0 0 1px rgba(212,175,55,0.3);
+}
+.cs-footer-avatar-more {
+  display: flex; align-items: center; justify-content: center;
+  height: 32px; width: 32px; border-radius: 9999px;
+  border: 2px solid #0d0e12; box-shadow: 0 0 0 1px rgba(212,175,55,0.3);
+  background: rgba(212,175,55,0.18); color: var(--primary);
+  font-size: 10px; font-weight: 700;
+}
+.cs-footer-trust-text { font-size: 12px; color: rgba(208,197,175,0.7); }
+.cs-footer-trust-text strong { color: var(--on-surface); font-weight: 500; }
+.cs-footer-socials { display: flex; align-items: center; gap: 10px; padding-top: 8px; }
+.cs-footer-social {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(212,175,55,0.04);
+  border: 1px solid rgba(212,175,55,0.12);
+  color: rgba(208,197,175,0.7);
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.cs-footer-social:hover {
+  background: rgba(212,175,55,0.12);
+  border-color: rgba(212,175,55,0.4);
+  color: var(--primary);
+}
+
+/* Link columns */
+.cs-footer-heading {
+  margin: 0; font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--primary-container);
+}
+.cs-footer-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; font-size: 14px; }
+.cs-footer-link {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  color: rgba(208,197,175,0.7); text-decoration: none; text-align: left;
+  background: none; border: none; padding: 0; font: inherit; cursor: pointer;
+  transition: color 0.15s ease;
+}
+.cs-footer-link span { transition: transform 0.2s ease; }
+.cs-footer-link:hover { color: var(--primary); }
+.cs-footer-link:hover span { transform: translateX(4px); }
+.cs-footer-link .cs-footer-link-icon { color: rgba(212,175,55,0.45); display: flex; transition: color 0.15s ease; }
+.cs-footer-link:hover .cs-footer-link-icon { color: var(--primary); transform: none; }
+
+/* Status card */
+.cs-footer-status {
+  margin-top: 8px; padding: 12px; border-radius: 12px;
+  background: rgba(212,175,55,0.03);
+  border: 1px solid rgba(212,175,55,0.12);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.cs-footer-status-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.cs-footer-status-dot {
+  width: 8px; height: 8px; border-radius: 9999px; flex-shrink: 0;
+  background: var(--primary-container);
+  box-shadow: 0 0 8px rgba(212,175,55,0.6);
+}
+.cs-footer-status-text { font-size: 12px; font-weight: 500; color: var(--on-surface-variant); }
+.cs-footer-status-ver { font-size: 11px; color: rgba(208,197,175,0.5); font-family: monospace; }
+
+/* Bottom bar */
+.cs-footer-bottom {
+  padding-top: 32px; border-top: 1px solid rgba(212,175,55,0.1);
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 16px;
+  font-size: 12px; color: rgba(208,197,175,0.55);
+}
+@media (min-width: 768px) { .cs-footer-bottom { flex-direction: row; } }
+.cs-footer-bottom-left { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 24px; text-align: center; }
+@media (min-width: 768px) { .cs-footer-bottom-left { justify-content: flex-start; text-align: left; } }
+.cs-footer-bottom-left strong { color: var(--on-surface-variant); font-weight: 600; }
+.cs-footer-bottom-dot { display: none; color: rgba(212,175,55,0.3); }
+@media (min-width: 640px) { .cs-footer-bottom-dot { display: inline; } }
+.cs-footer-bottom-accent { color: var(--on-surface-variant); }
+.cs-footer-bottom-right { display: flex; align-items: center; gap: 24px; }
+.cs-footer-bottom-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: none; padding: 0; cursor: pointer;
+  color: rgba(208,197,175,0.7); font: inherit; text-decoration: none;
+  transition: color 0.2s ease;
+}
+.cs-footer-bottom-btn:hover { color: var(--primary); }
 `;
 
 /* ---------------------------------------------------------------------------- */
@@ -1309,6 +1515,329 @@ const DEFAULT_POSTS = [
 ];
 
 /* ---------------------------------------------------------------------------- */
+/* ==================== SITE FOOTER (gold theme, self-contained) ==================== */
+
+/* Inline SVG icons for the footer — no icon library required. */
+const FOOTER_ICON_PATHS = {
+  sparkles: (
+    <>
+      <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z" />
+      <path d="M19 3v4M17 5h4" />
+      <path d="M5 17v4M3 19h4" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </>
+  ),
+  arrowRight: (
+    <>
+      <path d="M5 12h14" />
+      <path d="m13 6 6 6-6 6" />
+    </>
+  ),
+  arrowUp: (
+    <>
+      <path d="M12 19V5" />
+      <path d="m6 11 6-6 6 6" />
+    </>
+  ),
+  instagram: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+    </>
+  ),
+  twitter: (
+    <>
+      <path d="M4 4l16 16" />
+      <path d="M20 4 4 20" />
+    </>
+  ),
+  youtube: (
+    <>
+      <rect x="2.5" y="5.5" width="19" height="13" rx="3.5" />
+      <path d="m10 9.5 5 2.5-5 2.5Z" />
+    </>
+  ),
+  mic: (
+    <>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5 11a7 7 0 0 0 14 0" />
+      <path d="M12 18v3" />
+    </>
+  ),
+  github: (
+    <path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.500 2.800 5.400 3.100 5.400 3.100a4.200 4.200 0 0 0-.1 3.200A4.600 4.600 0 0 0 4 9.500c0 4.600 2.700 5.700 5.500 6-.6.600-.6 1.200-.5 2V21" />
+  ),
+  headphones: (
+    <>
+      <path d="M3 14v-2a9 9 0 0 1 18 0v2" />
+      <path d="M3 14h3a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2Z" />
+      <path d="M21 14h-3a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h1a2 2 0 0 0 2-2Z" />
+    </>
+  ),
+  shield: (
+    <>
+      <path d="M12 3 4 6v6c0 4.500 3.400 8 8 9 4.600-1 8-4.500 8-9V6Z" />
+      <path d="m9 12 2 2 4-4" />
+    </>
+  ),
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18" />
+      <path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z" />
+    </>
+  ),
+  chevronDown: <path d="m6 9 6 6 6-6" />,
+};
+
+const FIcon = ({ name, size = 16 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    style={{ display: "block", flexShrink: 0 }}
+  >
+    {FOOTER_ICON_PATHS[name]}
+  </svg>
+);
+
+const FOOTER_SOCIALS = [
+  { label: "Instagram", icon: "instagram" },
+  { label: "Twitter / X", icon: "twitter" },
+  { label: "YouTube", icon: "youtube" },
+  { label: "Spotify", icon: "mic" },
+  { label: "GitHub", icon: "github" },
+];
+
+const FOOTER_EXPLORE = [
+  { text: "Kalam (Poetry)" },
+  { text: "Community Circle" },
+  { text: "Browse Categories" },
+  { text: "Mushaira Live Rooms" },
+  { text: "Audio Recitations", icon: "headphones" },
+  { text: "Featured Shayars" },
+];
+
+const FOOTER_GUILD = [
+  { text: "About Alfaz" },
+  { text: "Editorial Guidelines" },
+  { text: "Poetic Meters (Behr) Guide" },
+  { text: "Publishing Grants & Contests" },
+  { text: "Help & Creator Support" },
+];
+
+const Footer = () => (
+  <footer className="cs-footer">
+    {/* Ambient golden glow behind footer */}
+    <div className="cs-footer-glow" />
+
+    {/* Decorative top divider accent */}
+    <div className="cs-footer-accent" />
+
+    {/* Top pre-footer callout / literary newsletter section */}
+    <div className="cs-footer-news">
+      <div className="cs-footer-container">
+        <div className="cs-footer-news-inner">
+          <div className="cs-footer-news-copy">
+            <div className="cs-footer-eyebrow">
+              <FIcon name="sparkles" size={14} />
+              The Weekly Bayt &amp;courier Dispatch
+            </div>
+            <h3 className="cs-footer-news-title">
+              Curated couplets, literary contests &amp; essays.
+            </h3>
+            <p className="cs-footer-news-text">
+              Join 42,000+ literary enthusiasts who receive handpicked gazals, poetry writing prompts, and festival invites every Sunday morning.
+            </p>
+          </div>
+          <div>
+            <form className="cs-footer-form" onSubmit={(e) => e.preventDefault()}>
+              <div className="cs-footer-input-wrap">
+                <span className="cs-footer-input-icon">
+                  <FIcon name="mail" size={16} />
+                </span>
+                <input
+                  className="cs-footer-input"
+                  placeholder="Enter your email for the gazette..."
+                  required
+                  type="email"
+                />
+              </div>
+              <button className="cs-footer-submit" type="submit">
+                <span>Subscribe</span>
+                <FIcon name="arrowRight" size={16} />
+              </button>
+            </form>
+            <p className="cs-footer-fineprint">
+              Zero spam. Unsubscribe with one click anytime.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Main multi-column footer grid */}
+    <div className="cs-footer-container cs-footer-main">
+      <div className="cs-footer-grid">
+        {/* Brand & mission column */}
+        <div className="cs-footer-col cs-footer-col-brand">
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <h1 className="cs-footer-wordmark">
+              <span aria-hidden="true" className="cs-footer-wordmark-glow">Alfaz</span>
+              <span className="cs-footer-wordmark-text">
+                <span className="cs-gnav-wm-a">A</span>
+                <bdi className="cs-gnav-wm-ur">لف</bdi>
+                <span className="cs-gnav-wm-a">az</span>
+              </span>
+            </h1>
+          </div>
+
+          <p className="cs-footer-about">
+            A sanctuary for poets, shayars, and novelists to immortalize their words, connect through soulful recitations, and celebrate the nuance of multilingual literature.
+          </p>
+
+          {/* Community trust badges */}
+          <div className="cs-footer-trust">
+            <div className="cs-footer-avatars">
+              <img alt="Poet Avatar" className="cs-footer-avatar" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+              <img alt="Writer Avatar" className="cs-footer-avatar" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+              <img alt="Contributor" className="cs-footer-avatar" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+              <div className="cs-footer-avatar-more">+18k</div>
+            </div>
+            <div className="cs-footer-trust-text">
+              <strong>18,500+</strong> Published Writers
+            </div>
+          </div>
+
+          {/* Social icon links */}
+          <div className="cs-footer-socials">
+            {FOOTER_SOCIALS.map((s) => (
+              <a key={s.label} aria-label={s.label} className="cs-footer-social" href="#">
+                <FIcon name={s.icon} size={16} />
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Column 2: Explore */}
+        <div className="cs-footer-col cs-footer-col-links cs-footer-col-sm">
+          <h4 className="cs-footer-heading">Explore</h4>
+          <ul className="cs-footer-list">
+            {FOOTER_EXPLORE.map((l) => (
+              <li key={l.text}>
+                <a className="cs-footer-link" href="#">
+                  <span>{l.text}</span>
+                  {l.icon && (
+                    <span className="cs-footer-link-icon">
+                      <FIcon name={l.icon} size={14} />
+                    </span>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Column 3: Writers & Guild */}
+        <div className="cs-footer-col cs-footer-col-links cs-footer-col-md">
+          <h4 className="cs-footer-heading">Writers &amp; Guild</h4>
+          <ul className="cs-footer-list">
+            {FOOTER_GUILD.map((l) => (
+              <li key={l.text}>
+                <a className="cs-footer-link" href="#">
+                  <span>{l.text}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Column 4: Legal & Transparency */}
+        <div className="cs-footer-col cs-footer-col-links cs-footer-col-md">
+          <h4 className="cs-footer-heading">Legal &amp; Transparency</h4>
+          <ul className="cs-footer-list">
+            <li>
+              <a className="cs-footer-link" href="/privacyPolicy">
+                <span>Privacy Policy</span>
+                <span className="cs-footer-link-icon">
+                  <FIcon name="shield" size={14} />
+                </span>
+              </a>
+            </li>
+            <li>
+              <a className="cs-footer-link" href="/termsofservices">
+                <span>Terms of Service</span>
+              </a>
+            </li>
+            <li>
+              <a className="cs-footer-link" href="#">
+                <span>Copyright &amp; Intellectual Rights</span>
+              </a>
+            </li>
+            <li>
+              <a className="cs-footer-link" href="#">
+                <span>Contact &amp; Inquiries</span>
+              </a>
+            </li>
+          </ul>
+
+          {/* System status card */}
+          <div className="cs-footer-status">
+            <div className="cs-footer-status-left">
+              <span className="cs-footer-status-dot cs-pulse-dot" />
+              <span className="cs-footer-status-text">All Systems Operational</span>
+            </div>
+            <span className="cs-footer-status-ver">v2.4.0</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom bar: copyright, language switcher, back to top */}
+      <div className="cs-footer-bottom">
+        <div className="cs-footer-bottom-left">
+          <span>© 2025 <strong>Alfaz • Shayri Club</strong>. All rights reserved.</span>
+          <span className="cs-footer-bottom-dot">•</span>
+          <span className="cs-footer-bottom-accent">Crafted with devotion for Urdu, Hindi &amp; English verse.</span>
+        </div>
+        <div className="cs-footer-bottom-right">
+          {/* Language selector mockup */}
+          <button type="button" className="cs-footer-bottom-btn">
+            <FIcon name="globe" size={14} />
+            <span>English (EN)</span>
+            <FIcon name="chevronDown" size={12} />
+          </button>
+
+          {/* Back to top button */}
+          <a
+            className="cs-footer-bottom-btn"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          >
+            <span>Back to top</span>
+            <FIcon name="arrowUp" size={14} />
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+);
+
+/* ---------------------------------------------------------------------------- */
 
 export default function CommunitySPaces({
   posts = DEFAULT_POSTS,
@@ -1316,7 +1845,6 @@ export default function CommunitySPaces({
   onPublish,
   onLike,
   onComment,
-  onShare,
 }) {
   const [value, setValue] = useState("");
   const [userAlbums, setUserAlbums] = useState([]);
@@ -1326,6 +1854,18 @@ export default function CommunitySPaces({
   const [isNotificationModalOpen, setIsNotificationmodalOpened] = useState(false);
   const likedPosts = useRef(new Set());
   const [modalSearch, setModalSearch] = useState("");
+  const [SearchParams] = useSearchParams();
+  const Navigate = useNavigate();
+  
+  const sharedPostId = SearchParams.get('share')?SearchParams.get('postId'):null;
+  const isShared = SearchParams.get('share');
+  
+  console.log(sharedPostId);
+
+  //Shared modal state
+  const [isShareModalOpen, setIsShareModalOpen] = useState(isShared);
+  const sharedPostData = useRef(null);
+
 
   // Report modal state
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -1342,6 +1882,55 @@ export default function CommunitySPaces({
   const [album, setAlbum] = useState(null); // selected album _id
   const [isAttached, setIsAttached] = useState(false);
   const [userPosts, setUserPosts] = useState([]);
+  const [sharedPost, setSharedPost] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+
+  const handleSharedPostRendering=()=>{
+
+      if(isShared){
+    axiosInstance
+    .get(`/api/userspecificpost?postId=${sharedPostId}`)
+    .then((response)=>{
+      // setSharedPost(response.data.data);
+      sharedPostData.current = response.data.data;
+      // setUserPosts((prev)=>prev.filter((item)=>item._id!==response.data.data._id));
+      // const filteredPosts = userPosts.filter((item)=>item.Id!==response.data.data._id);
+    //  const filteredArray = prev.filter((item)=>{
+    //       setUserPosts((prev)=>{
+    //      item._id!== response.data.data._id
+    //     })
+
+    //     return [response.data.data, ...filteredArray]
+    //   })
+      // setUserPosts(prev=>[response.data.data, ...prev]);
+      // setUserPosts([response.data.data, ...filteredPosts])
+      setUserPosts((prev)=>[response.data.data, ...prev])
+      console.log("see shared post//////////////////////////////////////////////////////////////////", userPosts);
+      setIsLoading(false);
+    }).catch((error)=>{
+      console.error("Error while fetching specified user post", error);
+        })
+
+
+  }
+  }
+
+  function timeAgo(dateString) {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  if (Number.isNaN(d.getTime())) return "";
+  const seconds = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (seconds < 60) return "Just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hr${hours === 1 ? "" : "s"} ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days} day${days === 1 ? "" : "s"} ago`;
+  return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+}
+
 
   const fetchPosts = () => {
     axiosInstance
@@ -1395,6 +1984,7 @@ export default function CommunitySPaces({
     fetchPosts();
     fetchUserNotifications();
     fetchLikedPosts();
+    handleSharedPostRendering();
   }, []);
 
   const fetchUserKalams = () => {
@@ -1976,6 +2566,26 @@ export default function CommunitySPaces({
 
   }
 
+  const handlePostSharing=(postId)=>{
+    if(navigator.share){
+      navigator
+      .share({url:`http://localhost:5173/spaces?share=true&postId=${postId}`})
+      .then(()=>{
+        console.log("Post shared successfully");
+      }).catch((error)=>{
+        console.error("Error while sharing post", error)
+      })
+    }
+  }
+
+  if(isLoading){
+    return(
+      <>
+      <h1 className="text-7xl"> loading....</h1>
+      </>
+    )
+  }
+
   return (
     <div className="cs-root">
       <style>{styles}</style>
@@ -2021,6 +2631,9 @@ export default function CommunitySPaces({
 
             {/* Each PostCard now owns its own comment panel (inline-expand on desktop,
                 bottom sheet on mobile) — no shared comment modal/context needed. */}
+                {
+                  console.log(",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",userPosts)
+                }
             <div className="cs-posts">
               {userPosts.map((item) =>
                 item.featuredAlbum ? (
@@ -2032,10 +2645,10 @@ export default function CommunitySPaces({
                     postText={item.text}
                     onLikeClick={likePost}
                     onComment={onComment}
-                    timestamp={item.createdAt}
+                    timestamp={timeAgo(item.createdAt)}
                     authorAvatarUrl={item.postBy.profilePic}
                     authorName={item.postBy.name}
-                    onShare={onShare}
+                    onShareClick={handlePostSharing}
                     isAlbumAvailable={true}
                     isKalamAvailable={false}
                     embed={{
@@ -2054,10 +2667,10 @@ export default function CommunitySPaces({
                     postText={item.text}
                     onLikeClick={likePost}
                     onComment={onComment}
-                    timestamp={item.createdAt}
+                    timestamp={timeAgo(item.createdAt)}
                     authorAvatarUrl={item.postBy.profilePic}
                     authorName={item.postBy.name}
-                    onShare={onShare}
+                    onShareClick={handlePostSharing}
                     isAlbumAvailable={false}
                     isKalamAvailable={true}
                     title={item.featurdKalam.name}
@@ -2077,10 +2690,10 @@ export default function CommunitySPaces({
                     postId={item._id}
                     onLikeClick={likePost}
                     onComment={onComment}
-                    timestamp={item.createdAt}
+                    timestamp={timeAgo(item.createdAt)}
                     authorAvatarUrl={item.postBy.profilePic}
                     authorName={item.postBy.name}
-                    onShare={onShare}
+                    onShareClick={handlePostSharing}
                     isAlbumAvailable={false}
                     isKalamAvailable={false}
                     embed={"no "}
@@ -2407,6 +3020,7 @@ export default function CommunitySPaces({
                     </MyVerticallyCenteredModal>
 
         {/* Report modal — opened from the "Report" item of the post menu */}
+       
         <MyVerticallyCenteredModal isOpen={isReportModalOpen} onClose={closeReportModal}>
           <div className="cs-modal-inner">
             <div className="cs-modal-header">
@@ -2482,6 +3096,9 @@ export default function CommunitySPaces({
           RightSidebar(userAvatarUrl, onPublish)
         }
       </div>
+
+      {/* Site footer — full width, sits above the fixed sidebars */}
+      <Footer />
 
       {/* <BottomNav /> */}
 

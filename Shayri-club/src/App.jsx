@@ -65,6 +65,8 @@ import ResetPassword from './pages/ResetPassword';
 import Error404 from './pages/Error pages/NotFound404';
 import ServerError500 from './pages/Error pages/ServerError500';
 import TooManyRequests from './pages/Error pages/TooManyRequests403';
+import HelpCenter from './legal/HelpCenter';
+import AboutUs from './legal/AboutUs';
 
 
 function App() {
@@ -167,6 +169,8 @@ onMessage(messaging, (data) => {
       <Route path='/404' element= {<Error404/>}/>
       <Route path='/500' element= {<ServerError500/>}/>
       <Route path='/403' element= {<TooManyRequests/>}/>
+      <Route path='/helpcenter' element= {<HelpCenter/>}/>
+      <Route path='/aboutus' element= {<AboutUs/>}/>
 
       {/* <ContextProvider>
         <Kalam/>

@@ -11,7 +11,38 @@ export default {
   ],
   theme: {
     extend: {
+      // ---------------------------------------------------------------------
+      // FONT FAMILY  (single block: Help Center "hc-" + Shayar + admin + archival)
+      // ---------------------------------------------------------------------
       fontFamily: {
+        // --- Alfaz About Us page (namespaced "ab-") ---
+        "ab-verse-quote": ["EB Garamond"],
+        "ab-headline-md": ["EB Garamond"],
+        "ab-headline-lg": ["EB Garamond"],
+        "ab-body-md": ["Plus Jakarta Sans"],
+        "ab-body-lg": ["Plus Jakarta Sans"],
+        "ab-headline-sm": ["EB Garamond"],
+        "ab-display-hero": ["EB Garamond"],
+        "ab-display-hero-mobile": ["EB Garamond"],
+        "ab-body-sm": ["Plus Jakarta Sans"],
+        "ab-headline-lg-mobile": ["EB Garamond"],
+        "ab-label-md": ["Plus Jakarta Sans"],
+        "ab-label-caps": ["Plus Jakarta Sans"],
+        // --- Alfaz Help Center (namespaced "hc-") ---
+        "hc-label-sm": ["Manrope"],
+        "hc-body-sm": ["Manrope"],
+        "hc-headline-sm": ["Newsreader"],
+        "hc-headline-md": ["Newsreader"],
+        "hc-headline-lg": ["Newsreader"],
+        "hc-display-lg": ["Newsreader"],
+        "hc-body-md": ["Manrope"],
+        "hc-display-lg-mobile": ["Newsreader"],
+        "hc-body-lg": ["Manrope"],
+        "hc-label-md": ["Manrope"],
+        "hc-title-md": ["Manrope"],
+        "hc-headline-lg-mobile": ["Newsreader"],
+
+        // --- Shayar ---
         allura: ['Allura'],
         dancingScript: ['Dancing Script'],
         greatVibes: ['Great Vibes'],
@@ -46,23 +77,27 @@ export default {
         "archival-urdu": ["Noto Nastaliq Urdu", "serif"],
         "archival-sans": ["Plus Jakarta Sans", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
       },
-          boxShadow: {
-      modal: '0 25px 50px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08), 0 0 35px -5px rgba(225,29,72,0.12)',
-      'danger-glow': '0 4px 20px -2px rgba(225,29,72,0.5), 0 2px 6px -1px rgba(225,29,72,0.3)',
-    },
+
+      boxShadow: {
+        modal: '0 25px 50px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08), 0 0 35px -5px rgba(225,29,72,0.12)',
+        'danger-glow': '0 4px 20px -2px rgba(225,29,72,0.5), 0 2px 6px -1px rgba(225,29,72,0.3)',
+      },
+
       animation: {
         typewriter: 'typewriter 4s steps(28) forwards',
         caret: 'typewriter 4s steps(28) forwards, blink 2s steps(28) infinite 2s',
         'modal-entry': 'modalIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
+
       keyframes: {
         scrollUp: {
           '0%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(-50%)' },
-          modalIn: {
-        from: { opacity: 0, transform: 'scale(0.96) translateY(8px)' },
-        to: { opacity: 1, transform: 'scale(1) translateY(0)' },
-      },
+        },
+        // FIX: modalIn was nested inside scrollUp; it must be a sibling.
+        modalIn: {
+          from: { opacity: 0, transform: 'scale(0.96) translateY(8px)' },
+          to: { opacity: 1, transform: 'scale(1) translateY(0)' },
         },
         typewriter: {
           to: {
@@ -77,6 +112,7 @@ export default {
           '100%': { opacity: '0' }
         }
       },
+
       borderRadius: {
         // shadcn radii (CSS-var driven) — kept from original config
         lg: 'var(--radius)',
@@ -91,7 +127,14 @@ export default {
         // DEFAULT/lg/xl, which are identical to Tailwind's core defaults,
         // so no extra entries are needed here — rounded / rounded-lg /
         // rounded-xl already match without adding anything.
+
+        // --- Alfaz About Us page (namespaced "ab-") ---
+        "ab": "0.125rem",
+        "ab-lg": "0.25rem",
+        "ab-xl": "0.5rem",
+        "ab-full": "0.75rem",
       },
+
       spacing: {
         "stack-lg": "48px",
         "section-gap": "96px",
@@ -112,8 +155,39 @@ export default {
         "admin-lg": "24px",
         "admin-gutter": "24px",
         "admin-margin-mobile": "16px",
+
+        // --- Alfaz About Us page (namespaced "ab-") ---
+        "ab-space-md": "1rem",
+        "ab-space-lg": "1.75rem",
+        "ab-space-xs": "0.25rem",
+        "ab-gutter-sm": "1rem",
+        "ab-margin-sm": "1.25rem",
+        "ab-margin": "3rem",
+        "ab-space-xl": "3rem",
+        "ab-space-2xl": "4.5rem",
+        "ab-space-sm": "0.5rem",
+        "ab-gutter": "1.5rem",
       },
+
+      // ---------------------------------------------------------------------
+      // FONT SIZE  (single block: Help Center "hc-" + Shayar + admin)
+      // ---------------------------------------------------------------------
       fontSize: {
+        // --- Alfaz Help Center (namespaced "hc-") ---
+        "hc-label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.03em", fontWeight: "600" }],
+        "hc-body-sm": ["13px", { lineHeight: "20px", fontWeight: "400" }],
+        "hc-headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+        "hc-headline-md": ["26px", { lineHeight: "34px", fontWeight: "500" }],
+        "hc-headline-lg": ["36px", { lineHeight: "44px", letterSpacing: "-0.015em", fontWeight: "500" }],
+        "hc-display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "500" }],
+        "hc-body-md": ["15px", { lineHeight: "24px", fontWeight: "400" }],
+        "hc-display-lg-mobile": ["34px", { lineHeight: "42px", letterSpacing: "-0.01em", fontWeight: "500" }],
+        "hc-body-lg": ["17px", { lineHeight: "28px", fontWeight: "400" }],
+        "hc-label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }],
+        "hc-title-md": ["18px", { lineHeight: "26px", letterSpacing: "-0.01em", fontWeight: "600" }],
+        "hc-headline-lg-mobile": ["28px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "500" }],
+
+        // --- Shayar ---
         "label-caps": ["12px", { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700" }],
         "headline-md": ["32px", { lineHeight: "40px", fontWeight: "600" }],
         "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
@@ -132,8 +206,86 @@ export default {
         "admin-label-md": ["12px", { lineHeight: "1", letterSpacing: "0.08em", fontWeight: "600" }],
         "admin-body-sm": ["12px", { lineHeight: "1.5", fontWeight: "400" }],
         "admin-headline-lg": ["32px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "600" }],
+
+        // --- Alfaz About Us page (namespaced "ab-") ---
+        "ab-verse-quote": ["24px", { lineHeight: "40px", letterSpacing: "0.01em", fontWeight: "400" }],
+        "ab-headline-md": ["28px", { lineHeight: "36px", letterSpacing: "0em", fontWeight: "500" }],
+        "ab-headline-lg": ["40px", { lineHeight: "48px", letterSpacing: "-0.01em", fontWeight: "400" }],
+        "ab-body-md": ["15px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "400" }],
+        "ab-body-lg": ["18px", { lineHeight: "30px", letterSpacing: "-0.005em", fontWeight: "400" }],
+        "ab-headline-sm": ["22px", { lineHeight: "30px", letterSpacing: "0.005em", fontWeight: "600" }],
+        "ab-display-hero": ["56px", { lineHeight: "64px", letterSpacing: "-0.015em", fontWeight: "400" }],
+        "ab-display-hero-mobile": ["38px", { lineHeight: "46px", letterSpacing: "-0.01em", fontWeight: "400" }],
+        "ab-body-sm": ["13px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "400" }],
+        "ab-headline-lg-mobile": ["30px", { lineHeight: "38px", letterSpacing: "0em", fontWeight: "400" }],
+        "ab-label-md": ["13px", { lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "500" }],
+        "ab-label-caps": ["11px", { lineHeight: "16px", letterSpacing: "0.08em", fontWeight: "600" }],
       },
+
+      // ---------------------------------------------------------------------
+      // COLORS  (single block: Help Center "hc-" + shadcn + Shayar + admin)
+      // ---------------------------------------------------------------------
       colors: {
+        // --- Alfaz Help Center (namespaced "hc-") ---
+        "hc-on-background": "#1f1b18",
+        "hc-on-error-container": "#93000a",
+        "hc-outline-variant": "#dec0b7",
+        "hc-tertiary-container": "#9f6912",
+        "hc-primary-fixed": "#ffdbcf",
+        "hc-surface-container-high": "#f0e6e1",
+        "hc-background": "#fff8f5",
+        "hc-surface-container-low": "#fbf2ec",
+        "hc-on-tertiary": "#ffffff",
+        "hc-on-primary-fixed": "#390c00",
+        "hc-surface": "#fff8f5",
+        "hc-on-primary-fixed-variant": "#822801",
+        "hc-on-error": "#ffffff",
+        "hc-primary-container": "#bf542c",
+        "hc-outline": "#8a726a",
+        "hc-secondary": "#516169",
+        "hc-primary-fixed-dim": "#ffb59c",
+        "hc-primary": "#9f3c16",
+        "hc-terracotta-soft": "#FDF2EC",
+        "hc-surface-bright": "#fff8f5",
+        "hc-on-tertiary-fixed-variant": "#643f00",
+        "hc-surface-container-lowest": "#ffffff",
+        "hc-secondary-fixed": "#d5e5ef",
+        "hc-on-secondary": "#ffffff",
+        "hc-surface-tint": "#a23e18",
+        "hc-on-secondary-fixed": "#0e1d25",
+        "hc-surface-container-highest": "#eae1dc",
+        "hc-tertiary-fixed-dim": "#fcba5f",
+        "hc-tertiary-fixed": "#ffddb5",
+        "hc-surface-dim": "#e1d8d3",
+        "hc-secondary-fixed-dim": "#b9c9d3",
+        "hc-ink-muted": "#8A8177",
+        "hc-on-secondary-container": "#55656e",
+        "hc-on-secondary-fixed-variant": "#3a4951",
+        "hc-border-rule-strong": "#CFC4B4",
+        "hc-on-primary": "#ffffff",
+        "hc-surface-card": "#FFFFFF",
+        "hc-surface-variant": "#eae1dc",
+        "hc-inverse-surface": "#342f2c",
+        "hc-ink-primary": "#1E1A17",
+        "hc-on-primary-container": "#fffbff",
+        "hc-on-tertiary-fixed": "#2a1800",
+        "hc-inverse-primary": "#ffb59c",
+        "hc-on-surface": "#1f1b18",
+        "hc-success-sage": "#3B6948",
+        "hc-tertiary": "#805200",
+        "hc-surface-parchment-warm": "#F3EDE2",
+        "hc-on-surface-variant": "#57423b",
+        "hc-border-rule": "#E5DCD0",
+        "hc-ink-secondary": "#57514C",
+        "hc-on-tertiary-container": "#fffbff",
+        "hc-error-container": "#ffdad6",
+        "hc-secondary-container": "#d2e2ec",
+        "hc-danger-crimson": "#B3261E",
+        "hc-error": "#ba1a1a",
+        "hc-surface-container": "#f5ece7",
+        "hc-surface-parchment": "#FAF6F0",
+        "hc-inverse-on-surface": "#f8efea",
+
         // shadcn CSS-var colors — kept from original config
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
@@ -175,6 +327,7 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))'
         },
+
         // Shayar design tokens (Material 3 style)
         "on-surface": "#ebdef1",
         "on-tertiary-fixed-variant": "#4e425a",
@@ -281,6 +434,55 @@ export default {
         "admin-surface-lowest": "#000000",
         "admin-primary-container": "#0a0a0a",
         "admin-surface-container": "#201f1f",
+
+        // --- Alfaz About Us page (namespaced "ab-") ---
+        "ab-surface-container-highest": "#e4e2df",
+        "ab-on-primary-container": "#828693",
+        "ab-primary": "#02050e",
+        "ab-outline": "#76777c",
+        "ab-tertiary": "#0a0400",
+        "ab-on-tertiary-container": "#a67f53",
+        "ab-on-error": "#ffffff",
+        "ab-on-tertiary-fixed-variant": "#5f401a",
+        "ab-inverse-primary": "#c3c6d5",
+        "ab-secondary": "#984444",
+        "ab-primary-container": "#1a1e29",
+        "ab-inverse-on-surface": "#f2f0ed",
+        "ab-surface-variant": "#e4e2df",
+        "ab-on-tertiary-fixed": "#2b1700",
+        "ab-primary-fixed": "#dfe2f1",
+        "ab-surface-dim": "#dbdad7",
+        "ab-error-container": "#ffdad6",
+        "ab-primary-fixed-dim": "#c3c6d5",
+        "ab-surface": "#fbf9f6",
+        "ab-on-surface-variant": "#46464c",
+        "ab-tertiary-fixed-dim": "#ecbe8e",
+        "ab-secondary-container": "#ff9693",
+        "ab-on-secondary-container": "#782c2d",
+        "ab-on-secondary-fixed": "#3f0207",
+        "ab-secondary-fixed": "#ffdad8",
+        "ab-on-error-container": "#93000a",
+        "ab-on-surface": "#1b1c1a",
+        "ab-on-tertiary": "#ffffff",
+        "ab-on-secondary-fixed-variant": "#7a2d2e",
+        "ab-tertiary-container": "#2f1900",
+        "ab-surface-container-lowest": "#ffffff",
+        "ab-on-secondary": "#ffffff",
+        "ab-surface-bright": "#fbf9f6",
+        "ab-on-primary": "#ffffff",
+        "ab-on-background": "#1b1c1a",
+        "ab-surface-container": "#efeeeb",
+        "ab-surface-container-high": "#eae8e5",
+        "ab-tertiary-fixed": "#ffddba",
+        "ab-on-primary-fixed": "#171b26",
+        "ab-surface-tint": "#5a5e6b",
+        "ab-secondary-fixed-dim": "#ffb3b0",
+        "ab-inverse-surface": "#30312f",
+        "ab-on-primary-fixed-variant": "#434653",
+        "ab-background": "#fbf9f6",
+        "ab-outline-variant": "#c6c6cc",
+        "ab-error": "#ba1a1a",
+        "ab-surface-container-low": "#f5f3f0",
       },
     }
   },

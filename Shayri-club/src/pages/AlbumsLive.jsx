@@ -867,7 +867,23 @@
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import CreateCollectionModal from "./components/Modals/CreateAlbumModal";
+// ── icons added for the new footer ──
+import {
+    Sparkles as SparklesIcon,
+    Mail as MailIcon,
+    ArrowRight as ArrowRightIcon,
+    Instagram as InstagramIcon,
+    Twitter as TwitterIcon,
+    Youtube as YoutubeIcon,
+    Mic as MicIcon,
+    Github as GithubIcon,
+    Headphones as HeadphonesIcon,
+    ShieldCheck as ShieldCheckIcon,
+    Globe as GlobeIcon,
+    ChevronDown as ChevronDownIcon,
+    ArrowUp as ArrowUpIcon,
+} from "lucide-react";
 
 /**
  * Color tokens pulled from the Library page's Material-3 dark theme mock,
@@ -910,12 +926,21 @@ const AlbumsLive = () => {
     const [featuredCurators, setFeaturedCurators] = useState([]);
     const [featuredAlbum, setFeaturedAlbum] = useState("");
     const [allTimeFavourite, setAllTimeFavourite] = useState([]);
+    const [user, setUser] = useState("");
+    const [userKalams, setUserKalams] = useState([]);
+    const [finalKalams, setFinalKalams] = useState([]);
+    const[isPublic, setIsPublic] = useState(true);
 
     const searchQuery = useRef("");
     const limit = 20;
     const Navigate = useNavigate();
     const trendingRef = useRef(null);
     const favoritesRef = useRef(null);
+
+    // Footer-overlap: the content block is pinned (sticky) once its end reaches the bottom of the scroll area
+    const rootRef = useRef(null);
+    const wrapRef = useRef(null);
+    const [wrapStickyTop, setWrapStickyTop] = useState(0);
 
     const categoryOptions = [
         { value: "romantic", label: "Romantic" },
@@ -928,6 +953,27 @@ const AlbumsLive = () => {
         { value: "relaxing", label: "Relaxing" },
         { value: "deep-focus", label: "Deep Focus" },
     ];
+
+    const albumGradients = [
+        {color1:"#49365F", color2:"#292D50"},
+        {color1:"#344C70", color2:"#192C48"},
+        {color1:"#70445A", color2:"#412B43"},
+        {color1:"#365C59", color2:"#203D42"},
+        {color1:"#725044", color2:"#3F302F"},
+        {color1:"#51416D", color2:"#302844"},
+        {color1:"#55523A", color2:"#34372D"},
+        {color1:"#3D5065", color2:"#253448"},
+        {color1:"#59465F", color2:"#302B49"},
+        {color1:"#36516A", color2:"#1E354B"},
+        {color1:"#674D39", color2:"#3D3029"},
+        {color1:"#60465B", color2:"#382C45"}
+];
+
+  const chooseDefaultAlbumCover=(colorPalette)=>{
+      const totalColors = colorPalette.length;
+    const randomColorSet = colorPalette[Math.floor(Math.random()*totalColors)];
+    return randomColorSet;
+  }
 
     // const featuredCurators = [
     //     { name: "Luna Echo", followers: "12.4k Followers", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" },
@@ -1027,27 +1073,61 @@ const AlbumsLive = () => {
     };
 
     const handleCreateAlbum = () => {
-        const formData = new FormData();
-        formData.append("name", newTitle);
-        formData.append("curator", newCurator);
-        formData.append("category", newCategory);
-        if (artworkFile) formData.append("albumCover", artworkFile);
 
-        axiosInstance
-            .post("/api/albums", formData, {
+          if (artworkFile) {
+            const albumData={
+                name:newTitle,
+                category: newCategory,
+                kalams: finalKalams,
+                isLive: isPublic
+            }
+
+        const formData = new FormData();
+        formData.append("fileType", 'albumCover&creation')
+        formData.append("albumcover&creation", artworkFile)
+        formData.append("albumData", JSON.stringify(albumData));
+        //serializing
+        const serializedKalams = JSON.stringify(finalKalams);
+        formData.append("kalams", serializedKalams);
+
+                axiosInstance
+            .post("/api/albumcoverncreation", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
-            })
+                withCredentials: true
+            },)
             .then(() => {
                 setModalOpen(false);
                 setNewTitle("");
                 setNewCurator("");
                 setNewCategory("");
                 setArtworkFile(null);
+                setFinalKalams(null);
                 fetchAlbums();
             })
             .catch((error) => {
                 console.error("error while creating album", error);
             });
+      
+        }else{
+            // Choosing default album cover
+            
+            const albumCover = chooseDefaultAlbumCover(albumGradients)
+
+            const albumData={
+                name:newTitle,
+                category: newCategory,
+                kalams: finalKalams,
+                isLive: isPublic,
+                albumCover: albumCover
+            }
+            axiosInstance
+            .post('/api/album',{
+                albumData
+            })
+        }
+        
+
+
     };
 
     const fetchAllTimeFavourite=()=>{
@@ -1072,15 +1152,61 @@ const AlbumsLive = () => {
         })
     }
 
+    const gettingUserInfo=()=>{
+        axiosInstance
+        .get('/api/userId',{
+            withCredentials: true
+        })
+        .then((response)=>{
+            setUser(response.data);
+        })
+    }
+
+    const gettingUserKalams=()=>{
+        axiosInstance
+        .get('/api/urKalam',{
+            withCredentials: true
+        })
+        .then((response)=>{
+            setUserKalams(response.data);
+        }).catch((error)=>{
+            console.error("Error while fetching user kalams", error);
+        })
+    }
+
     useEffect(()=>{
         fetchFeaturedAlbum();
         fetchAllTimeFavourite();
+        gettingUserInfo();
+        gettingUserKalams();
     }, [])
+
+    // New: keep the content block pinned when its bottom reaches the bottom of the scroll area,
+    // so the footer can scroll up over it. Sticky "top" = viewportHeight - contentHeight (negative when content is taller).
+    useEffect(() => {
+        const wrapEl = wrapRef.current;
+        const rootEl = rootRef.current;
+        if (!wrapEl || !rootEl) return;
+        const update = () => {
+            const top = Math.min(0, rootEl.clientHeight - wrapEl.offsetHeight);
+            setWrapStickyTop(top);
+        };
+        update();
+        const ro = new ResizeObserver(update);
+        ro.observe(wrapEl);
+        ro.observe(rootEl);
+        window.addEventListener("resize", update);
+        return () => {
+            ro.disconnect();
+            window.removeEventListener("resize", update);
+        };
+    }, []);
 
     return (
        <div
             id="scrollable-albums-live"
-            className="min-h-screen w-full overflow-y-auto overflow-x-hidden"
+            ref={rootRef}
+            className="h-screen w-full overflow-y-auto overflow-x-hidden"
             style={{ background: COLORS.background, color: COLORS.onSurface, fontFamily: "Inter, system-ui, sans-serif" }}
         >
             <style>{`
@@ -1092,6 +1218,14 @@ const AlbumsLive = () => {
                     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
                     vertical-align: middle;
                     line-height: 1;
+                }
+                
+                .k-avatar {
+                    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+                    background: rgba(83,74,183,0.18); border: 0.5px solid rgba(210,170,90,0.3);
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 11px; font-weight: 500; color: rgba(210,170,90,0.8); cursor: pointer;
+                    overflow: hidden;
                 }
 
                 .lib-glass-card {
@@ -1216,12 +1350,20 @@ const AlbumsLive = () => {
                                 search
                             </button>
                         </div>
-                        <button className="material-symbols-outlined" style={{ color: COLORS.onSurface }}>account_circle</button>
+                        {/* <button className="material-symbols-outlined" style={{ color: COLORS.onSurface }}>account_circle</button> */}
+                        <div className="k-avatar">
+                    <img onClick={() => Navigate(`/profile?userId=${user._id}`)} className="rounded-full h-full" src={user.profilePic} alt="profilePic" />
+                    </div>
                     </div>
                 </div>
             </header>
 
-            <div className="flex pt-16 md:pt-20">
+            {/* Content block (sidebar + main): pinned via sticky so the footer can scroll over it */}
+            <div
+                ref={wrapRef}
+                className="flex pt-16 md:pt-20 pb-16 md:pb-8 sticky"
+                style={{ top: `${wrapStickyTop}px` }}
+            >
                 {/* ── Sidebar (desktop) ── */}
                 <aside
                     className="lib-sidebar hidden lg:flex flex-col py-8 px-4 gap-4 fixed left-0 top-20 z-40 overflow-y-auto"
@@ -1267,7 +1409,7 @@ const AlbumsLive = () => {
                             <span className="material-symbols-outlined text-xl">settings</span>
                             <span>Settings</span>
                         </Link>
-                        <Link to="/support" className="lib-sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg" style={{ color: COLORS.onSurfaceVariant }}>
+                        <Link to="/helpcenter" className="lib-sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg" style={{ color: COLORS.onSurfaceVariant }}>
                             <span className="material-symbols-outlined text-xl">help</span>
                             <span>Support</span>
                         </Link>
@@ -1336,10 +1478,14 @@ const AlbumsLive = () => {
                                     className="p-2 sm:p-3 md:p-4 rounded-xl cursor-pointer group flex-shrink-0 w-[150px] sm:w-[190px] md:w-[220px]"
                                 >
                                     <div className="relative aspect-square w-full h-auto rounded-lg overflow-hidden mb-2 sm:mb-3 md:mb-4 shadow-xl">
-                                        <div
+                                        {item.albumCover && <div
                                             className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                                            style={{ backgroundImage: `url('${item.albumCover}')` }}
-                                        />
+                                             style={{ backgroundImage: `url('${item.albumCover}')` }}
+                                        />}
+                                        {item.defaultAlbumCover && <div
+                                            className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                             style={{ background: `linear-gradient(135deg, ${item.defaultAlbumCover.color1}, ${item.defaultAlbumCover.color2})` }}
+                                        />}
                                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "rgba(0,0,0,0.4)" }}>
                                             <div className="lib-sunset-gradient w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white scale-75 group-hover:scale-100 transition-transform shadow-lg">
                                                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
@@ -1509,126 +1655,316 @@ const AlbumsLive = () => {
         </div>
     </div>
 </section>
-
-                    {/* ── Footer (themed to match Library's navy/amber palette) ── */}
-                    <footer
-                        className="mt-10 md:mt-16 -mx-4 md:-mx-12 pb-8 rounded-t-2xl sm:rounded-t-[32px] overflow-hidden"
-                        style={{
-                            background: `linear-gradient(90deg, ${COLORS.surfaceContainerLowest ?? "#010f1f"} 0%, ${COLORS.surfaceContainer} 55%, #010f1f 100%)`,
-                            borderTop: `1px solid ${COLORS.borderSubtle}`,
-                        }}
-                    >
-                        <div className="max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-12">
-                            <div className="flex flex-col items-center text-center gap-6 sm:hidden mb-8">
-                                <div>
-                                    <h1 className="relative inline-block text-3xl leading-none font-black tracking-wide cursor-default group">
-                                        <span className="relative inline-block">
-                                            <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent" style={{ fontFamily: "'Dancing Script', cursive" }}>A</span>
-                                            <bdi className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent" style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}>لف</bdi>
-                                            <span className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent" style={{ fontFamily: "'Dancing Script', cursive" }}>az</span>
-                                        </span>
-                                    </h1>
-                                    <p className="text-xs mt-2 max-w-xs mx-auto" style={{ color: COLORS.onSurfaceVariant }}>
-                                        A platform for poets and writers to share their art with the world.
-                                    </p>
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-6 w-full">
-                            <div>
-                                <h4 className="font-extrabold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Explore</h4>
-                                <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
-                                    <li className="lib-nav-link cursor-pointer transition">Kalam</li>
-                                    <li className="lib-nav-link cursor-pointer transition">Community</li>
-                                    <li className="lib-nav-link cursor-pointer transition">Browse</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 className="font-extrabold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Resources</h4>
-                                <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
-                                    <li className="lib-nav-link cursor-pointer transition">About Us</li>
-                                    <li className="lib-nav-link cursor-pointer transition">Guidelines</li>
-                                    <li className="lib-nav-link cursor-pointer transition">Help Center</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 className="font-extrabold mb-3 text-xs uppercase tracking-wide" style={{ color: COLORS.onSurface }}>Legal</h4>
-                                <ul className="space-y-2 text-xs" style={{ color: COLORS.onSurfaceVariant }}>
-                                    <li className="lib-nav-link cursor-pointer transition">Privacy</li>
-                                    <li className="lib-nav-link cursor-pointer transition">Terms</li>
-                                    <li className="lib-nav-link cursor-pointer transition">Contact</li>
-                                </ul>
-                            </div>
-                        </div>
-                            </div>
-
-                            <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8">
-                                <div className="col-span-2 md:col-span-1">
-                                    <h1 className="relative inline-block text-3xl sm:text-5xl leading-none font-black tracking-wide cursor-default group">
-                                       <span className="relative inline-block">
-    <span
-      className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
-      style={{ fontFamily: "'Dancing Script', cursive" }}
-    >
-      A
-    </span>
-    <bdi
-      className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
-      style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
-    >
-      لف
-    </bdi>
-    <span
-      className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
-      style={{ fontFamily: "'Dancing Script', cursive" }}
-    >
-      az
-    </span>
-  </span>
-                                    </h1>
-
-                                    <p className="text-xs sm:text-sm mt-2" style={{ color: COLORS.onSurfaceVariant }}>
-                                        A platform for poets and writers to share their art with the world.
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base" style={{ color: COLORS.onSurface }}>Explore</h4>
-                                    <ul className="space-y-2 text-xs sm:text-sm" style={{ color: COLORS.onSurfaceVariant }}>
-                                        <li className="lib-nav-link cursor-pointer transition">Kalam</li>
-                                        <li className="lib-nav-link cursor-pointer transition">Community</li>
-                                        <li className="lib-nav-link cursor-pointer transition">Browse</li>
-                                    </ul>
-                                </div>
-
-                                <div>
-                                    <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base" style={{ color: COLORS.onSurface }}>Resources</h4>
-                                    <ul className="space-y-2 text-xs sm:text-sm" style={{ color: COLORS.onSurfaceVariant }}>
-                                        <li className="lib-nav-link cursor-pointer transition">About Us</li>
-                                        <li className="lib-nav-link cursor-pointer transition">Guidelines</li>
-                                        <li className="lib-nav-link cursor-pointer transition">Help Center</li>
-                                    </ul>
-                                </div>
-
-                                <div>
-                                    <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base" style={{ color: COLORS.onSurface }}>Legal</h4>
-                                    <ul className="space-y-2 text-xs sm:text-sm" style={{ color: COLORS.onSurfaceVariant }}>
-                                        <li className="lib-nav-link cursor-pointer transition">Privacy Policy</li>
-                                        <li className="lib-nav-link cursor-pointer transition">Terms of Service</li>
-                                        <li className="lib-nav-link cursor-pointer transition">Contact</li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div
-                                className="text-center text-xs sm:text-sm pt-6 sm:pt-8"
-                                style={{ color: "rgba(203,196,210,0.5)", borderTop: `1px solid ${COLORS.borderSubtle}` }}
-                            >
-                                © 2025 Alfaz. All rights reserved.
-                            </div>
-                        </div>
-                    </footer>
                 </main>
             </div>
+
+            {/* ==================== ENHANCED PROFESSIONAL FOOTER (themed to Library's navy/lavender palette) ====================
+                - lives OUTSIDE the sidebar/main block, so it spans the full width (and covers the fixed sidebar)
+                - relative z-[45] places it above the sidebar (z-40); the content block above is `sticky`
+                  with a measured negative top (see wrapStickyTop), so it stays pinned when its end
+                  reaches the bottom and this footer scrolls up OVER it */}
+            <footer
+                className="relative z-[45] border-t border-[#cfbcff]/20 bg-gradient-to-b from-[#051424] via-[#04101d] to-[#020a13] overflow-hidden"
+            >
+                {/* Ambient Glow behind footer */}
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background:
+                            "radial-gradient(circle at 50% 0%, rgba(207, 188, 255, 0.12) 0%, rgba(231, 195, 101, 0.04) 35%, transparent 70%)",
+                    }}
+                ></div>
+
+                {/* Decorative Top Divider Accent */}
+                <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#cfbcff]/40 to-transparent"></div>
+
+                {/* Top Pre-Footer Callout / Literary Newsletter Section */}
+                <div className="relative border-b border-white/5 bg-white/[0.015]">
+                    <div className="max-w-7xl mx-auto px-6 py-12 lg:py-14">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center justify-between">
+                            <div className="lg:col-span-6 space-y-2">
+                                <div className="flex items-center gap-2 text-[#cfbcff] text-xs font-semibold tracking-wider uppercase">
+                                    <SparklesIcon className="w-3.5 h-3.5" />
+                                    The Weekly Bayt &amp;courier Dispatch
+                                </div>
+                                <h3 className="text-2xl sm:text-3xl font-serif text-[#d4e4fa] font-medium">
+                                    Curated couplets, literary contests &amp; essays.
+                                </h3>
+                                <p className="text-sm text-[#cbc4d2]/70 max-w-lg">
+                                    Join 42,000+ literary enthusiasts who receive handpicked gazals, poetry writing prompts, and festival invites every Sunday morning.
+                                </p>
+                            </div>
+                            <div className="lg:col-span-6">
+                                <form
+                                    className="flex flex-col sm:flex-row gap-3 max-w-lg lg:ml-auto"
+                                    onSubmit={(e) => e.preventDefault()}
+                                >
+                                    <div className="relative flex-1">
+                                        <MailIcon className="w-4 h-4 text-[#cbc4d2]/70 absolute left-4 top-1/2 -translate-y-1/2" />
+                                        <input
+                                            className="w-full bg-[#122131]/80 text-[#d4e4fa] placeholder-[#cbc4d2]/40 text-sm rounded-xl pl-11 pr-4 py-3.5 border border-[#cfbcff]/25 focus:border-[#cfbcff] focus:outline-none focus:ring-2 focus:ring-[#cfbcff]/20 transition-all"
+                                            placeholder="Enter your email for the gazette..."
+                                            required
+                                            type="email"
+                                        />
+                                    </div>
+                                    <button
+                                        className="px-6 py-3.5 rounded-xl bg-[#cfbcff] hover:brightness-110 text-[#381e72] font-semibold text-sm transition-all shadow-md shadow-[#cfbcff]/10 flex items-center justify-center gap-2 whitespace-nowrap active:scale-[0.98]"
+                                        type="submit"
+                                    >
+                                        <span>Subscribe</span>
+                                        <ArrowRightIcon className="w-4 h-4" />
+                                    </button>
+                                </form>
+                                <p className="text-[11px] text-[#cbc4d2]/50 mt-2 lg:text-right">
+                                    Zero spam. Unsubscribe with one click anytime.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Main Multi-Column Footer Grid */}
+                <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+                        {/* Brand & Mission Column (Col 1-4) */}
+                        <div className="lg:col-span-4 space-y-5">
+                            <div className="flex items-center gap-3">
+                                <h1 className="relative inline-block text-4xl sm:text-5xl leading-none font-black tracking-wide cursor-default group">
+                                    {/* Soft Glow layer behind text */}
+                                    <span
+                                        aria-hidden="true"
+                                        className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-amber-400 via-rose-400 to-orange-400 bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-75"
+                                        style={{ fontFamily: "'Playfair Display', serif" }}
+                                    >
+                                        Alfaz
+                                    </span>
+
+                                    {/* Main text with composite Urdu & Script flourish */}
+                                    <span className="relative inline-block">
+                                        <span
+                                            className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
+                                            style={{ fontFamily: "'Dancing Script', cursive" }}
+                                        >
+                                            A
+                                        </span>
+                                        <bdi
+                                            className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
+                                            style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+                                        >
+                                            لف
+                                        </bdi>
+                                        <span
+                                            className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
+                                            style={{ fontFamily: "'Dancing Script', cursive" }}
+                                        >
+                                            az
+                                        </span>
+                                    </span>
+                                </h1>
+                                {/* <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                                    Shayri Club
+                                </span> */}
+                            </div>
+
+                            <p className="text-[#cbc4d2]/70 text-sm leading-relaxed max-w-sm">
+                                A sanctuary for poets, shayars, and novelists to immortalize their words, connect through soulful recitations, and celebrate the nuance of multilingual literature.
+                            </p>
+
+                            {/* Community Trust Badges */}
+                            <div className="flex items-center gap-4 pt-1">
+                                <div className="flex -space-x-2">
+                                    <img alt="Poet Avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#051424] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                                    <img alt="Writer Avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#051424] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                                    <img alt="Contributor" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#051424] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                                    <div className="flex items-center justify-center h-8 w-8 rounded-full ring-2 ring-[#051424] bg-[#cfbcff]/20 text-[#cfbcff] text-[10px] font-bold">
+                                        +18k
+                                    </div>
+                                </div>
+                                <div className="text-xs text-[#cbc4d2]/70">
+                                    <span className="text-[#d4e4fa] font-medium">18,500+</span> Published Writers
+                                </div>
+                            </div>
+
+                            {/* Social Icon Links with Tooltip/Hover Glow */}
+                            <div className="flex items-center gap-2.5 pt-2">
+                                <a aria-label="Instagram" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <InstagramIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="Twitter / X" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <TwitterIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="YouTube" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <YoutubeIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="Spotify" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <MicIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="GitHub" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <GithubIcon className="w-4 h-4" />
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Column 2: Explore (Col 5-6) */}
+                        <div className="lg:col-span-2 space-y-4">
+                            <div className="flex items-center gap-2">
+                                {/* <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span> */}
+                                <h4 className="text-sm font-semibold text-[#d4e4fa] tracking-wider uppercase font-sans">Explore</h4>
+                            </div>
+                            <ul className="space-y-3 text-sm text-[#cbc4d2]/70">
+                                <li>
+                                    <a className="group flex items-center justify-between hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Kalam (Poetry)</span>
+                                        {/* <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">Hot</span> */}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Community Circle</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Browse Categories</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Mushaira Live Rooms</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center justify-between hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Audio Recitations</span>
+                                        <HeadphonesIcon className="w-3.5 h-3.5 text-[#cbc4d2]/50 group-hover:text-[#cfbcff]" />
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Featured Shayars</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Column 3: Resources & Academy (Col 7-8) */}
+                        <div className="lg:col-span-3 space-y-4">
+                            <div className="flex items-center gap-2">
+                                {/* <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span> */}
+                                <h4 className="text-sm font-semibold text-[#d4e4fa] tracking-wider uppercase font-sans">Writers &amp; Guild</h4>
+                            </div>
+                            <ul className="space-y-3 text-sm text-[#cbc4d2]/70">
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">About Alfaz</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Editorial Guidelines</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center justify-between hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Poetic Meters (Behr) Guide</span>
+                                        {/* <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">Learn</span> */}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Publishing Grants &amp; Contests</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Help &amp; Creator Support</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Column 4: Legal & System Status (Col 9-12) */}
+                        <div className="lg:col-span-3 space-y-4">
+                            <div className="flex items-center gap-2">
+                                {/* <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> */}
+                                <h4 className="text-sm font-semibold text-[#d4e4fa] tracking-wider uppercase font-sans">Legal &amp; Transparency</h4>
+                            </div>
+                            <ul className="space-y-3 text-sm text-[#cbc4d2]/70">
+                                <li>
+                                    <button
+                                        onClick={() => Navigate('/privacyPolicy')}
+                                        className="group flex items-center justify-between w-full text-left hover:text-[#cfbcff] transition-colors duration-150"
+                                    >
+                                        <span className="group-hover:translate-x-1 transition-transform">Privacy Policy</span>
+                                        <ShieldCheckIcon className="w-3.5 h-3.5 text-[#cbc4d2]/50 group-hover:text-emerald-400" />
+                                    </button>
+                                </li>
+                                <li>
+                                    <button
+                                        onClick={() => Navigate('/termsofservices')}
+                                        className="group flex items-center w-full text-left hover:text-[#cfbcff] transition-colors duration-150"
+                                    >
+                                        <span className="group-hover:translate-x-1 transition-transform">Terms of Service</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Copyright &amp; Intellectual Rights</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Contact &amp; Inquiries</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            {/* System Status Card */}
+                            <div className="mt-4 p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                                <div className="flex items-center gap-2.5">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                    <span className="text-xs text-[#cbc4d2] font-medium">All Systems Operational</span>
+                                </div>
+                                <span className="text-[11px] text-[#cbc4d2]/50">v2.4.0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bottom Bar: Copyright, Language Switcher, Regional note */}
+                    <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#cbc4d2]/50">
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-center md:text-left">
+                            <span>© 2025 <strong className="text-[#cbc4d2]/80 font-semibold">Alfaz • Shayri Club</strong>. All rights reserved.</span>
+                            <span className="hidden sm:inline text-[#cbc4d2]/20">•</span>
+                            <span className="text-[#cbc4d2]/70">Crafted with devotion for Urdu, Hindi &amp; English verse.</span>
+                        </div>
+                        <div className="flex items-center gap-6">
+                            {/* Language Selector Mockup */}
+                            <button className="inline-flex items-center gap-1.5 text-[#cbc4d2]/70 hover:text-[#cfbcff] transition-colors">
+                                <GlobeIcon className="w-3.5 h-3.5" />
+                                <span>English (EN)</span>
+                                <ChevronDownIcon className="w-3 h-3" />
+                            </button>
+
+                            {/* Back to top button */}
+                            <a
+                                className="inline-flex items-center gap-1 text-[#cbc4d2]/70 hover:text-[#cfbcff] transition-colors"
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    rootRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                                }}
+                            >
+                                <span>Back to top</span>
+                                <ArrowUpIcon className="w-3.5 h-3.5" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
 
             {/* ── Floating Action Button ── */}
             <button
@@ -1738,7 +2074,7 @@ const AlbumsLive = () => {
             </nav>
 
             {/* ── Create Album Modal ── */}
-            {modalOpen && (
+            {/* {modalOpen && (
                 <div
                     className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
                     style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}
@@ -1841,7 +2177,12 @@ const AlbumsLive = () => {
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
+            {
+                console.log("See added final kalms>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: ", finalKalams)
+            }
+            <CreateCollectionModal open={modalOpen} onClose={()=>setModalOpen(false)} isPublic={isPublic} setIsPublic={setIsPublic} setFinalKalams={setFinalKalams} userKalams={userKalams} setNewTitle={setNewTitle} setNewCurator={setNewCurator} setNewCategory={setNewCategory} setArtworkFile={setArtworkFile}
+ newTitle={newTitle} newCurator={newCurator} newCategory={newCategory} categoryOptions={categoryOptions} artworkFile={artworkFile} onCreate={handleCreateAlbum}/>
         </div>
     );
 };
