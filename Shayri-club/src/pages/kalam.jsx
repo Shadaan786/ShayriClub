@@ -1331,11 +1331,11 @@ const KalamFooter = () => {
                   <img alt="Writer Avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#07060d] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
                   <img alt="Contributor" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#07060d] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
                   <div className="flex items-center justify-center h-8 w-8 rounded-full ring-2 ring-[#07060d] bg-[#d2aa5a]/20 text-[#e8c872] text-[10px] font-bold">
-                    +18k
+                    {/* +18k */}
                   </div>
                 </div>
                 <div className="text-xs text-[#f0ebe3]/55">
-                  <span className="text-[#f0ebe3] font-medium">18,500+</span> Published Writers
+                  {/* <span className="text-[#f0ebe3] font-medium">18,500+</span> Published Writers */}
                 </div>
               </div>
 
@@ -1490,7 +1490,7 @@ const KalamFooter = () => {
           {/* Bottom Bar: Copyright, Language Switcher, Regional note */}
           <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#f0ebe3]/30">
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-center md:text-left">
-              <span>© 2025 <strong className="text-[#f0ebe3]/55 font-semibold">Alfaz • Shayri Club</strong>. All rights reserved.</span>
+              {/* <span>© 2025 <strong className="text-[#f0ebe3]/55 font-semibold">Alfaz • Shayri Club</strong>. All rights reserved.</span> */}
               <span className="hidden sm:inline text-[#d2aa5a]/30">•</span>
               <span className="text-[#f0ebe3]/55">Crafted with devotion for Urdu, Hindi &amp; English verse.</span>
             </div>

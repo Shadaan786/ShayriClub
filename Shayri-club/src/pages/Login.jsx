@@ -137,6 +137,9 @@ const Login = () => {
         { withCredentials: true }
       );
       const data = response.data;
+      if(data.redirectUrl){
+        navigate(data.redirectUrl);
+      }
       if (data.success) {
         setNotice2(`Welcome back, ${id}`);
             navigate('/');
@@ -154,7 +157,7 @@ const Login = () => {
           console.error("Error while sending fcmToken", error)
         })
         
-        setTimeout(() => navigate(data.redirectUrl), 800);
+        // setTimeout(() => navigate(data.redirectUrl), 800);
       } else {
         setNotice(data.message || "Invalid credentials.");
       }

@@ -506,430 +506,444 @@ const Authors = () => {
 
             </main>
 
-            {isPremiumModal && (
-              <div
-                className="fixed inset-0 z-[100] overflow-y-auto pm-sans text-left"
-                role="dialog"
-                aria-modal="true"
-                aria-label="Alfaaz Pro plans"
-              >
-                {/* Scoped styles for the modal (animations + helper classes) */}
-                <style>{`
-                  .pm-serif { font-family: 'EB Garamond', Georgia, serif; }
-                  .pm-sans  { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
-             
-                  @keyframes pmDiagonalShimmer {
-                    0% { transform: translateX(-140%) rotate(25deg); }
-                    30%, 100% { transform: translateX(180%) rotate(25deg); }
-                  }
-                  @keyframes pmButtonReflectionSweep {
-                    0% { transform: translateX(-150%) skewX(-25deg); }
-                    50% { transform: translateX(250%) skewX(-25deg); }
-                    100% { transform: translateX(250%) skewX(-25deg); }
-                  }
-                  @keyframes pmCelestialBreathe {
-                    0%, 100% { opacity: 0.45; transform: scale(1); }
-                    50% { opacity: 0.75; transform: scale(1.08); }
-                  }
-                  @keyframes pmModalIn {
-                    from { opacity: 0; transform: translateY(14px) scale(0.98); }
-                    to { opacity: 1; transform: translateY(0) scale(1); }
-                  }
-             
-                  .pm-modal-in { animation: pmModalIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
-                  .pm-celestial-glow { animation: pmCelestialBreathe 9s ease-in-out infinite; }
-             
-                  .pm-pro-card {
-                    transition: transform 0.3s ease, box-shadow 0.3s ease;
-                    box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 2px 10px rgba(180,140,50,0.12), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 0 15px rgba(140,100,20,0.1);
-                  }
-                  .pm-pro-card:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 12px 30px rgba(0,0,0,0.45), 0 4px 16px rgba(180,140,50,0.18), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 0 20px rgba(140,100,20,0.12);
-                  }
-                  .pm-card-free {
-                    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background-color 0.3s ease;
-                  }
-                  .pm-card-free:hover { transform: translateY(-3px); }
-             
-                  .pm-shimmer-sweep {
-                    position: absolute;
-                    inset: -60% -40%;
-                    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.08) 75%, rgba(255,255,255,0) 100%);
-                    pointer-events: none;
-                    z-index: 5;
-                    animation: pmDiagonalShimmer 7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-                  }
-             
-                  .pm-cta {
-                    position: relative;
-                    overflow: hidden;
-                    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, filter 0.25s ease, border-color 0.25s ease;
-                  }
-                  .pm-cta:hover {
-                    transform: translateY(-1.5px);
-                    box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 18px rgba(212,175,55,0.25) !important;
-                    border-color: rgba(230,202,133,0.7) !important;
-                  }
-                  .pm-cta:active { transform: scale(0.985); }
-             
-                  .pm-feature { transition: transform 0.25s ease, opacity 0.25s ease; }
-                  .pm-feature:hover { transform: translateX(3px); }
-                  .pm-icon { transition: transform 0.25s ease, box-shadow 0.25s ease; }
-                  .pm-feature:hover .pm-icon {
-                    transform: scale(1.08);
-                    box-shadow: 0 0 14px rgba(212,175,55,0.45);
-                  }
-             
-                  @media (prefers-reduced-motion: reduce) {
-                    .pm-modal-in, .pm-celestial-glow, .pm-shimmer-sweep, .pm-cta *, .pm-pro-card, .pm-card-free {
-                      animation-duration: 0.01ms !important;
-                      animation-iteration-count: 1 !important;
-                      transition-duration: 0.01ms !important;
-                    }
-                    .pm-shimmer-sweep { display: none !important; }
-                    .pm-pro-card, .pm-card-free { transform: none !important; }
-                  }
-                `}</style>
-             
-                {/* Backdrop — click to close */}
-                <div
-                  onClick={() => setIsPremiumModal(false)}
-                  className="fixed inset-0 bg-[#080a0f]/90 backdrop-blur-sm"
-                  aria-hidden="true"
-                >
-                  <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[850px] max-w-full h-[500px] bg-gradient-to-b from-amber-800/15 via-[#c5a059]/10 to-transparent rounded-full blur-[130px] pm-celestial-glow" />
-                  <div
-                    className="absolute bottom-10 left-10 w-96 h-96 bg-amber-950/15 rounded-full blur-[140px] pm-celestial-glow"
-                    style={{ animationDelay: "3s" }}
-                  />
-                </div>
-             
-                {/* Modal content */}
-                <div className="relative flex min-h-full items-center justify-center p-2 sm:p-4 pointer-events-none">
-                  <div className="pm-modal-in relative w-full max-w-3xl pointer-events-auto">
-             
-                    {/* Close button */}
-                    <button
-                      type="button"
-                      onClick={() => setIsPremiumModal(false)}
-                      aria-label="Close"
-                      className="absolute -top-2 -right-1 sm:-top-3 sm:-right-3 z-30 w-9 h-9 rounded-full flex items-center justify-center bg-stone-900/90 border border-stone-700 text-stone-300 hover:text-[#f0da9e] hover:border-[#d4af37]/60 transition-colors"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
-             
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-4 items-stretch relative z-10 pt-5 sm:pt-3">
-             
-                      {/* ================= FREE PLAN ================= */}
-                      <div className="pm-card-free md:col-span-5 rounded-xl bg-stone-900/70 border border-stone-800/90 p-4 sm:p-5 hidden md:flex flex-col justify-between hover:border-stone-700 hover:bg-stone-900/80">
-                        <div>
-                          <div className="flex items-start justify-between mb-4">
-                            <div>
-                              <h2 className="pm-serif text-xl sm:text-2xl text-stone-100 font-medium tracking-wide">Free</h2>
-                              {/* <span className="text-sm text-stone-400 block mt-1">Aam Silsila</span> */}
-                            </div>
-                            <span className="text-xs font-semibold uppercase tracking-wider text-stone-300 bg-stone-800/90 px-3 py-1.5 rounded border border-stone-700/60">
-                              Standard
-                            </span>
-                          </div>
-             
-                          <div className="my-3 pb-3 border-b border-stone-800/80 flex items-baseline gap-2">
-                            <span className="pm-serif text-2xl sm:text-3xl text-stone-100 font-normal">₹0</span>
-                            <span className="text-sm sm:text-base text-stone-400 font-normal">/ forever</span>
-                          </div>
-             
-                          <ul className="space-y-2.5 text-sm text-stone-200 leading-relaxed">
-                            <li className="pm-feature flex items-start gap-3.5">
-                              <div className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-[#d4af37]/30 bg-stone-900/90 shadow-sm text-[#e6ca85]">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 16 16">
-                                  <polyline points="3.5 8.5 6.5 11.5 12.5 5" />
-                                </svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="pm-serif font-medium text-sm text-stone-100 leading-snug mb-0.5">2 Kalams / Day</h4>
-                                <p className="hidden sm:block text-[11px] sm:text-xs text-stone-400 font-normal leading-snug">Publishing limit across all traditional verse categories.</p>
-                              </div>
-                            </li>
-             
-                            <li className="pm-feature flex items-start gap-3.5">
-                              <div className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-[#d4af37]/30 bg-stone-900/90 shadow-sm text-[#e6ca85]">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 16 16">
-                                  <polyline points="3.5 8.5 6.5 11.5 12.5 5" />
-                                </svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="pm-serif font-medium text-sm text-stone-100 leading-snug mb-0.5">Standard Diwan Reach</h4>
-                                <p className="hidden sm:block text-[11px] sm:text-xs text-stone-400 font-normal leading-snug">Regular organic feed distribution to fellow readers.</p>
-                              </div>
-                            </li>
-             
-                            <li className="pm-feature flex items-start gap-3.5">
-                              <div className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-[#d4af37]/30 bg-stone-900/90 shadow-sm text-[#e6ca85]">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 16 16">
-                                  <polyline points="3.5 8.5 6.5 11.5 12.5 5" />
-                                </svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="pm-serif font-medium text-sm text-stone-100 leading-snug mb-0.5">Reader Profile &amp; Discussions</h4>
-                                <p className="hidden sm:block text-[11px] sm:text-xs text-stone-400 font-normal leading-snug">Standard public profile with public discussion rights.</p>
-                              </div>
-                            </li>
-             
-                            <li className="pm-feature flex items-start gap-3.5">
-                              <div className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-[#d4af37]/30 bg-stone-900/90 shadow-sm text-[#e6ca85]">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 16 16">
-                                  <polyline points="3.5 8.5 6.5 11.5 12.5 5" />
-                                </svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="pm-serif font-medium text-sm text-stone-100 leading-snug mb-0.5">Community Baithaks</h4>
-                                <p className="hidden sm:block text-[11px] sm:text-xs text-stone-400 font-normal leading-snug">Access to open community literary gatherings &amp; rooms.</p>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-             
-                        <div className="mt-3 pt-2">
-                          <button
-                            className="w-full py-2.5 px-4 rounded-lg border border-stone-800 text-stone-400 bg-stone-900/60 text-sm font-semibold tracking-wider uppercase cursor-default text-center whitespace-nowrap"
-                            disabled
-                            type="button"
-                          >
-                            Current Plan
-                          </button>
-                          <p className="text-xs text-stone-500 text-center mt-2.5">No payment required • Open forever</p>
-                        </div>
-                      </div>
-             
-                      {/* ================= PRO PLAN ================= */}
-                      <div
-                        className="pm-pro-card md:col-span-7 rounded-xl p-4 sm:p-5 flex flex-col justify-between relative overflow-hidden"
-                        style={{
-                          background: "linear-gradient(135deg, rgb(252, 237, 186) 0%, rgb(243, 216, 135) 25%, rgb(225, 190, 101) 60%, rgb(201, 158, 66) 100%)",
-                          border: "1.5px solid rgba(255, 255, 255, 0.65)",
-                        }}
-                      >
-                        <div aria-hidden="true" className="pm-shimmer-sweep" />
-                        <div
-                          className="absolute top-0 right-0 w-56 h-56 rounded-full pointer-events-none"
-                          style={{
-                            background: "radial-gradient(circle at right top, rgba(255, 255, 255, 0.5) 0%, rgba(255, 248, 220, 0.3) 40%, transparent 75%)",
-                            filter: "blur(30px)",
-                          }}
-                        />
-             
-                        <div className="relative z-10">
-                          <div className="flex items-center justify-between gap-3 mb-1 pb-0">
-                            <div className="flex items-center gap-2">
-                              <img
-                                src={logo}
-                                alt="Alfaaz logo"
-                                className="h-7 sm:h-8 w-auto object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
-                              />
-                              <h2
-                                className="pm-serif text-xl sm:text-2xl font-semibold tracking-wide"
-                                style={{ color: "#191408", textShadow: "0 1px 0 rgba(255,255,255,0.4)" }}
-                              >
-                                Alfaaz Pro
-                              </h2>
-                            </div>
-                            {/* <div
-                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase transition-transform hover:scale-105"
-                              style={{
-                                background: "rgba(24, 18, 8, 0.88)",
-                                color: "#fbedba",
-                                border: "1px solid rgba(160, 120, 40, 0.6)",
-                                boxShadow: "0 2px 8px rgba(24, 18, 8, 0.25)",
-                              }}
-                            >
-                              <span className="font-bold" style={{ color: "#fbedba" }}>✦</span>
-                              <span className="tracking-wider">Khas Silsila</span>
-                            </div> */}
-                          </div>
-             
-                          {/* <p className="text-sm sm:text-[15px] mb-2 font-semibold" style={{ color: "rgb(26, 20, 8)" }}>
-                            For distinguished poets, connoisseurs, and classical patrons.
-                          </p> */}
-             
-                          <div
-                            className="mb-3 pb-3 flex flex-wrap items-baseline justify-between gap-2"
-                            style={{
-                              borderBottom: "1.5px solid rgba(70, 50, 10, 0.2)",
-                              boxShadow: "0 1px 0 rgba(255, 255, 255, 0.5)",
-                            }}
-                          >
-                            <div className="flex items-baseline gap-2">
-                              <span className="pm-serif text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: "#161106" }}>₹120</span>
-                              <span className="text-sm sm:text-base font-bold" style={{ color: "rgb(26, 20, 8)" }}>/ month</span>
-                            </div>
-                            <span className="text-xs sm:text-sm font-semibold" style={{ color: "rgb(24, 18, 6)" }}>
-                              Billed monthly, cancel anytime
-                            </span>
-                          </div>
-             
-                          <div className="space-y-2.5 text-sm leading-snug mb-3" style={{ color: "rgb(26, 19, 5)" }}>
-             
-                            {/* Unlimited Kalams */}
-                            <div className="pm-feature flex items-start gap-3.5">
-                              <div
-                                className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-md"
-                                style={{
-                                  background: "linear-gradient(135deg, #241c0e 0%, #100b04 100%)",
-                                  border: "1.5px solid rgba(212, 175, 55, 0.65)",
-                                  boxShadow: "inset 0 1px 1px rgba(255, 240, 190, 0.4), 0 3px 8px rgba(0, 0, 0, 0.35)",
-                                }}
-                              >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="#f8e2a0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" viewBox="0 0 24 24">
-                                  <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
-                                </svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-0">Unlimited Kalams</h4>
-                                <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Publish ghazals, nazms &amp; ruba'iyat without daily caps.</p>
-                              </div>
-                            </div>
-             
-                            {/* 10x Reach */}
-                            <div className="pm-feature flex items-start gap-3.5">
-                              <div
-                                className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-md"
-                                style={{
-                                  background: "linear-gradient(135deg, #241c0e 0%, #100b04 100%)",
-                                  border: "1.5px solid rgba(212, 175, 55, 0.65)",
-                                  boxShadow: "inset 0 1px 1px rgba(255, 240, 190, 0.4), 0 3px 8px rgba(0, 0, 0, 0.35)",
-                                }}
-                              >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="#f8e2a0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" viewBox="0 0 24 24">
-                                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                                  <polyline points="17 6 23 6 23 12" />
-                                </svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">Boosted Kalam Reach</h4>
-                                <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Priority curation in weekly Diwan newsletters &amp; Baithak spotlights.</p>
-                              </div>
-                            </div>
-             
-                            {/* Gilded Quill */}
-                            <div className="pm-feature flex items-start gap-3.5">
-                              <div
-                                className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-md"
-                                style={{
-                                  background: "linear-gradient(135deg, #241c0e 0%, #100b04 100%)",
-                                  border: "1.5px solid rgba(212, 175, 55, 0.65)",
-                                  boxShadow: "inset 0 1px 1px rgba(255, 240, 190, 0.4), 0 3px 8px rgba(0, 0, 0, 0.35)",
-                                }}
-                              >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="#f8e2a0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" viewBox="0 0 24 24">
-                                  <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" />
-                                  <line x1="16" x2="2" y1="8" y2="22" />
-                                  <line x1="17.5" x2="9" y1="15" y2="15" />
-                                </svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">Gilded Quill &amp; Takhallus Crest</h4>
-                                <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Ornate golden insignia on your profile &amp; couplets.</p>
-                              </div>
-                            </div>
-             
-                            {/* No Watermark */}
-                            <div className="pm-feature flex items-start gap-3.5">
-                              <div
-                                className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-md"
-                                style={{
-                                  background: "linear-gradient(135deg, #241c0e 0%, #100b04 100%)",
-                                  border: "1.5px solid rgba(212, 175, 55, 0.65)",
-                                  boxShadow: "inset 0 1px 1px rgba(255, 240, 190, 0.4), 0 3px 8px rgba(0, 0, 0, 0.35)",
-                                }}
-                              >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="#f8e2a0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" viewBox="0 0 24 24">
-                                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                                  <polyline points="9 12 11 14 15 10" />
-                                </svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">No Watermark on Kalam Shares</h4>
-                                <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Pristine, unbranded export &amp; social sharing for all your couplets, ghazals &amp; nazms.</p>
-                              </div>
-                            </div>
-             
-                            {/* VIP Concierge */}
-                            <div className="pm-feature flex items-start gap-3.5">
-                              <div
-                                className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-md"
-                                style={{
-                                  background: "linear-gradient(135deg, #241c0e 0%, #100b04 100%)",
-                                  border: "1.5px solid rgba(212, 175, 55, 0.65)",
-                                  boxShadow: "inset 0 1px 1px rgba(255, 240, 190, 0.4), 0 3px 8px rgba(0, 0, 0, 0.35)",
-                                }}
-                              >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="#f8e2a0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" viewBox="0 0 24 24">
-                                  <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-                                  <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-                                </svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">VIP Concierge &amp; Priority Support</h4>
-                                <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Direct fast-track desk for disputes, manuscript guidance, profile verification, and dedicated 24/7 literary concierge.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-             
-                        <div
-                          className="relative z-10 pt-3"
-                          style={{
-                            borderTop: "1.5px solid rgba(70, 50, 10, 0.2)",
-                            boxShadow: "rgba(255, 255, 255, 0.5) 0px -1px 0px",
-                          }}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => {
-                              // TODO: start your payment / checkout flow here
-                            }}
-                            className="pm-cta relative overflow-hidden w-full h-11 py-2.5 rounded-lg font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md flex items-center justify-center gap-2 group cursor-pointer whitespace-nowrap sm:px-10"
-                            style={{
-                              background: "rgb(18, 21, 28)",
-                              color: "rgb(253, 248, 236)",
-                              border: "1.5px solid rgba(197, 160, 89, 0.5)",
-                              boxShadow: "rgba(0, 0, 0, 0.5) 0px 4px 16px, rgba(255, 255, 255, 0.1) 0px 1px 0px inset",
-                            }}
-                          >
-                            <div aria-hidden="true" className="absolute inset-0 pointer-events-none overflow-hidden">
-                              <div
-                                className="absolute top-0 bottom-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                                style={{ animation: "pmButtonReflectionSweep 4s cubic-bezier(0.4, 0, 0.2, 1) infinite" }}
-                              />
-                            </div>
-                            <span className="font-bold relative z-10 tracking-widest leading-none">
-                              Become an Alfaaz Pro • ₹120/mo
-                            </span>
-                            <span className="text-xl leading-none transition-transform duration-300 group-hover:translate-x-1 relative z-10 shrink-0 font-bold ml-1.5">→</span>
-                          </button>
-             
-                          <div
-                            className="mt-2.5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs font-semibold"
-                            style={{ color: "rgb(72, 57, 24)" }}
-                          >
-                            <span className="font-bold" style={{ color: "rgb(20, 15, 5)" }}>Instant UPI &amp; Card access</span>
-                            <span aria-hidden="true" className="font-bold" style={{ color: "rgb(74, 56, 20)" }}>•</span>
-                            <span className="font-bold" style={{ color: "rgb(20, 15, 5)" }}>7-day money-back guarantee</span>
-                            <span aria-hidden="true" className="font-bold" style={{ color: "rgb(74, 56, 20)" }}>•</span>
-                            <span className="font-bold" style={{ color: "rgb(20, 15, 5)" }}>Cancel anytime</span>
-                          </div>
-                        </div>
-                      </div>
-             
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+           {isPremiumModal && (
+             <div
+               className="fixed inset-0 z-[100] overflow-y-auto pm-sans text-left"
+               role="dialog"
+               aria-modal="true"
+               aria-label="Alfaz Pro plans"
+             >
+               {/* Scoped styles for the modal (animations + helper classes) */}
+               <style>{`
+                 .pm-serif { font-family: 'EB Garamond', Georgia, serif; }
+                 .pm-sans  { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+            
+                 @keyframes pmDiagonalShimmer {
+                   0% { transform: translateX(-140%) rotate(25deg); }
+                   30%, 100% { transform: translateX(180%) rotate(25deg); }
+                 }
+                 @keyframes pmButtonReflectionSweep {
+                   0% { transform: translateX(-150%) skewX(-25deg); }
+                   50% { transform: translateX(250%) skewX(-25deg); }
+                   100% { transform: translateX(250%) skewX(-25deg); }
+                 }
+                 @keyframes pmCelestialBreathe {
+                   0%, 100% { opacity: 0.45; transform: scale(1); }
+                   50% { opacity: 0.75; transform: scale(1.08); }
+                 }
+                 @keyframes pmModalIn {
+                   from { opacity: 0; transform: translateY(14px) scale(0.98); }
+                   to { opacity: 1; transform: translateY(0) scale(1); }
+                 }
+            
+                 .pm-modal-in { animation: pmModalIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+                 .pm-celestial-glow { animation: pmCelestialBreathe 9s ease-in-out infinite; }
+            
+                 .pm-pro-card {
+                   transition: transform 0.3s ease, box-shadow 0.3s ease;
+                   box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 2px 10px rgba(180,140,50,0.12), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 0 15px rgba(140,100,20,0.1);
+                 }
+                 .pm-pro-card:hover {
+                   transform: translateY(-2px);
+                   box-shadow: 0 12px 30px rgba(0,0,0,0.45), 0 4px 16px rgba(180,140,50,0.18), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 0 20px rgba(140,100,20,0.12);
+                 }
+                 .pm-card-free {
+                   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background-color 0.3s ease;
+                 }
+                 .pm-card-free:hover { transform: translateY(-3px); }
+            
+                 .pm-shimmer-sweep {
+                   position: absolute;
+                   inset: -60% -40%;
+                   background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.08) 75%, rgba(255,255,255,0) 100%);
+                   pointer-events: none;
+                   z-index: 5;
+                   animation: pmDiagonalShimmer 7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                 }
+            
+                 .pm-cta {
+                   position: relative;
+                   overflow: hidden;
+                   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, filter 0.25s ease, border-color 0.25s ease;
+                 }
+                 .pm-cta:hover {
+                   transform: translateY(-1.5px);
+                   box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 18px rgba(212,175,55,0.25) !important;
+                   border-color: rgba(230,202,133,0.7) !important;
+                 }
+                 .pm-cta:active { transform: scale(0.985); }
+            
+                 .pm-feature { transition: transform 0.25s ease, opacity 0.25s ease; }
+                 .pm-feature:hover { transform: translateX(3px); }
+                 .pm-icon { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+                 .pm-feature:hover .pm-icon {
+                   transform: scale(1.08);
+                   box-shadow: 0 0 14px rgba(212,175,55,0.45);
+                 }
+            
+                 @media (prefers-reduced-motion: reduce) {
+                   .pm-modal-in, .pm-celestial-glow, .pm-shimmer-sweep, .pm-cta *, .pm-pro-card, .pm-card-free {
+                     animation-duration: 0.01ms !important;
+                     animation-iteration-count: 1 !important;
+                     transition-duration: 0.01ms !important;
+                   }
+                   .pm-shimmer-sweep { display: none !important; }
+                   .pm-pro-card, .pm-card-free { transform: none !important; }
+                 }
+               `}</style>
+            
+               {/* Backdrop — click to close */}
+               <div
+                 onClick={() => setIsPremiumModal(false)}
+                 className="fixed inset-0 bg-[#080a0f]/90 backdrop-blur-sm"
+                 aria-hidden="true"
+               >
+                 <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[850px] max-w-full h-[500px] bg-gradient-to-b from-amber-800/15 via-[#c5a059]/10 to-transparent rounded-full blur-[130px] pm-celestial-glow" />
+                 <div
+                   className="absolute bottom-10 left-10 w-96 h-96 bg-amber-950/15 rounded-full blur-[140px] pm-celestial-glow"
+                   style={{ animationDelay: "3s" }}
+                 />
+               </div>
+            
+               {/* Modal content */}
+               <div className="relative flex min-h-full items-center justify-center p-2 sm:p-4 pointer-events-none">
+                 <div className="pm-modal-in relative w-full max-w-3xl pointer-events-auto">
+            
+                   {/* Close button */}
+                   <button
+                     type="button"
+                     onClick={() => setIsPremiumModal(false)}
+                     aria-label="Close"
+                     className="absolute -top-2 -right-1 sm:-top-3 sm:-right-3 z-30 w-9 h-9 rounded-full flex items-center justify-center bg-stone-900/90 border border-stone-700 text-stone-300 hover:text-[#f0da9e] hover:border-[#d4af37]/60 transition-colors"
+                   >
+                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
+                       <line x1="18" y1="6" x2="6" y2="18" />
+                       <line x1="6" y1="6" x2="18" y2="18" />
+                     </svg>
+                   </button>
+            
+                   <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-4 items-stretch relative z-10 pt-5 sm:pt-3">
+            
+                     {/* ================= FREE PLAN ================= */}
+                     <div className="pm-card-free md:col-span-5 rounded-xl bg-stone-900/70 border border-stone-800/90 p-4 sm:p-5 hidden md:flex flex-col justify-between hover:border-stone-700 hover:bg-stone-900/80">
+                       <div>
+                         <div className="flex items-start justify-between mb-4">
+                           <div>
+                             <h2 className="pm-serif text-xl sm:text-2xl text-stone-100 font-medium tracking-wide">Free</h2>
+                             {/* <span className="text-sm text-stone-400 block mt-1">Aam Silsila</span> */}
+                           </div>
+                           <span className="text-xs font-semibold uppercase tracking-wider text-stone-300 bg-stone-800/90 px-3 py-1.5 rounded border border-stone-700/60">
+                             Standard
+                           </span>
+                         </div>
+            
+                         <div className="my-3 pb-3 border-b border-stone-800/80 flex items-baseline gap-2">
+                           <span className="pm-serif text-2xl sm:text-3xl text-stone-100 font-normal">₹0</span>
+                           <span className="text-sm sm:text-base text-stone-400 font-normal">/ forever</span>
+                         </div>
+            
+                         <ul className="space-y-2.5 text-sm text-stone-200 leading-relaxed">
+                           <li className="pm-feature flex items-start gap-3.5">
+                             <div className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-[#d4af37]/30 bg-stone-900/90 shadow-sm text-[#e6ca85]">
+                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 16 16">
+                                 <polyline points="3.5 8.5 6.5 11.5 12.5 5" />
+                               </svg>
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <h4 className="pm-serif font-medium text-sm text-stone-100 leading-snug mb-0.5">2 Kalams / Day</h4>
+                               <p className="hidden sm:block text-[11px] sm:text-xs text-stone-400 font-normal leading-snug">Publishing limit across all traditional verse categories.</p>
+                             </div>
+                           </li>
+            
+                           <li className="pm-feature flex items-start gap-3.5">
+                             <div className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-[#d4af37]/30 bg-stone-900/90 shadow-sm text-[#e6ca85]">
+                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 16 16">
+                                 <polyline points="3.5 8.5 6.5 11.5 12.5 5" />
+                               </svg>
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <h4 className="pm-serif font-medium text-sm text-stone-100 leading-snug mb-0.5">Standard Diwan Reach</h4>
+                               <p className="hidden sm:block text-[11px] sm:text-xs text-stone-400 font-normal leading-snug">Regular organic feed distribution to fellow readers.</p>
+                             </div>
+                           </li>
+            
+                           <li className="pm-feature flex items-start gap-3.5">
+                             <div className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-[#d4af37]/30 bg-stone-900/90 shadow-sm text-[#e6ca85]">
+                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 16 16">
+                                 <polyline points="3.5 8.5 6.5 11.5 12.5 5" />
+                               </svg>
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <h4 className="pm-serif font-medium text-sm text-stone-100 leading-snug mb-0.5">Reader Profile &amp; Discussions</h4>
+                               <p className="hidden sm:block text-[11px] sm:text-xs text-stone-400 font-normal leading-snug">Standard public profile with public discussion rights.</p>
+                             </div>
+                           </li>
+            
+                           <li className="pm-feature flex items-start gap-3.5">
+                             <div className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-[#d4af37]/30 bg-stone-900/90 shadow-sm text-[#e6ca85]">
+                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 16 16">
+                                 <polyline points="3.5 8.5 6.5 11.5 12.5 5" />
+                               </svg>
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <h4 className="pm-serif font-medium text-sm text-stone-100 leading-snug mb-0.5">Community Baithaks</h4>
+                               <p className="hidden sm:block text-[11px] sm:text-xs text-stone-400 font-normal leading-snug">Access to open community literary gatherings &amp; rooms.</p>
+                             </div>
+                           </li>
+                         </ul>
+                       </div>
+            
+                       <div className="mt-3 pt-2">
+                         <button
+                           className="w-full py-2.5 px-4 rounded-lg border border-stone-800 text-stone-400 bg-stone-900/60 text-sm font-semibold tracking-wider uppercase cursor-default text-center whitespace-nowrap"
+                           disabled
+                           type="button"
+                         >
+                           Current Plan
+                         </button>
+                         <p className="text-xs text-stone-500 text-center mt-2.5">No payment required • Open forever</p>
+                       </div>
+                     </div>
+            
+                     {/* ================= PRO PLAN ================= */}
+                     <div
+                       className="pm-pro-card md:col-span-7 rounded-xl p-4 sm:p-5 flex flex-col justify-between relative overflow-hidden"
+                       style={{
+                         background: "linear-gradient(135deg, rgb(252, 237, 186) 0%, rgb(243, 216, 135) 25%, rgb(225, 190, 101) 60%, rgb(201, 158, 66) 100%)",
+                         border: "1.5px solid rgba(255, 255, 255, 0.65)",
+                       }}
+                     >
+                       <div aria-hidden="true" className="pm-shimmer-sweep" />
+                       <div
+                         className="absolute top-0 right-0 w-56 h-56 rounded-full pointer-events-none"
+                         style={{
+                           background: "radial-gradient(circle at right top, rgba(255, 255, 255, 0.5) 0%, rgba(255, 248, 220, 0.3) 40%, transparent 75%)",
+                           filter: "blur(30px)",
+                         }}
+                       />
+            
+                       <div className="relative z-10">
+                         <div className="flex items-center justify-between gap-3 mb-1 pb-0">
+                           <div className="flex items-center gap-2">
+                             <img
+                               src={logo}
+                               alt="Alfaz logo"
+                               className="h-7 sm:h-8 w-auto object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                             />
+                             <h2
+                               className="pm-serif text-xl sm:text-2xl font-semibold tracking-wide"
+                               style={{ color: "#191408", textShadow: "0 1px 0 rgba(255,255,255,0.4)" }}
+                             >
+                               Alfaz Pro
+                             </h2>
+                           </div>
+                           {/* <div
+                             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase transition-transform hover:scale-105"
+                             style={{
+                               background: "rgba(24, 18, 8, 0.88)",
+                               color: "#fbedba",
+                               border: "1px solid rgba(160, 120, 40, 0.6)",
+                               boxShadow: "0 2px 8px rgba(24, 18, 8, 0.25)",
+                             }}
+                           >
+                             <span className="font-bold" style={{ color: "#fbedba" }}>✦</span>
+                             <span className="tracking-wider">Khas Silsila</span>
+                           </div> */}
+                         </div>
+            
+                         {/* <p className="text-sm sm:text-[15px] mb-2 font-semibold" style={{ color: "rgb(26, 20, 8)" }}>
+                           For distinguished poets, connoisseurs, and classical patrons.
+                         </p> */}
+            
+                         <div
+                           className="mb-3 pb-3 flex flex-wrap items-baseline justify-between gap-2"
+                           style={{
+                             borderBottom: "1.5px solid rgba(70, 50, 10, 0.2)",
+                             boxShadow: "0 1px 0 rgba(255, 255, 255, 0.5)",
+                           }}
+                         >
+                           <div className="flex items-baseline gap-2">
+                             <span className="pm-serif text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: "#161106" }}>₹120</span>
+                             <span className="text-sm sm:text-base font-bold" style={{ color: "rgb(26, 20, 8)" }}>/ month</span>
+                           </div>
+                           <span className="text-xs sm:text-sm font-semibold" style={{ color: "rgb(24, 18, 6)" }}>
+                             Billed monthly, cancel anytime
+                           </span>
+                         </div>
+            
+                         <div className="space-y-2.5 text-sm leading-snug mb-3" style={{ color: "rgb(26, 19, 5)" }}>
+            
+                           {/* Unlimited Kalams */}
+                           <div className="pm-feature flex items-start gap-3.5">
+                             <div
+                               className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-md"
+                               style={{
+                                 background: "linear-gradient(135deg, #241c0e 0%, #100b04 100%)",
+                                 border: "1.5px solid rgba(212, 175, 55, 0.65)",
+                                 boxShadow: "inset 0 1px 1px rgba(255, 240, 190, 0.4), 0 3px 8px rgba(0, 0, 0, 0.35)",
+                               }}
+                             >
+                               <svg className="w-3.5 h-3.5" fill="none" stroke="#f8e2a0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" viewBox="0 0 24 24">
+                                 <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
+                               </svg>
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-0">Unlimited Kalams</h4>
+                               <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Publish ghazals, nazms &amp; all poetries without daily limits.</p>
+                             </div>
+                           </div>
+            
+                           {/* 10x Reach */}
+                           <div className="pm-feature flex items-start gap-3.5">
+                             <div
+                               className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-md"
+                               style={{
+                                 background: "linear-gradient(135deg, #241c0e 0%, #100b04 100%)",
+                                 border: "1.5px solid rgba(212, 175, 55, 0.65)",
+                                 boxShadow: "inset 0 1px 1px rgba(255, 240, 190, 0.4), 0 3px 8px rgba(0, 0, 0, 0.35)",
+                               }}
+                             >
+                               <svg className="w-3.5 h-3.5" fill="none" stroke="#f8e2a0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" viewBox="0 0 24 24">
+                                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                                 <polyline points="17 6 23 6 23 12" />
+                               </svg>
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">Boosted Kalam Reach</h4>
+                               <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Increased visibility across various feeds including community spaces &amp; library.</p>
+                             </div>
+                           </div>
+            
+                           {/* Gilded Quill */}
+                           <div className="pm-feature flex items-start gap-3.5">
+                             <div
+                               className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-md"
+                               style={{
+                                 background: "linear-gradient(135deg, #241c0e 0%, #100b04 100%)",
+                                 border: "1.5px solid rgba(212, 175, 55, 0.65)",
+                                 boxShadow: "inset 0 1px 1px rgba(255, 240, 190, 0.4), 0 3px 8px rgba(0, 0, 0, 0.35)",
+                               }}
+                             >
+                               <svg className="w-3.5 h-3.5" fill="none" stroke="#f8e2a0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" viewBox="0 0 24 24">
+                                 <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" />
+                                 <line x1="16" x2="2" y1="8" y2="22" />
+                                 <line x1="17.5" x2="9" y1="15" y2="15" />
+                               </svg>
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">Gilded Quill &amp; Poet's Emblem</h4>
+                               <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Display an exclusive golden Alfaz emblem on your profile &amp; couplets.</p>
+                             </div>
+                           </div>
+            
+                           {/* No Watermark */}
+                           <div className="pm-feature flex items-start gap-3.5">
+                             <div
+                               className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-md"
+                               style={{
+                                 background: "linear-gradient(135deg, #241c0e 0%, #100b04 100%)",
+                                 border: "1.5px solid rgba(212, 175, 55, 0.65)",
+                                 boxShadow: "inset 0 1px 1px rgba(255, 240, 190, 0.4), 0 3px 8px rgba(0, 0, 0, 0.35)",
+                               }}
+                             >
+                               <svg className="w-3.5 h-3.5" fill="none" stroke="#f8e2a0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" viewBox="0 0 24 24">
+                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                 <polyline points="9 12 11 14 15 10" />
+                               </svg>
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">No Watermark on Kalam Shares</h4>
+                               <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Pristine, unbranded export &amp; social sharing for all your couplets, ghazals &amp; nazms.</p>
+                             </div>
+                           </div>
+            
+                           {/* VIP Concierge */}
+                           <div className="pm-feature flex items-start gap-3.5">
+                             <div
+                               className="pm-icon w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-md"
+                               style={{
+                                 background: "linear-gradient(135deg, #241c0e 0%, #100b04 100%)",
+                                 border: "1.5px solid rgba(212, 175, 55, 0.65)",
+                                 boxShadow: "inset 0 1px 1px rgba(255, 240, 190, 0.4), 0 3px 8px rgba(0, 0, 0, 0.35)",
+                               }}
+                             >
+                               <svg className="w-3.5 h-3.5" fill="none" stroke="#f8e2a0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" viewBox="0 0 24 24">
+                                 <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                                 <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                               </svg>
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">VIP Concierge &amp; Priority Support</h4>
+                               <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Direct fast-track desk for disputes, queries, profile verification, and dedicated 24/7 literary concierge.</p>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+            
+                       <div
+                         className="relative z-10 pt-3"
+                         style={{
+                           borderTop: "1.5px solid rgba(70, 50, 10, 0.2)",
+                           boxShadow: "rgba(255, 255, 255, 0.5) 0px -1px 0px",
+                         }}
+                       >
+                         <button
+                           type="button"
+                           onClick={() => {
+                             // TODO: start your payment / checkout flow here
+                           }}
+                           className="pm-cta relative overflow-hidden w-full h-11 py-2.5 rounded-lg font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md flex items-center justify-center gap-2 group cursor-pointer whitespace-nowrap sm:px-10"
+                           style={{
+                             background: "rgb(18, 21, 28)",
+                             color: "rgb(253, 248, 236)",
+                             border: "1.5px solid rgba(197, 160, 89, 0.5)",
+                             boxShadow: "rgba(0, 0, 0, 0.5) 0px 4px 16px, rgba(255, 255, 255, 0.1) 0px 1px 0px inset",
+                           }}
+                         >
+                           <div aria-hidden="true" className="absolute inset-0 pointer-events-none overflow-hidden">
+                             <div
+                               className="absolute top-0 bottom-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                               style={{ animation: "pmButtonReflectionSweep 4s cubic-bezier(0.4, 0, 0.2, 1) infinite" }}
+                             />
+                           </div>
+                           <span className="font-bold relative z-10 tracking-widest leading-none">
+                             Become an Alfaz Pro • ₹120/mo
+                           </span>
+                           <span className="text-xl leading-none transition-transform duration-300 group-hover:translate-x-1 relative z-10 shrink-0 font-bold ml-1.5">→</span>
+                         </button>
+            
+                         <div
+                         className="mt-2.5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs font-semibold"
+                         style={{ color: "rgb(72, 57, 24)" }}
+                       >
+                         <span className="font-bold" style={{ color: "rgb(20, 15, 5)" }}>
+                           Instant UPI &amp; Card access
+                         </span>
+           
+                         <span aria-hidden="true">•</span>
+           
+                         <span className="font-bold" style={{ color: "rgb(20, 15, 5)" }}>
+                           Cancel anytime
+                         </span>
+           
+                         <span aria-hidden="true">•</span>
+           
+                         <a
+                           href="/cancellation&refundpolicy"
+                           className="underline underline-offset-2 hover:text-black transition-colors"
+                           style={{ color: "rgb(72, 57, 24)" }}
+                         >
+                           Cancellation &amp; Refund Policy
+                         </a>
+                       </div>
+                       </div>
+                     </div>
+            
+                   </div>
+                 </div>
+               </div>
+             </div>
+           )}
 
             {/* ── Bottom Player / Mobile Nav ── */}
             <footer

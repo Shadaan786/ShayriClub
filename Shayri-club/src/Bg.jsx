@@ -215,14 +215,14 @@ export const Footer = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center justify-between">
               <div className="lg:col-span-6 space-y-2">
                 <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold tracking-wider uppercase">
-                  <SparklesIcon className="w-3.5 h-3.5" />
-                  The Weekly Bayt &amp;courier Dispatch
+                  <SparklesIcon className="w-5 h-5" />
+                  Experience exclusive Kalam of the Week &amp; <br /> featured curators section
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-serif text-white font-medium">
                   Curated couplets, literary contests &amp; essays.
                 </h3>
                 <p className="text-sm text-slate-400 max-w-lg">
-                  Join 42,000+ literary enthusiasts who receive handpicked gazals, poetry writing prompts, and festival invites every Sunday morning.
+                  Join various literary enthusiasts who receive handpicked gazals, poetry writing prompts, and festival invites every Sunday morning.
                 </p>
               </div>
               <div className="lg:col-span-6">
@@ -1155,7 +1155,7 @@ useEffect(() => {
             م
           </span>
         </div>
-        <span>Over 24,000 verses composed with archival serif typesetting</span>
+        <span>Various verses composed with archival serif typesetting</span>
       </div>
     </div>
 
@@ -1696,7 +1696,7 @@ useEffect(() => {
                     <div className="w-7 h-7 rounded-full ring-1 ring-[#0b0d13] bg-[#1d2624] text-[#c59d3f] flex items-center justify-center font-archival-serif text-[11px] font-semibold">غ</div>
                   </div>
                   <div className="text-xs text-[#8c887b] leading-snug">
-                    <span className="text-[#ded7c8] font-medium">Preserving 14,000+ poetic works</span> across Ghazal, Nazm, Rubaiyat, and Sufi oral traditions.
+                    <span className="text-[#ded7c8] font-medium">Preserving poetic works</span> across Ghazal, Nazm, Rubaiyat, and Sufi oral traditions.
                   </div>
                 </div>
               </div>
@@ -2056,7 +2056,7 @@ useEffect(() => {
     className="fixed inset-0 z-[100] overflow-y-auto pm-sans text-left"
     role="dialog"
     aria-modal="true"
-    aria-label="Alfaaz Pro plans"
+    aria-label="Alfaz Pro plans"
   >
     {/* Scoped styles for the modal (animations + helper classes) */}
     <style>{`
@@ -2272,14 +2272,14 @@ useEffect(() => {
                 <div className="flex items-center gap-2">
                   <img
                     src={logo}
-                    alt="Alfaaz logo"
+                    alt="Alfaz logo"
                     className="h-7 sm:h-8 w-auto object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
                   />
                   <h2
                     className="pm-serif text-xl sm:text-2xl font-semibold tracking-wide"
                     style={{ color: "#191408", textShadow: "0 1px 0 rgba(255,255,255,0.4)" }}
                   >
-                    Alfaaz Pro
+                    Alfaz Pro
                   </h2>
                 </div>
                 {/* <div
@@ -2334,7 +2334,7 @@ useEffect(() => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-0">Unlimited Kalams</h4>
-                    <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Publish ghazals, nazms &amp; ruba'iyat without daily caps.</p>
+                    <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Publish ghazals, nazms &amp; all poetries without daily limits.</p>
                   </div>
                 </div>
  
@@ -2355,7 +2355,7 @@ useEffect(() => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">Boosted Kalam Reach</h4>
-                    <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Priority curation in weekly Diwan newsletters &amp; Baithak spotlights.</p>
+                    <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Increased visibility across various feeds including community spaces &amp; library.</p>
                   </div>
                 </div>
  
@@ -2376,8 +2376,8 @@ useEffect(() => {
                     </svg>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">Gilded Quill &amp; Takhallus Crest</h4>
-                    <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Ornate golden insignia on your profile &amp; couplets.</p>
+                    <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">Gilded Quill &amp; Poet's Emblem</h4>
+                    <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Display an exclusive golden Alfaz emblem on your profile &amp; couplets.</p>
                   </div>
                 </div>
  
@@ -2419,7 +2419,7 @@ useEffect(() => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="pm-serif font-bold text-sm sm:text-[15px] leading-snug tracking-tight text-[#100b04] mb-1">VIP Concierge &amp; Priority Support</h4>
-                    <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Direct fast-track desk for disputes, manuscript guidance, profile verification, and dedicated 24/7 literary concierge.</p>
+                    <p className="hidden sm:block text-[11px] sm:text-xs leading-snug font-medium text-[#181206] mt-0.5">Direct fast-track desk for disputes, queries, profile verification, and dedicated 24/7 literary concierge.</p>
                   </div>
                 </div>
               </div>
@@ -2452,21 +2452,35 @@ useEffect(() => {
                   />
                 </div>
                 <span className="font-bold relative z-10 tracking-widest leading-none">
-                  Become an Alfaaz Pro • ₹120/mo
+                  Become an Alfaz Pro • ₹120/mo
                 </span>
                 <span className="text-xl leading-none transition-transform duration-300 group-hover:translate-x-1 relative z-10 shrink-0 font-bold ml-1.5">→</span>
               </button>
  
               <div
-                className="mt-2.5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs font-semibold"
+              className="mt-2.5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs font-semibold"
+              style={{ color: "rgb(72, 57, 24)" }}
+            >
+              <span className="font-bold" style={{ color: "rgb(20, 15, 5)" }}>
+                Instant UPI &amp; Card access
+              </span>
+
+              <span aria-hidden="true">•</span>
+
+              <span className="font-bold" style={{ color: "rgb(20, 15, 5)" }}>
+                Cancel anytime
+              </span>
+
+              <span aria-hidden="true">•</span>
+
+              <a
+                href="/cancellation&refundpolicy"
+                className="underline underline-offset-2 hover:text-black transition-colors"
                 style={{ color: "rgb(72, 57, 24)" }}
               >
-                <span className="font-bold" style={{ color: "rgb(20, 15, 5)" }}>Instant UPI &amp; Card access</span>
-                <span aria-hidden="true" className="font-bold" style={{ color: "rgb(74, 56, 20)" }}>•</span>
-                <span className="font-bold" style={{ color: "rgb(20, 15, 5)" }}>7-day money-back guarantee</span>
-                <span aria-hidden="true" className="font-bold" style={{ color: "rgb(74, 56, 20)" }}>•</span>
-                <span className="font-bold" style={{ color: "rgb(20, 15, 5)" }}>Cancel anytime</span>
-              </div>
+                Cancellation &amp; Refund Policy
+              </a>
+            </div>
             </div>
           </div>
  
@@ -2514,7 +2528,7 @@ useEffect(() => {
               <div className="space-y-6">
                 <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-2xl p-6 border border-purple-500/20">
                   <h4 className="text-2xl font-bold text-white mb-2">Poets</h4>
-                  <p className="text-gray-300">Active community members sharing their art daily</p>
+                  <p className="text-gray-300">Various poets and their artworks to explore</p>
                 </div>
                 <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-lg rounded-2xl p-6 border border-blue-500/20">
                   <h4 className="text-2xl font-bold text-white mb-2">Works</h4>
@@ -2522,7 +2536,7 @@ useEffect(() => {
                 </div>
                 <div className="bg-gradient-to-br from-pink-600/20 to-yellow-600/20 backdrop-blur-lg rounded-2xl p-6 border border-pink-500/20">
                   <h4 className="text-2xl font-bold text-white mb-2">Events</h4>
-                  <p className="text-gray-300">Monthly poetry sessions and community gatherings</p>
+                  <p className="text-gray-300">Kalam of the Week and other community gatherings</p>
                 </div>
               </div>
             </div>
