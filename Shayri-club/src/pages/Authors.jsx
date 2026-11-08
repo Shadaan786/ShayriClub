@@ -1,8 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/Apis/axiosInstance";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Crown, Menu, X } from "lucide-react";
+// ── icons added for the new footer ──
+import {
+    Sparkles as SparklesIcon,
+    Mail as MailIcon,
+    ArrowRight as ArrowRightIcon,
+    Instagram as InstagramIcon,
+    Twitter as TwitterIcon,
+    Youtube as YoutubeIcon,
+    Mic as MicIcon,
+    Github as GithubIcon,
+    Headphones as HeadphonesIcon,
+    ShieldCheck as ShieldCheckIcon,
+    Globe as GlobeIcon,
+    ChevronDown as ChevronDownIcon,
+    ArrowUp as ArrowUpIcon,
+} from "lucide-react";
 import logo from '../../public/logo2.svg'
 
 /**
@@ -25,6 +41,14 @@ const COLORS = {
     borderSubtle: "rgba(255,255,255,0.10)",
 };
 
+// ── Global nav links (site-wide, same four everywhere) ──
+const GLOBAL_NAV_LINKS = [
+    { text: "Kalam", to: "/kalam" },
+    { text: "Community", to: "/spaces" },
+    { text: "Browse", to: "/Social" },
+    { text: "Library", to: "/albumsLive", active: true },
+];
+
 const LIMIT = 10;
 
 const SORT_OPTIONS = [
@@ -36,7 +60,7 @@ const SORT_OPTIONS = [
 
 const formatFollowers = (curator) => {
     if (typeof curator.followers === "string") return curator.followers;
-    const count = curator.followers ?? curator.followerCount ?? curator.followersCount ?? 0;
+    const count = curator.followers.length ?? curator.followerCount ?? curator.followersCount ?? 0;
     const formatted =
         count >= 1000 ? `${(count / 1000).toFixed(count % 1000 === 0 ? 0 : 1)}K` : `${count}`;
     return `${formatted} Followers`;
@@ -51,6 +75,11 @@ const Authors = () => {
     const [searchValue, setSearchValue] = useState("");
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [isPremiumModal, setIsPremiumModal] = useState(false);
+    // UI-only: mobile sidebar drawer (same as AlbumsLive)
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const[user, setUser] = useState("");
+
+    const Navigate = useNavigate();
 
     // Same refs-driven pattern used for albums: page/query live outside
     // React state so InfiniteScroll's callbacks always read the latest
@@ -58,6 +87,14 @@ const Authors = () => {
     const page = useRef(1);
     const query = useRef("all");
     const isFetchingMore = useRef(false);
+
+    const fetchUser=()=>{
+      axiosInstance
+      .get('/api/userId',{withCredentials:true})
+      .then((response)=>{
+        setUser(response.data);
+      })
+    }
 
     const handleFetch = () => {
         if (query.current.trim() === "") {
@@ -89,6 +126,7 @@ const Authors = () => {
 
     useEffect(() => {
         handleFetch();
+        fetchUser();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -183,12 +221,43 @@ const Authors = () => {
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
                 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block');
+                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Dancing+Script:wght@600&family=Noto+Nastaliq+Urdu&display=swap');
 
                 .material-symbols-outlined {
                     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
                     vertical-align: middle;
                     line-height: 1;
                 }
+
+                /* ── Navbar / sidebar styles copied from AlbumsLive ── */
+                .k-avatar {
+                    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+                    background: rgba(83,74,183,0.18); border: 0.5px solid rgba(210,170,90,0.3);
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 11px; font-weight: 500; color: rgba(210,170,90,0.8); cursor: pointer;
+                    overflow: hidden;
+                }
+                .lib-glass-card {
+                    background: rgba(255,255,255,0.04);
+                    border: 1px solid rgba(255,255,255,0.08);
+                    backdrop-filter: blur(20px);
+                }
+                .lib-sunset-gradient {
+                    background: linear-gradient(135deg, #fbbf24 0%, #fb923c 100%);
+                }
+                .lib-nav-link { color: rgba(212,228,250,0.65); transition: color .2s; }
+                .lib-nav-link:hover { color: ${COLORS.primary}; }
+                .lib-sidebar-link { transition: background .2s, color .2s; }
+                .lib-sidebar-link:hover { background: rgba(255,255,255,0.08); }
+                .lib-pill { transition: all .15s ease; }
+                @media (max-width: 1023px) {
+                    .lib-sidebar { display: none !important; }
+                }
+                @media (max-width: 767px) {
+                    .lib-nav-search { display: none !important; }
+                    .lib-nav-links { display: none !important; }
+                }
+
                 .cur-sunset-gradient {
                     background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.tertiary} 100%);
                 }
@@ -219,20 +288,21 @@ const Authors = () => {
                 @keyframes cur-spin { to { transform: rotate(360deg); } }
                 .cur-mobile-search-bar { display: none; }
 
+                @media (max-width: 1023px) {
+                    .cur-mobile-search-bar { display: flex !important; }
+                }
+
                 @media (max-width: 767px) {
-                    .cur-header { height: calc(56px + env(safe-area-inset-top)) !important; }
-                    .cur-header-inner { padding-top: env(safe-area-inset-top) !important; }
-                    .cur-main { padding-top: calc(56px + env(safe-area-inset-top) + 12px) !important; }
+                    .cur-main { padding-top: calc(64px + env(safe-area-inset-top) + 12px) !important; }
                     .cur-grid {
                         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                         gap: 12px !important;
                     }
-                    .cur-card { padding: 16px !important; border-radius: 20px !important; }
-                    .cur-card-avatar { width: 72px !important; height: 72px !important; margin-bottom: 12px !important; }
+                    .cur-card { padding: 8px !important; }
+                    .cur-card-avatar { width: 72px !important; height: 72px !important; margin-bottom: 6px !important; }
                     .cur-card-name { font-size: 13px !important; }
                     .cur-card-followers { font-size: 10px !important; margin-bottom: 14px !important; }
                     .cur-follow-btn, .cur-sunset-gradient.cur-follow-cta { padding-top: 8px !important; padding-bottom: 8px !important; font-size: 10px !important; }
-                    .cur-mobile-search-bar { display: flex !important; }
                     .cur-icon-btn { width: 40px !important; height: 40px !important; }
                     .cur-footer-player { padding-top: 10px !important; padding-bottom: calc(10px + env(safe-area-inset-bottom)) !important; }
                 }
@@ -242,114 +312,86 @@ const Authors = () => {
                 }
             `}</style>
 
-            {/* ── Side Nav (desktop) ── */}
-            <nav
-                className="hidden md:flex fixed left-0 top-0 h-full w-64 z-40 flex-col p-6 gap-2"
-                style={{ background: "rgba(18,33,49,0.4)", backdropFilter: "blur(24px)", borderRight: `1px solid ${COLORS.borderSubtle}` }}
-            >
-                <div className="mb-8">
-                    <h1 className="text-2xl font-bold" style={{ color: COLORS.primary }}>Library</h1>
-                    <p className="text-xs font-semibold tracking-widest uppercase opacity-60" style={{ color: COLORS.onSurfaceVariant }}>
-                        Auralis Nocturne
-                    </p>
-                </div>
-
-                <div className="flex flex-col gap-2 flex-grow">
-                    {[
-                        { icon: "home", label: "Home", to: "/" },
-                        { icon: "explore", label: "Explore", to: "/explore" },
-                        { icon: "library_music", label: "Library", to: "/library", active: true },
-                        { icon: "history", label: "Recent", to: "/recent" },
-                        { icon: "download", label: "Downloads", to: "/downloads" },
-                    ].map((item) => (
-                        <Link
-                            key={item.label}
-                            to={item.to}
-                            className="cur-sidebar-link flex items-center gap-3 p-3 rounded-xl"
-                            style={{
-                                color: item.active ? COLORS.primary : COLORS.onSurfaceVariant,
-                                background: item.active ? "rgba(207,188,255,0.1)" : "transparent",
-                            }}
-                        >
-                            <span className="material-symbols-outlined">{item.icon}</span>
-                            <span className="text-xs font-semibold tracking-widest uppercase">{item.label}</span>
-                        </Link>
-                    ))}
-                </div>
-
-                <div className="mt-auto pt-6 flex flex-col gap-2">
-                    <button
-                        className="cur-sunset-gradient font-semibold text-xs tracking-widest uppercase py-3 rounded-xl mb-6 shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
-                        onClick={()=>setIsPremiumModal(true)}
-                        style={{ color: COLORS.onPrimary }}
-                    >
-                        Upgrade to Pro
-                    </button>
-                    <Link to="/settings" className="cur-sidebar-link flex items-center gap-3 p-3 rounded-xl">
-                        <span className="material-symbols-outlined">settings</span>
-                        <span className="text-xs font-semibold tracking-widest uppercase">Settings</span>
-                    </Link>
-                    <Link to="/support" className="cur-sidebar-link flex items-center gap-3 p-3 rounded-xl">
-                        <span className="material-symbols-outlined">help</span>
-                        <span className="text-xs font-semibold tracking-widest uppercase">Help</span>
-                    </Link>
-                </div>
-            </nav>
-
-            {/* ── Top Nav ── */}
+            {/* ── Top Navigation (global Alfaz nav, styled to this page's navy/amber theme — same as AlbumsLive) ── */}
             <header
-                className="cur-header fixed top-0 right-0 left-0 md:left-64 z-50 flex flex-col justify-center h-16"
-                style={{ background: "rgba(5,20,36,0.6)", backdropFilter: "blur(32px)", borderBottom: `1px solid ${COLORS.borderSubtle}` }}
+                className="fixed top-0 left-0 w-full z-50"
+                style={{ background: "rgba(5,20,36,0.7)", backdropFilter: "blur(40px)", borderBottom: `1px solid ${COLORS.borderSubtle}` }}
             >
-                <div className="cur-header-inner flex justify-between items-center px-4 md:px-12 h-full">
-                    <div className="flex items-center gap-8">
-                        <span className="md:hidden text-2xl font-extrabold tracking-tighter" style={{ color: COLORS.primary }}>Library</span>
-                        <div className="hidden lg:flex items-center gap-6">
-                            <Link to="/artists" className="cur-nav-link text-base">Artists</Link>
-                            <Link to="/albums" className="cur-nav-link text-base">Albums</Link>
-                            <Link to="/playlists" className="cur-nav-link text-base">Playlists</Link>
-                            <Link to="/genres" className="cur-nav-link text-base">Genres</Link>
-                        </div>
+                <div
+                    className="items-center h-16 md:h-20 px-3 sm:px-6 w-full max-w-[1440px] mx-auto"
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto 1fr",
+                        columnGap: 16,
+                    }}
+                >
+                    <div className="flex items-center gap-2 sm:gap-4" style={{ minWidth: 0 }}>
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="lg:hidden mr-1 sm:mr-2 w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
+                            style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
+                            aria-label="Open sidebar"
+                        >
+                            <span className="material-symbols-outlined text-lg">menu</span>
+                        </button>
+
+                        <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
+                            <span className="font-extrabold text-xl md:text-3xl tracking-tight">Library</span>
+                        </Link>
                     </div>
 
-                    <div className="flex items-center gap-2 md:gap-4">
+                    <nav className="lib-nav-links hidden md:flex items-center gap-8" style={{ justifySelf: "center" }}>
+                        {GLOBAL_NAV_LINKS.map((link) =>
+                            link.active ? (
+                                <Link
+                                    key={link.text}
+                                    to={link.to}
+                                    className="font-bold pb-1"
+                                    style={{ color: COLORS.primary, borderBottom: `2px solid ${COLORS.primary}` }}
+                                >
+                                    {link.text}
+                                </Link>
+                            ) : (
+                                <Link key={link.text} to={link.to} className="lib-nav-link">
+                                    {link.text}
+                                </Link>
+                            )
+                        )}
+                    </nav>
+
+                    <div className="flex items-center gap-2 sm:gap-4" style={{ justifySelf: "end" }}>
+                        <button
+                            onClick={() => setMobileSearchOpen((prev) => !prev)}
+                            className="cur-icon-btn lg:hidden w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0"
+                            style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
+                            aria-label="Toggle search"
+                        >
+                            <span className="material-symbols-outlined text-lg" style={{ color: COLORS.onSurfaceVariant }}>search</span>
+                        </button>
                         <div
-                            className="hidden sm:flex items-center rounded-full px-4 py-2 transition-all"
+                            className="lib-nav-search hidden lg:flex items-center rounded-full px-4 py-2"
                             style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
                         >
-                            <span className="material-symbols-outlined text-[20px]" style={{ color: COLORS.onSurfaceVariant }}>search</span>
+                            <span className="material-symbols-outlined text-sm mr-2" style={{ color: COLORS.onSurfaceVariant }}>search</span>
                             <input
                                 type="text"
                                 value={searchValue}
                                 onChange={(e) => setSearchValue(e.target.value)}
                                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                                 placeholder="Search curated library..."
-                                className="bg-transparent border-none focus:ring-0 text-base w-48 outline-none"
+                                className="bg-transparent border-none focus:ring-0 text-sm w-48 outline-none"
                                 style={{ color: COLORS.onSurface }}
                             />
+                            <button onClick={handleSearch}>
+                                search
+                            </button>
                         </div>
-                        <button
-                            onClick={() => setMobileSearchOpen((prev) => !prev)}
-                            className="cur-icon-btn sm:hidden w-9 h-9 flex items-center justify-center rounded-full"
-                            style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${COLORS.borderSubtle}` }}
-                            aria-label="Toggle search"
-                        >
-                            <span className="material-symbols-outlined text-[20px]" style={{ color: COLORS.onSurfaceVariant }}>search</span>
-                        </button>
-                        <button
-                            className="material-symbols-outlined p-2 transition-colors"
-                            style={{ color: COLORS.onSurfaceVariant }}
-                        >
-                            settings
-                        </button>
-                        <div
-                            className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0"
-                            style={{ background: COLORS.surfaceContainer, border: `1px solid ${COLORS.borderSubtle}` }}
-                        >
+                        <div className="k-avatar">
                             <img
-                                className="w-full h-full object-cover"
+                            onClick={()=>Navigate(`/profile?userId=${user._id}`)}
+                                className="rounded-full h-full"
                                 alt="Profile"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJvDit6hr4INv-0DUByHGbbIDeAlcpaVNuh-_p2AmLkX38PlNGnvOx3L9z0wmlAAQg4HnAJjlkvkB5VwNkswPgUqRx7lhEp6LM-TH-yFAxJh79kvcRiEhKEANKwkWGkXhJShVmNtAgLnJrZukYYyUJvaUsWz1bd4xBkRyJLJW7sY2kF4ALcCEPTK0XrhmHpP8wNC5KFTDG64GjKAnLE1wQfFKB5jz5KjW7b1kPU7ZY_GdsIemqe_Nz"
+                                src={user.profilePic}
                             />
                         </div>
                     </div>
@@ -357,7 +399,7 @@ const Authors = () => {
 
                 {/* Mobile search row — toggled by the search icon above */}
                 {mobileSearchOpen && (
-                    <div className="cur-mobile-search-bar items-center relative px-4 pb-3 sm:hidden">
+                    <div className="cur-mobile-search-bar items-center relative px-4 pb-3 lg:hidden">
                         <span
                             className="material-symbols-outlined absolute left-7 top-1/2 -translate-y-1/2"
                             style={{ color: COLORS.onSurfaceVariant }}
@@ -378,8 +420,67 @@ const Authors = () => {
                 )}
             </header>
 
+            {/* ── Sidebar (desktop) — same as AlbumsLive, with the Upgrade to Pro button kept ── */}
+            <aside
+                className="lib-sidebar hidden lg:flex flex-col py-8 px-4 gap-4 fixed left-0 top-20 z-40 overflow-y-auto"
+                style={{
+                    width: 256,
+                    height: "calc(100vh - 80px)",
+                    background: "rgba(18,33,49,0.6)",
+                    backdropFilter: "blur(20px)",
+                    borderRight: `1px solid ${COLORS.borderSubtle}`,
+                }}
+            >
+                <div className="mb-6 px-2">
+                    <h3 className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: COLORS.secondary }}>
+                        Your Collection
+                    </h3>
+                    <p className="text-xs" style={{ color: "rgba(203,196,210,0.6)" }}>Premium Member</p>
+                </div>
+                <div className="flex flex-col gap-1">
+                    {[
+                        { label: "Home", to: "/" },
+                        { label: "Kalam", to: "/kalam" },
+                        { label: "Community", to: "/spaces" },
+                        { label: "Browse", to: "/social" },
+                        { label: "Library", to: "/library", active: true },
+                    ].map((item) => (
+                        <Link
+                            key={item.label}
+                            to={item.to}
+                            className="lib-sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg"
+                            style={{
+                                color: item.active ? COLORS.primary : COLORS.onSurfaceVariant,
+                                fontWeight: item.active ? 700 : 400,
+                                background: item.active ? "rgba(255,255,255,0.05)" : "transparent",
+                            }}
+                        >
+                            <span className="material-symbols-outlined text-xl">{item.icon}</span>
+                            <span>{item.label}</span>
+                        </Link>
+                    ))}
+                </div>
+                <div className="mt-auto flex flex-col gap-1 pt-8" style={{ borderTop: `1px solid rgba(255,255,255,0.05)` }}>
+                    <button
+                        className="cur-sunset-gradient font-semibold text-xs tracking-widest uppercase py-3 rounded-xl mb-6 shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
+                        onClick={()=>setIsPremiumModal(true)}
+                        style={{ color: COLORS.onPrimary }}
+                    >
+                        Upgrade to Pro
+                    </button>
+                    <Link to="/settings" className="lib-sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg" style={{ color: COLORS.onSurfaceVariant }}>
+                        <span className="material-symbols-outlined text-xl">settings</span>
+                        <span>Settings</span>
+                    </Link>
+                    <Link to="/helpcenter" className="lib-sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg" style={{ color: COLORS.onSurfaceVariant }}>
+                        <span className="material-symbols-outlined text-xl">help</span>
+                        <span>Support</span>
+                    </Link>
+                </div>
+            </aside>
+
             {/* ── Main Content ── */}
-            <main className="cur-main relative z-10 pt-24 pb-32 px-4 md:px-12 md:ml-64 md:w-[calc(100%-16rem)] min-h-screen">
+            <main className="cur-main relative z-10 pt-24 md:pt-32 pb-32 px-4 md:px-12 lg:ml-64 lg:w-[calc(100%-16rem)] min-h-screen">
                 {/* Header Section */}
                 <section className="mb-8 md:mb-12">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
@@ -454,9 +555,10 @@ const Authors = () => {
                             const id = curator._id || curator.id;
                             const img = curator.profilePic || curator.avatar || curator.profileImage;
                             return (
-                                <div key={id} className="cur-card cur-glass p-6 rounded-3xl flex flex-col items-center text-center group">
-                                    <div className="cur-card-avatar relative w-24 h-24 md:w-32 md:h-32 mb-6 transition-transform duration-500 group-hover:scale-105">
+                                <div key={id} className="cur-card p-2 flex flex-col items-center text-center group">
+                                    <div className="cur-card-avatar relative w-24 h-24 md:w-32 md:h-32 mb-3 transition-transform duration-500 group-hover:scale-105">
                                         <img
+                                        onClick={()=>Navigate(`/profile?userId=${curator._id}`)}
                                             className="w-full h-full rounded-full object-cover shadow-xl"
                                             style={{ border: `4px solid ${COLORS.surfaceContainerHighest}` }}
                                             alt={curator.name}
@@ -495,8 +597,8 @@ const Authors = () => {
 
                         {initialLoading &&
                             Array.from({ length: 10 }).map((_, i) => (
-                                <div key={i} className="cur-card p-6 rounded-3xl flex flex-col items-center animate-pulse">
-                                    <div className="cur-card-avatar w-24 h-24 md:w-32 md:h-32 mb-6 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }} />
+                                <div key={i} className="cur-card p-2 flex flex-col items-center animate-pulse">
+                                    <div className="cur-card-avatar w-24 h-24 md:w-32 md:h-32 mb-3 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }} />
                                     <div className="h-4 w-2/3 mb-2 rounded" style={{ background: "rgba(255,255,255,0.05)" }} />
                                     <div className="h-3 w-1/2 rounded" style={{ background: "rgba(255,255,255,0.05)" }} />
                                 </div>
@@ -945,6 +1047,313 @@ const Authors = () => {
              </div>
            )}
 
+            {/* ==================== ENHANCED PROFESSIONAL FOOTER (copied from AlbumsLive, themed to Library's navy/lavender palette) ====================
+                - lives OUTSIDE the sidebar/main block, so it spans the full width (and covers the fixed sidebar)
+                - relative z-[45] places it above the sidebar (z-40)
+                - extra bottom padding keeps the links clear of the fixed bottom player bar */}
+            <footer
+                className="relative z-[45] border-t border-[#cfbcff]/20 bg-gradient-to-b from-[#051424] via-[#04101d] to-[#020a13] overflow-hidden"
+            >
+                {/* Ambient Glow behind footer */}
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background:
+                            "radial-gradient(circle at 50% 0%, rgba(207, 188, 255, 0.12) 0%, rgba(231, 195, 101, 0.04) 35%, transparent 70%)",
+                    }}
+                ></div>
+
+                {/* Decorative Top Divider Accent */}
+                <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#cfbcff]/40 to-transparent"></div>
+
+                {/* Top Pre-Footer Callout / Literary Newsletter Section */}
+                <div className="relative border-b border-white/5 bg-white/[0.015]">
+                    <div className="max-w-7xl mx-auto px-6 py-12 lg:py-14">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center justify-between">
+                            <div className="lg:col-span-6 space-y-2">
+                                <div className="flex items-center gap-2 text-[#cfbcff] text-xs font-semibold tracking-wider uppercase">
+                                    <SparklesIcon className="w-3.5 h-3.5" />
+                                    The Weekly Bayt &amp;courier Dispatch
+                                </div>
+                                <h3 className="text-2xl sm:text-3xl font-serif text-[#d4e4fa] font-medium">
+                                    Curated couplets, literary contests &amp; essays.
+                                </h3>
+                                <p className="text-sm text-[#cbc4d2]/70 max-w-lg">
+                                    Join 42,000+ literary enthusiasts who receive handpicked gazals, poetry writing prompts, and festival invites every Sunday morning.
+                                </p>
+                            </div>
+                            <div className="lg:col-span-6">
+                                <form
+                                    className="flex flex-col sm:flex-row gap-3 max-w-lg lg:ml-auto"
+                                    onSubmit={(e) => e.preventDefault()}
+                                >
+                                    <div className="relative flex-1">
+                                        <MailIcon className="w-4 h-4 text-[#cbc4d2]/70 absolute left-4 top-1/2 -translate-y-1/2" />
+                                        <input
+                                            className="w-full bg-[#122131]/80 text-[#d4e4fa] placeholder-[#cbc4d2]/40 text-sm rounded-xl pl-11 pr-4 py-3.5 border border-[#cfbcff]/25 focus:border-[#cfbcff] focus:outline-none focus:ring-2 focus:ring-[#cfbcff]/20 transition-all"
+                                            placeholder="Enter your email for the gazette..."
+                                            required
+                                            type="email"
+                                        />
+                                    </div>
+                                    <button
+                                        className="px-6 py-3.5 rounded-xl bg-[#cfbcff] hover:brightness-110 text-[#381e72] font-semibold text-sm transition-all shadow-md shadow-[#cfbcff]/10 flex items-center justify-center gap-2 whitespace-nowrap active:scale-[0.98]"
+                                        type="submit"
+                                    >
+                                        <span>Subscribe</span>
+                                        <ArrowRightIcon className="w-4 h-4" />
+                                    </button>
+                                </form>
+                                <p className="text-[11px] text-[#cbc4d2]/50 mt-2 lg:text-right">
+                                    Zero spam. Unsubscribe with one click anytime.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Main Multi-Column Footer Grid */}
+                <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-32 md:pb-28">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+                        {/* Brand & Mission Column (Col 1-4) */}
+                        <div className="lg:col-span-4 space-y-5">
+                            <div className="flex items-center gap-3">
+                                <h1 className="relative inline-block text-4xl sm:text-5xl leading-none font-black tracking-wide cursor-default group">
+                                    {/* Soft Glow layer behind text */}
+                                    <span
+                                        aria-hidden="true"
+                                        className="absolute inset-0 blur-xl opacity-40 bg-gradient-to-r from-amber-400 via-rose-400 to-orange-400 bg-clip-text text-transparent transition-opacity duration-500 group-hover:opacity-75"
+                                        style={{ fontFamily: "'Playfair Display', serif" }}
+                                    >
+                                        Alfaz
+                                    </span>
+
+                                    {/* Main text with composite Urdu & Script flourish */}
+                                    <span className="relative inline-block">
+                                        <span
+                                            className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"
+                                            style={{ fontFamily: "'Dancing Script', cursive" }}
+                                        >
+                                            A
+                                        </span>
+                                        <bdi
+                                            className="inline-block -mx-0.5 translate-y-[3px] bg-gradient-to-r from-rose-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent"
+                                            style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+                                        >
+                                            لف
+                                        </bdi>
+                                        <span
+                                            className="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent"
+                                            style={{ fontFamily: "'Dancing Script', cursive" }}
+                                        >
+                                            az
+                                        </span>
+                                    </span>
+                                </h1>
+                                {/* <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                                    Shayri Club
+                                </span> */}
+                            </div>
+
+                            <p className="text-[#cbc4d2]/70 text-sm leading-relaxed max-w-sm">
+                                A sanctuary for poets, shayars, and novelists to immortalize their words, connect through soulful recitations, and celebrate the nuance of multilingual literature.
+                            </p>
+
+                            {/* Community Trust Badges */}
+                            <div className="flex items-center gap-4 pt-1">
+                                <div className="flex -space-x-2">
+                                    <img alt="Poet Avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#051424] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                                    <img alt="Writer Avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#051424] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                                    <img alt="Contributor" className="inline-block h-8 w-8 rounded-full ring-2 ring-[#051424] object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                                    <div className="flex items-center justify-center h-8 w-8 rounded-full ring-2 ring-[#051424] bg-[#cfbcff]/20 text-[#cfbcff] text-[10px] font-bold">
+                                        +18k
+                                    </div>
+                                </div>
+                                <div className="text-xs text-[#cbc4d2]/70">
+                                    <span className="text-[#d4e4fa] font-medium">18,500+</span> Published Writers
+                                </div>
+                            </div>
+
+                            {/* Social Icon Links with Tooltip/Hover Glow */}
+                            <div className="flex items-center gap-2.5 pt-2">
+                                <a aria-label="Instagram" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <InstagramIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="Twitter / X" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <TwitterIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="YouTube" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <YoutubeIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="Spotify" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <MicIcon className="w-4 h-4" />
+                                </a>
+                                <a aria-label="GitHub" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#cfbcff]/10 border border-white/5 hover:border-[#cfbcff]/30 text-[#cbc4d2]/70 hover:text-[#cfbcff] flex items-center justify-center transition-all" href="#">
+                                    <GithubIcon className="w-4 h-4" />
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Column 2: Explore (Col 5-6) */}
+                        <div className="lg:col-span-2 space-y-4">
+                            <div className="flex items-center gap-2">
+                                {/* <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span> */}
+                                <h4 className="text-sm font-semibold text-[#d4e4fa] tracking-wider uppercase font-sans">Explore</h4>
+                            </div>
+                            <ul className="space-y-3 text-sm text-[#cbc4d2]/70">
+                                <li>
+                                    <a className="group flex items-center justify-between hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Kalam (Poetry)</span>
+                                        {/* <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">Hot</span> */}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Community Circle</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Browse Categories</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Mushaira Live Rooms</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center justify-between hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Audio Recitations</span>
+                                        <HeadphonesIcon className="w-3.5 h-3.5 text-[#cbc4d2]/50 group-hover:text-[#cfbcff]" />
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Featured Shayars</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Column 3: Resources & Academy (Col 7-8) */}
+                        <div className="lg:col-span-3 space-y-4">
+                            <div className="flex items-center gap-2">
+                                {/* <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span> */}
+                                <h4 className="text-sm font-semibold text-[#d4e4fa] tracking-wider uppercase font-sans">Writers &amp; Guild</h4>
+                            </div>
+                            <ul className="space-y-3 text-sm text-[#cbc4d2]/70">
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">About Alfaz</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Editorial Guidelines</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center justify-between hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Poetic Meters (Behr) Guide</span>
+                                        {/* <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">Learn</span> */}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Publishing Grants &amp; Contests</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Help &amp; Creator Support</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Column 4: Legal & System Status (Col 9-12) */}
+                        <div className="lg:col-span-3 space-y-4">
+                            <div className="flex items-center gap-2">
+                                {/* <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> */}
+                                <h4 className="text-sm font-semibold text-[#d4e4fa] tracking-wider uppercase font-sans">Legal &amp; Transparency</h4>
+                            </div>
+                            <ul className="space-y-3 text-sm text-[#cbc4d2]/70">
+                                <li>
+                                    <button
+                                        onClick={() => Navigate('/privacyPolicy')}
+                                        className="group flex items-center justify-between w-full text-left hover:text-[#cfbcff] transition-colors duration-150"
+                                    >
+                                        <span className="group-hover:translate-x-1 transition-transform">Privacy Policy</span>
+                                        <ShieldCheckIcon className="w-3.5 h-3.5 text-[#cbc4d2]/50 group-hover:text-emerald-400" />
+                                    </button>
+                                </li>
+                                <li>
+                                    <button
+                                        onClick={() => Navigate('/termsofservices')}
+                                        className="group flex items-center w-full text-left hover:text-[#cfbcff] transition-colors duration-150"
+                                    >
+                                        <span className="group-hover:translate-x-1 transition-transform">Terms of Service</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Copyright &amp; Intellectual Rights</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a className="group flex items-center hover:text-[#cfbcff] transition-colors duration-150" href="#">
+                                        <span className="group-hover:translate-x-1 transition-transform">Contact &amp; Inquiries</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            {/* System Status Card */}
+                            <div className="mt-4 p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                                <div className="flex items-center gap-2.5">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                    <span className="text-xs text-[#cbc4d2] font-medium">All Systems Operational</span>
+                                </div>
+                                <span className="text-[11px] text-[#cbc4d2]/50">v2.4.0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bottom Bar: Copyright, Language Switcher, Regional note */}
+                    <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#cbc4d2]/50">
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-center md:text-left">
+                            <span>© 2025 <strong className="text-[#cbc4d2]/80 font-semibold">Alfaz • Shayri Club</strong>. All rights reserved.</span>
+                            <span className="hidden sm:inline text-[#cbc4d2]/20">•</span>
+                            <span className="text-[#cbc4d2]/70">Crafted with devotion for Urdu, Hindi &amp; English verse.</span>
+                        </div>
+                        <div className="flex items-center gap-6">
+                            {/* Language Selector Mockup */}
+                            <button className="inline-flex items-center gap-1.5 text-[#cbc4d2]/70 hover:text-[#cfbcff] transition-colors">
+                                <GlobeIcon className="w-3.5 h-3.5" />
+                                <span>English (EN)</span>
+                                <ChevronDownIcon className="w-3 h-3" />
+                            </button>
+
+                            {/* Back to top button */}
+                            <a
+                                className="inline-flex items-center gap-1 text-[#cbc4d2]/70 hover:text-[#cfbcff] transition-colors"
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    window.scrollTo({ top: 0, behavior: "smooth" });
+                                }}
+                            >
+                                <span>Back to top</span>
+                                <ArrowUpIcon className="w-3.5 h-3.5" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
             {/* ── Bottom Player / Mobile Nav ── */}
             <footer
                 className="cur-footer-player fixed bottom-0 w-full z-50 flex items-center justify-between px-4 md:px-12 py-4"
@@ -1012,6 +1421,43 @@ const Authors = () => {
                     <Link to="/recent"><span className="material-symbols-outlined" style={{ color: COLORS.onSurfaceVariant }}>history</span></Link>
                 </div>
             </footer>
+
+            {/* ── Mobile Sidebar Drawer (same as AlbumsLive; Upgrade to Pro kept) ── */}
+            {sidebarOpen && (
+                <div className="fixed inset-0 z-[70] lg:hidden" onClick={() => setSidebarOpen(false)} style={{ background: "rgba(0,0,0,0.6)" }}>
+                    <aside
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-full w-64 max-w-[80vw] flex flex-col py-8 px-4 gap-4"
+                        style={{ background: COLORS.surfaceContainer }}
+                    >
+                        {[
+                            { icon: "home", label: "Home", to: "/" },
+                            { icon: "explore", label: "Explore", to: "/explore" },
+                            { icon: "library_music", label: "Library", to: "/library", active: true },
+                            { icon: "history", label: "Recent", to: "/recent" },
+                            { icon: "download", label: "Downloads", to: "/downloads" },
+                        ].map((item) => (
+                            <Link
+                                key={item.label}
+                                to={item.to}
+                                onClick={() => setSidebarOpen(false)}
+                                className="flex items-center gap-3 py-2 px-3 rounded-lg"
+                                style={{ color: item.active ? COLORS.primary : COLORS.onSurfaceVariant, fontWeight: item.active ? 700 : 400 }}
+                            >
+                                <span className="material-symbols-outlined text-xl">{item.icon}</span>
+                                <span>{item.label}</span>
+                            </Link>
+                        ))}
+                        <button
+                            className="cur-sunset-gradient font-semibold text-xs tracking-widest uppercase py-3 rounded-xl mt-auto shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
+                            onClick={() => { setSidebarOpen(false); setIsPremiumModal(true); }}
+                            style={{ color: COLORS.onPrimary }}
+                        >
+                            Upgrade to Pro
+                        </button>
+                    </aside>
+                </div>
+            )}
         </div>
     );
 };

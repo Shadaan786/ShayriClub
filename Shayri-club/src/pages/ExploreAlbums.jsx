@@ -52,6 +52,22 @@ const SORT_OPTIONS = [
     { value: "year", label: "Release Year" },
 ];
 
+const FILTER_OPTIONS = [
+    { value: "romantic", label: "Romantic" },
+    { value: "motivational", label: "Motivational" },
+    { value: "inspirational", label: "Inspirational" },
+    { value: "funny", label: "Funny" },
+    { value: "sad", label: "Sad" },
+    { value: "philosophy", label: "Philosophy" },
+    // { value: "motivational", label: "Motivational" },
+    { value: "visionary", label: "Visionary" },
+    { value: "relaxing", label: "Relaxing" },
+    { value: "all", label: "all2" },
+    // { value: "motivational", label: "Motivational" },
+    // { value: "motivational", label: "Motivational" },
+    // { value: "motivational", label: "Motivational" },
+]
+
 const GLOBAL_NAV_LINKS = [
     { text: "Kalam", to: "/kalam" },
     { text: "Community", to: "/spaces" },
@@ -71,6 +87,7 @@ const ExploreAlbums = () => {
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [SearchParams] = useSearchParams();
     const [user, setUser] = useState("");
+    const query = useRef("all");
 
     const navQuery = SearchParams.get('query');
     
@@ -82,7 +99,7 @@ const ExploreAlbums = () => {
     const [wrapStickyTop, setWrapStickyTop] = useState(0);
 
     if(navQuery){
-        console.log(true);
+          query.current = navQuery;
     }else{
         console.log(false)
     }
@@ -90,17 +107,17 @@ const ExploreAlbums = () => {
     // Same pattern as AlbumsLive: refs drive the request params so we don't
     // need to worry about stale closures inside the InfiniteScroll callbacks.
     const page = useRef(1);
-    const query = useRef("all");
+    
     const newAlbums = useRef([]);
     const isFetchingMore = useRef(false);
     const [searchValue, setSearchValue] = useState("");
 
     const handleFetch = () => {
-        if (query.current.trim() === "" && !navQuery) {
-            query.current = "all";
-        } else if(navQuery){
-            query.current = navQuery;
-        }
+        // if (query.current.trim() === "" && !navQuery) {
+        //     query.current = "all";
+        // } else if(navQuery){
+        //     query.current = navQuery;
+        // }
 
         page.current = 1;
 
@@ -404,95 +421,56 @@ const ExploreAlbums = () => {
                 style={{ top: `${wrapStickyTop}px` }}
             >
                 {/* ── Sidebar (desktop) ── */}
-                <aside
-                    className="ea-sidebar hidden lg:flex flex-col fixed left-0 top-20 z-40 overflow-y-auto"
-                    style={{
-                        width: 256,
-                        height: "calc(100vh - 80px)",
-                        background: "rgba(18,33,49,0.4)",
-                        backdropFilter: "blur(20px)",
-                        borderRight: `1px solid ${COLORS.borderSubtle}`,
-                    }}
-                >
-                    <div className="flex flex-col py-8 px-4 gap-4 flex-grow">
-                        <div className="px-4 mb-6">
-                            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: COLORS.secondary }}>
-                                Your Collection
-                            </p>
-                            <p className="text-sm" style={{ color: COLORS.onSurfaceVariant }}>Premium Member</p>
-                        </div>
-
-                        <div className="space-y-1">
-                            {[
-                            { label: "Home", to: "/" },
-                            { label: "Kalam", to: "/kalam" },
-                            { label: "Community", to: "/spaces" },                           
-                            { label: "Browse", to: "/social" },
-                            ].map((item) => (
-                                <Link
-                                    key={item.label}
-                                    to={item.to}
-                                    className="ea-sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg"
-                                    style={{
-                                        color: item.active ? COLORS.primary : COLORS.onSurfaceVariant,
-                                        fontWeight: item.active ? 700 : 400,
-                                        background: item.active ? "rgba(255,255,255,0.05)" : "transparent",
-                                    }}
-                                >
-                                    <span className="material-symbols-outlined">{item.icon}</span>
-                                    <span>{item.label}</span>
-                                </Link>
-                            ))}
-
-                            <Link
-                                to="/library"
-                                className="ea-sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg"
-                                style={{
-                                    color: COLORS.onSurfaceVariant,
-                                    fontWeight: 400,
-                                    background: "transparent",
-                                }}
-                            >
-                                <span className="material-symbols-outlined">{undefined}</span>
-                                <span>Library</span>
-                            </Link>
-                            <Link
-                                to="/explore"
-                                className="ea-sidebar-link flex items-center gap-3 pl-11 pr-4 py-2 rounded-lg"
-                                style={{
-                                    color: COLORS.primary,
-                                    fontWeight: 700,
-                                    background: "rgba(255,255,255,0.05)",
-                                    fontSize: 14,
-                                }}
-                            >
-                                <span>Explore</span>
-                            </Link>
-                        </div>
-
-                        {/* <div className="mt-8 px-4">
-                            <button
-                                className="ea-sunset-gradient w-full py-3 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 font-semibold"
-                                style={{ color: COLORS.onPrimary }}
-                            >
-                                <span className="material-symbols-outlined">add</span>
-                                Add New
-                            </button>
-                        </div> */}
-
-                        <div className="mt-auto pt-8" style={{ borderTop: `1px solid rgba(255,255,255,0.05)` }}>
-                            <Link to="/settings" className="ea-sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" style={{ color: COLORS.onSurfaceVariant }}>
-                                <span className="material-symbols-outlined">settings</span>
-                                <span>Settings</span>
-                            </Link>
-                            <Link to="/helpcenter" className="ea-sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" style={{ color: COLORS.onSurfaceVariant }}>
-                                <span className="material-symbols-outlined">help</span>
-                                <span>Support</span>
-                            </Link>
-                        </div>
-                    </div>
-                </aside>
-
+               <aside
+                                   className="lib-sidebar hidden lg:flex flex-col py-8 px-4 gap-4 fixed left-0 top-20 z-40 overflow-y-auto"
+                                   style={{
+                                       width: 256,
+                                       height: "calc(100vh - 80px)",
+                                       background: "rgba(18,33,49,0.6)",
+                                       backdropFilter: "blur(20px)",
+                                       borderRight: `1px solid ${COLORS.borderSubtle}`,
+                                   }}
+                               >
+                                   <div className="mb-6 px-2">
+                                       <h3 className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: COLORS.secondary }}>
+                                           Your Collection
+                                       </h3>
+                                       <p className="text-xs" style={{ color: "rgba(203,196,210,0.6)" }}>Premium Member</p>
+                                   </div>
+                                   <div className="flex flex-col gap-1">
+                                       {[
+                                           { label: "Home", to: "/" },
+                                           { label: "Kalam", to: "/kalam" },
+                                           { label: "Community", to: "/spaces" },                           
+                                           { label: "Browse", to: "/social" },
+                                           { label: "Library", to: "/library", active: true },
+                                       ].map((item) => (
+                                           <Link
+                                               key={item.label}
+                                               to={item.to}
+                                               className="lib-sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg"
+                                               style={{
+                                                   color: item.active ? COLORS.primary : COLORS.onSurfaceVariant,
+                                                   fontWeight: item.active ? 700 : 400,
+                                                   background: item.active ? "rgba(255,255,255,0.05)" : "transparent",
+                                               }}
+                                           >
+                                               <span className="material-symbols-outlined text-xl">{item.icon}</span>
+                                               <span>{item.label}</span>
+                                           </Link>
+                                       ))}
+                                   </div>
+                                   <div className="mt-auto flex flex-col gap-1 pt-8" style={{ borderTop: `1px solid rgba(255,255,255,0.05)` }}>
+                                       <Link to="/settings" className="lib-sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg" style={{ color: COLORS.onSurfaceVariant }}>
+                                           <span className="material-symbols-outlined text-xl">settings</span>
+                                           <span>Settings</span>
+                                       </Link>
+                                       <Link to="/helpcenter" className="lib-sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg" style={{ color: COLORS.onSurfaceVariant }}>
+                                           <span className="material-symbols-outlined text-xl">help</span>
+                                           <span>Support</span>
+                                       </Link>
+                                   </div>
+                               </aside>
                 {/* ── Main Content ── */}
                 <main className="ea-main-scroll flex-1 min-h-screen px-4 md:px-12 py-6 md:py-12 pb-32 lg:ml-64 lg:w-[calc(100%-16rem)]">
                     {/* Page Header */}
@@ -533,9 +511,21 @@ const ExploreAlbums = () => {
                             >
                                 <span className="material-symbols-outlined text-[18px]">filter_list</span>
                                 <span className="text-sm font-bold">Filters</span>
+                                  <select
+                                    value={query.current}
+                                    onChange={(e) => {query.current = e.target.value; page.current = 1;SearchParams.set("query",`"${e.target.value}"`); handleFetch(query.current)}}
+                                    className="bg-transparent border-none text-sm font-bold outline-none cursor-pointer p-0 pr-6"
+                                    style={{ color: COLORS.primary }}
+                                >
+                                    {FILTER_OPTIONS.map((opt) => (
+                                        <option key={opt.value} value={opt.value} style={{ color: "#000" }}>
+                                            {opt.label}
+                                        </option>
+                                    ))}
+                                </select>
                             </button>
 
-                            <div className="flex gap-2">
+                            {/* <div className="flex gap-2">
                                 {GENRE_CHIPS.map((genre) => {
                                     const active = activeGenre === genre;
                                     return (
@@ -553,7 +543,7 @@ const ExploreAlbums = () => {
                                         </span>
                                     );
                                 })}
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
