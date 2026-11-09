@@ -10,6 +10,7 @@ import {
   FileText,
   Menu,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Design tokens pulled from the original Tailwind config (translated to
 // arbitrary-value Tailwind classes since this environment doesn't support
@@ -67,13 +68,13 @@ const colors = {
 };
 
 const NAV_ITEMS = [
-  { id: "account", label: "Account", icon: UserCog },
-  { id: "notifications", label: "Notifications", icon: Bell },
-  { id: "privacy", label: "Privacy", icon: Lock },
-  { id: "security", label: "Security", icon: Shield },
-  { id: "support", label: "Support & Feedback", icon: HelpCircle },
-  { id: "legal", label: "Legal", icon: Gavel },
-  { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
+  { id: "account", label: "Account", icon: UserCog, link: '/settings/account'},
+  { id: "notifications", label: "Notifications", icon: Bell, link: '/settings/notifications' },
+  { id: "privacy", label: "Privacy", icon: Lock, link: '/settings/privacy' },
+  { id: "security", label: "Security", icon: Shield, link: '/settings/security' },
+  { id: "support", label: "Support & Feedback", icon: HelpCircle, link: '/settings/support' },
+  { id: "legal", label: "Legal", icon: Gavel, link: '/settings/legal' },
+  { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true, link: '/settings/danger' },
 ];
 
 const CATEGORIES = [
@@ -142,6 +143,7 @@ export default function KalamSuggestPage() {
   const [fileName, setFileName] = useState("");
   const [activeSection, setActiveSection] = useState("support");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const Navigate = useNavigate();
 
   const handleFileChange = (e) => {
     const files = e.target.files;
@@ -171,6 +173,7 @@ export default function KalamSuggestPage() {
             key={item.id}
             onClick={() => {
               setActiveSection(item.id);
+              Navigate(item.link);
               onNavigate && onNavigate();
             }}
             className="w-full flex items-center gap-4 py-3 px-4 text-left transition-colors"

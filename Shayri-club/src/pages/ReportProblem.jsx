@@ -10,6 +10,7 @@ import {
   FileText,
   Menu,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // ---- Sidebar design tokens (ported 1:1 from SystemSettings.jsx) ----
 const colors = {
@@ -37,13 +38,13 @@ const colors = {
 };
 
 const NAV_ITEMS = [
-  { id: "account", label: "Account", icon: UserCog },
-  { id: "notifications", label: "Notifications", icon: Bell },
-  { id: "privacy", label: "Privacy", icon: Lock },
-  { id: "security", label: "Security", icon: Shield },
-  { id: "support", label: "Support & Feedback", icon: HelpCircle },
-  { id: "legal", label: "Legal", icon: Gavel },
-  { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
+  { id: "account", label: "Account", icon: UserCog, link: '/settings/account'},
+  { id: "notifications", label: "Notifications", icon: Bell, link: '/settings/notifications' },
+  { id: "privacy", label: "Privacy", icon: Lock, link: '/settings/privacy' },
+  { id: "security", label: "Security", icon: Shield, link: '/settings/security' },
+  { id: "support", label: "Support & Feedback", icon: HelpCircle, link: '/settings/support' },
+  { id: "legal", label: "Legal", icon: Gavel, link: '/settings/legal' },
+  { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true, link: '/settings/danger' },
 ];
 
 /**
@@ -186,6 +187,8 @@ export default function ReportProblem() {
   const [activeSection, setActiveSection] = useState("support");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
+  const Navigate = useNavigate();
+
   // Identical NavList used across the console (see SystemSettings.jsx)
   const NavList = ({ onNavigate }) => (
     <nav className="flex-1 overflow-y-auto px-4 space-y-1">
@@ -197,6 +200,7 @@ export default function ReportProblem() {
             key={item.id}
             onClick={() => {
               setActiveSection(item.id);
+              Navigate(item.link)
               onNavigate && onNavigate();
             }}
             className="w-full flex items-center gap-4 py-3 px-4 text-left transition-colors"

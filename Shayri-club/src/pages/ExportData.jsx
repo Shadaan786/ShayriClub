@@ -16,6 +16,8 @@ import {
   ExternalLink,
   Menu,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "@/Apis/axiosInstance";
 
 /**
  * Data Export admin panel
@@ -67,13 +69,13 @@ const colors = {
 };
 
 const NAV_ITEMS = [
-  { id: "account", label: "Account", icon: UserCog },
-  { id: "notifications", label: "Notifications", icon: Bell },
-  { id: "privacy", label: "Privacy", icon: Lock },
-  { id: "security", label: "Security", icon: Shield },
-  { id: "support", label: "Support & Feedback", icon: HelpCircle },
-  { id: "legal", label: "Legal", icon: Gavel },
-  { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
+  { id: "account", label: "Account", icon: UserCog, link: '/settings/account'},
+  { id: "notifications", label: "Notifications", icon: Bell, link: '/settings/notifications' },
+  { id: "privacy", label: "Privacy", icon: Lock, link: '/settings/privacy' },
+  { id: "security", label: "Security", icon: Shield, link: '/settings/security' },
+  { id: "support", label: "Support & Feedback", icon: HelpCircle, link: '/settings/support' },
+  { id: "legal", label: "Legal", icon: Gavel, link: '/settings/legal' },
+  { id: "danger", label: "Danger Zone", icon: AlertTriangle, danger: true, link: '/settings/danger' },
 ];
 
 const DATE_RANGES = [
@@ -84,8 +86,8 @@ const DATE_RANGES = [
 ];
 
 const DATA_SOURCES = [
-  { label: "User Profiles & Analytics", defaultChecked: true },
-  { label: "Transaction History", defaultChecked: true },
+  { label: "User Profiles & Analytics", value:"profile", defaultChecked: true },
+  { label: "Transaction History", value:"transaction", defaultChecked: true },
   { label: "System Logs (Admin Only)", defaultChecked: false },
 ];
 
@@ -144,8 +146,8 @@ function StatusBadge({ status }) {
   );
 }
 
-function TimeRangePicker() {
-  const [selected, setSelected] = React.useState("30d");
+function TimeRangePicker({selected, setSelected}) {
+  
   return (
     <div className="flex flex-col gap-2">
       <label className="text-xs font-semibold tracking-wide" style={{ color: COLORS.onSurface }}>
@@ -182,12 +184,10 @@ function TimeRangePicker() {
   );
 }
 
-function DataSourcesPicker() {
-  const [checked, setChecked] = React.useState(
-    Object.fromEntries(DATA_SOURCES.map((s) => [s.label, s.defaultChecked]))
-  );
+function DataSourcesPicker({checked, setChecked}) {
 
-  const toggle = (label) => setChecked((prev) => ({ ...prev, [label]: !prev[label] }));
+
+  const toggle = (value) => setChecked((prev) => ({ ...prev, [value]: !prev[value] }));
 
   return (
     <div className="flex flex-col gap-2">
@@ -197,7 +197,7 @@ function DataSourcesPicker() {
       <div className="flex flex-col gap-1">
         {DATA_SOURCES.map((source) => (
           <label
-            key={source.label}
+            key={source.value}
             className="flex items-center gap-2 cursor-pointer py-1 px-2 -ml-2 transition-colors"
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = COLORS.surfaceVariant;
@@ -208,8 +208,8 @@ function DataSourcesPicker() {
           >
             <input
               type="checkbox"
-              checked={!!checked[source.label]}
-              onChange={() => toggle(source.label)}
+              checked={!!checked[source.value]}
+              onChange={() => toggle(source.value)}
               className="w-4 h-4 rounded-none focus:ring-0 focus:ring-offset-0"
               style={{
                 backgroundColor: COLORS.surfaceContainer,
@@ -229,6 +229,29 @@ function DataSourcesPicker() {
 }
 
 function NewExportRequestForm() {
+  const [selected, setSelected] = React.useState("30d");
+    const [checked, setChecked] = React.useState(
+    Object.fromEntries(DATA_SOURCES.map((s) => [s.value, s.defaultChecked]))
+  );
+  const [dataFormat, setDataFormat] = useState("JSON")
+
+
+  const requestReport=()=>{
+    axiosInstance
+    .post('/api.requestdata',{
+      date: selected,
+      source: checked,
+      format: dataFormat
+    })
+    .then((response)=>{
+      console.log(response.data)
+    })
+    .catch((error)=>{
+      console.error("Error while sending request", error)
+    })
+  }
+
+
   return (
     <div className="col-span-1 md:col-span-8 border p-6" style={{ borderColor: COLORS.borderSubtle, backgroundColor: COLORS.surface }}>
       <h3
@@ -242,8 +265,8 @@ function NewExportRequestForm() {
       </h3>
 
       <form className="flex flex-col gap-6">
-        <TimeRangePicker />
-        <DataSourcesPicker />
+        <TimeRangePicker selected={selected} setSelected={setSelected} />
+        <DataSourcesPicker checked={checked} setChecked={setChecked} />
 
         <div className="flex flex-col md:flex-row gap-6 md:items-end mt-4 pt-6 border-t" style={{ borderColor: COLORS.borderSubtle }}>
           <div className="flex-1 flex flex-col gap-2">
@@ -255,13 +278,13 @@ function NewExportRequestForm() {
                 className="w-full bg-transparent border-none text-sm py-2 pl-4 pr-10 appearance-none focus:ring-0"
                 style={{ color: COLORS.onSurface }}
               >
-                <option style={{ backgroundColor: COLORS.surfaceContainer, color: COLORS.onSurface }} value="json">
+                <option style={{ backgroundColor: COLORS.surfaceContainer, color: COLORS.onSurface }} value="json"onClick={()=> setDataFormat("JSON")}>
                   JSON (Recommended)
                 </option>
-                <option style={{ backgroundColor: COLORS.surfaceContainer, color: COLORS.onSurface }} value="csv">
+                <option style={{ backgroundColor: COLORS.surfaceContainer, color: COLORS.onSurface }} value="csv" onClick={()=>setDataFormat("CSV")}>
                   CSV (Comma Separated)
                 </option>
-                <option style={{ backgroundColor: COLORS.surfaceContainer, color: COLORS.onSurface }} value="xml">
+                <option style={{ backgroundColor: COLORS.surfaceContainer, color: COLORS.onSurface }} value="xml" onClick={()=>setDataFormat("XML")}>
                   XML
                 </option>
               </select>
@@ -276,6 +299,7 @@ function NewExportRequestForm() {
 
           <button
             type="button"
+            onClick={()=>requestReport()}
             className="py-2 px-8 text-xs font-semibold tracking-wide whitespace-nowrap h-[42px] flex items-center justify-center gap-2 transition-colors"
             style={{ backgroundColor: "#ffffff", color: "#000000" }}
             onMouseEnter={(e) => {
@@ -295,6 +319,8 @@ function NewExportRequestForm() {
     </div>
   );
 }
+
+
 
 function InfoSidebar() {
   return (
@@ -428,6 +454,8 @@ export default function DataExport() {
   const [activeSection, setActiveSection] = useState("privacy");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
+  const Navigate = useNavigate();
+
   const NavList = ({ onNavigate }) => (
     <nav className="flex-1 overflow-y-auto px-4 space-y-1">
       {NAV_ITEMS.map((item) => {
@@ -438,6 +466,7 @@ export default function DataExport() {
             key={item.id}
             onClick={() => {
               setActiveSection(item.id);
+              Navigate(item.link)
               onNavigate && onNavigate();
             }}
             className="w-full flex items-center gap-4 py-3 px-4 text-left transition-colors"
